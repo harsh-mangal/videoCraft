@@ -4,7 +4,7 @@ import hooks from "eslint-plugin-react-hooks";
 import a11y from "eslint-plugin-jsx-a11y";
 
 export default [
-  { ignores: ["build/**", ".cache/**", "node_modules/**"] },
+  { ignores: ["build/**", "client/build/**", "**/.cache/**", "**/node_modules/**", "server/site-renderer/**", "admin/dist/**"] },
   js.configs.recommended,
   {
     files: ["**/*.{js,jsx,mjs}"],
@@ -17,5 +17,5 @@ export default [
       "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z]", argsIgnorePattern: "^[A-Z_]" }],
     },
   },
-  { files: ["src/**/*.test.{js,jsx}", "src/setupTests.js"], languageOptions: { globals: { ...globals.vitest } } },
+  { files: ["client/src/**/*.test.{js,jsx}", "client/src/setupTests.js", "admin/src/**/*.test.{js,jsx}", "admin/src/setupTests.js"], languageOptions: { globals: { ...globals.vitest } } },
 ];

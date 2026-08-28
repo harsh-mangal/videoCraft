@@ -7,6 +7,9 @@ node_modules/
 /build/
 /dist/
 /coverage/
+/client/build/
+/client/dist/
+/client/coverage/
 .cache/
 .eslintcache
 *.tsbuildinfo
@@ -37,5 +40,11 @@ Desktop.ini
 *.swo
 *~
 
-# Local source backup supplied with this checkout
+# Local source backups supplied with this checkout
+/Archive/
 /Archive.zip
+
+# Separate admin build and Node runtime data (never publish or commit these)
+/admin/dist/
+/server/data/
+/server/site-renderer/

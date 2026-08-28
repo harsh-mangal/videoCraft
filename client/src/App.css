@@ -1,0 +1,72 @@
+html {
+  scroll-behavior: auto;
+  scroll-padding-top: 9rem;
+}
+
+body {
+  min-width: 320px;
+  color: #4d504a;
+}
+
+img {
+  max-width: 100%;
+}
+
+button, input, select, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { cursor: pointer; }
+button:disabled { cursor: default; }
+input, select, textarea { min-height: 44px; }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 3px solid #626d55;
+  outline-offset: 4px;
+}
+main:focus { outline: none; }
+.skip-link {
+  position: fixed; top: 8px; left: 8px; z-index: 100;
+  padding: 12px 18px; background: #fff; color: #24251f;
+  transform: translateY(-160%);
+}
+.skip-link:focus { transform: translateY(0); }
+.carousel-control {
+  display: inline-flex; min-width: 44px; min-height: 44px;
+  align-items: center; justify-content: center; border: 1px solid #73736a;
+  border-color: #73736a; border-radius: 6px; background: transparent;
+}
+.carousel-control:hover { background: #e9e5e0; }
+footer a, footer p { overflow-wrap: anywhere; }
+.social-links { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.social-link { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex-shrink: 0; border: 1px solid #e3e6df; border-radius: 50%; background: #fff; transition: background-color 150ms ease, box-shadow 150ms ease; }
+.social-link:hover { background: #f3f5f0; box-shadow: 0 2px 8px #0001; }
+.social-link svg { display: block; width: 23px; height: 23px; flex-shrink: 0; }
+.whatsapp-button {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  color: #fff;
+  background: #128c7e;
+  box-shadow: 0 4px 16px #0003;
+  transition: background-color 150ms ease, box-shadow 150ms ease;
+}
+.whatsapp-button:hover { background: #0d7165; box-shadow: 0 6px 20px #0004; }
+/* Leave room to scroll footer content clear of the floating contact action. */
+footer { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

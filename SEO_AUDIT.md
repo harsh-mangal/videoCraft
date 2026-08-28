@@ -1,9 +1,11 @@
 # SEO, performance and responsive audit
 
-**Date:** 2026-08-28  
-**Scope:** Current source and generated production build, all 11 public routes, local static HTTP behavior, browser layout and interactions, dependency scan, and referenced ImageKit assets. This replaces the historical CRA audit in CODEBASE_AUDIT.md.
+**Date:** 2026-08-28
+**Scope:** Current source and generated production build, all 11 public routes, local static HTTP behavior, browser layout and interactions, dependency scan, and referenced ImageKit assets. This is the maintained audit; current architecture and setup instructions are in README.md.
 
 ## Result
+
+**Admin follow-up (2026-08-28):** The repository now includes a separate Node.js backend and React admin. The catalog covers 122 editable entries (121 existing images plus the browser icon). Published replacements update server-rendered HTML, social/schema images, both CSS backgrounds and the app icon without a rebuild. Admin routes are noindex and excluded from sitemap/robots. Verification now covers 35 public-site tests, 5 admin tests and 10 backend integration tests; all three dependency audits report zero vulnerabilities. Initial public JavaScript is approximately 95 KB gzip, with the admin delivered as a separate bundle. The Node server compresses public HTML/assets; private API responses are not compressed. See README.md and server/README.md for the required Node runtime and persistent-storage deployment.
 
 The reported application issues have been addressed in code. The site now generates crawlable page content and route-specific metadata before JavaScript runs, has a canonical sitemap and robots file, uses responsive images and smaller JavaScript bundles, and has regression/build checks.
 
@@ -54,15 +56,15 @@ All rows below have initial HTML, canonical URLs, indexable robots metadata and 
 
 | Measure | Previous audit | Current build / observation |
 | --- | --- | --- |
-| Initial JavaScript | About 186 KB gzip in one main bundle | About 90 KB gzip including the shared image module; roughly half the previous payload |
+| Initial JavaScript | About 186 KB gzip in one main bundle | About 95 KB gzip including the shared image module; roughly half the previous payload |
 | Main CSS | About 12.3 KB gzip | About 5.6 KB gzip |
 | Route loading | All pages eagerly imported | Separate inner-route chunks; HTML already prerendered |
 | Animation/carousel dependencies | Framer Motion, Swiper, Slick | Removed; small manual carousel and static content |
 | Dependency audit | 60 flagged entries, including 3 critical | 0 flagged entries |
-| Tests | 1 helper test | 32 regression tests |
+| Tests | 1 helper test | 51 tests across the public site, admin and backend |
 | Image requests | Source-size images with limited responsive delivery | ImageKit width/quality/format transformations plus srcset/sizes |
 | Layout stability | Many images lacked intrinsic dimensions | Measured source dimensions for all 121 remaining ImageKit assets |
-| Interface icons | External service-icon images and text glyphs | Named Lucide React imports; 11 external icon images replaced with inline SVG |
+| Interface icons | External service-icon images and text glyphs | Lucide interface icons and Simple Icons brand marks; 11 external icon images replaced with inline SVG |
 | Loading priority | CSS backgrounds and eager image strips | High-priority hero; default lazy images below the fold; no duplicated moving strips |
 
 The byte comparisons below use the same Accept: image/webp header for each original/optimized pair, with a 640px transform for the mobile variant. They are resource-size measurements, not whole-page load-time measurements.
@@ -101,13 +103,13 @@ These are targeted checks, not a formal WCAG certification or comprehensive scre
 | Reduced-motion/autoplay | Autoplay and animated image strips removed; manual controls retained |
 | Initial response missing per-page SEO | React static generation with complete Suspense content; metadata generated per route |
 | Malformed phone numbers accepted | Whole-input validation, balanced formatting, local/international length limits and normalized enquiry text |
-| Minimal test coverage | 32 tests plus production SEO/import/HTTP checks and CI configuration |
+| Minimal test coverage | 51 tests plus production SEO/import/HTTP checks and CI configuration |
 | Ignore rules ineffective for tracked output | build/ and .DS_Store removed from the Git index; local files retained |
 
 ## Owner and deployment actions still required
 
-1. **Confirm the production domain and DNS.** The configured domain did not resolve from this environment. Change SITE_URL in src/config/seo.js if needed and rebuild so sitemap, canonicals and metadata remain consistent.
-2. **Deploy and verify host behavior.** Upload build/ including hidden files. Verify HTTPS, alternate hostname redirects, compression, cache headers, clean route responses, old URL redirects and actual 404 status codes. The generated Apache/Netlify rules are not a substitute for testing the live hosting configuration. Native Apache configuration validation was blocked by an OS permission error; the 22 passing HTTP checks use the project's Node preview server, not Apache or Netlify.
+1. **Confirm the production domain and DNS.** The configured domain did not resolve from this environment. Change SITE_URL in client/src/config/seo.js if needed and rebuild so sitemap, canonicals and metadata remain consistent.
+2. **Deploy and verify host behavior.** For a static snapshot, upload client/build/ including hidden files. Live image administration requires the Node deployment described in README.md. Verify HTTPS, alternate hostname redirects, compression, cache headers, clean route responses, old URL redirects and actual 404 status codes. The generated Apache/Netlify rules are not a substitute for testing the live hosting configuration. Native Apache configuration validation was blocked by an OS permission error; the 22 passing HTTP checks use the project's Node preview server, not Apache or Netlify.
 3. **Validate business and editorial content.** Confirm the studio address, phone, email, establishment history, review quotations/permissions, award imagery and the factual status of the wedding narratives before publication. The inherited Sarah/Jack-style stories and testimonials were preserved, not independently authenticated or represented as verified customer evidence.
 4. **Verify search ownership and discovery.** Submit the deployed sitemap through an owner-controlled Search Console property, inspect representative URLs, and run Google's Rich Results Test. No Search Console account or Business Profile was accessed.
 5. **Improve content from actual shoots.** Add verified location/service-specific copy, useful package/process FAQs, and more descriptive photo captions/alt text where the owner can supply accurate context. The current alt attributes are present but some remain broad portfolio descriptions.
@@ -121,12 +123,18 @@ No deployment, rankings, indexing, rich-result eligibility or ownership verifica
 Use Node.js 24 or newer:
 
     npm ci
+    npm ci --prefix client
+    npm ci --prefix admin
+    npm ci --prefix server
     npm run lint
-    npm test
-    npm run build
+    npm run build:all
+    npm run test:all
     npm audit
+    npm audit --prefix client
+    npm audit --prefix admin
+    npm audit --prefix server
     npm run preview
 
 The build includes SEO, asset, exact-case import and local HTTP checks. Detailed machine-readable results are written to .cache/build-audit.json. The CI workflow is configured for Ubuntu with Node 24; it has not been run on GitHub from this local session.
 
-The implementation uses [Vite's static prerendering approach](https://vite.dev/guide/ssr#pre-rendering-ssg) and [React's static-generation API](https://react.dev/reference/react-dom/static/prerenderToNodeStream). The website is still deployed as static files and does not require an application server.
+The implementation uses [Vite's prerendering approach](https://vite.dev/guide/ssr#pre-rendering-ssg) and [React's generation API](https://react.dev/reference/react-dom/static/prerenderToNodeStream). Static snapshots remain available, but the image admin and live published-image HTML now require the Node backend described in README.md. Production DNS/TLS, host configuration, backups and owner credentials remain deployment tasks.

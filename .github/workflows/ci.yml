@@ -16,8 +16,19 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            client/package-lock.json
+            admin/package-lock.json
+            server/package-lock.json
       - run: npm ci
+      - run: npm ci --prefix client
+      - run: npm ci --prefix admin
+      - run: npm ci --prefix server
       - run: npm run lint
-      - run: npm test
-      - run: npm run build
+      - run: npm run build:all
+      - run: npm run test:all
       - run: npm audit --audit-level=moderate
+      - run: npm audit --prefix client --audit-level=moderate
+      - run: npm audit --prefix admin --audit-level=moderate
+      - run: npm audit --prefix server --audit-level=moderate

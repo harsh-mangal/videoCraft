@@ -7,36 +7,25 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "start": "vite --host 127.0.0.1",
-    "dev": "vite --host 127.0.0.1",
-    "build": "vite build && vite build --ssr src/entry-server.jsx --outDir .cache/ssr && node scripts/prerender.mjs && node scripts/check-build.mjs",
-    "preview": "node scripts/serve.mjs",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "lint": "eslint src scripts vite.config.js",
-    "check:seo": "node scripts/check-build.mjs"
-  },
-  "dependencies": {
-    "lucide-react": "^0.544.0",
-    "react": "^19.2.8",
-    "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.2"
+    "start": "npm --prefix client start",
+    "dev": "npm --prefix client run dev",
+    "dev:admin": "npm --prefix admin run dev",
+    "dev:server": "npm --prefix server run dev",
+    "build": "npm --prefix client run build",
+    "build:all": "npm run build && npm --prefix admin run build",
+    "preview": "npm --prefix client run preview",
+    "test": "npm --prefix client test",
+    "test:all": "npm test && npm --prefix admin test && npm --prefix server test",
+    "test:watch": "npm --prefix client run test:watch",
+    "lint": "eslint client/src client/scripts client/vite.config.js server/src server/scripts server/test admin/src admin/vite.config.js eslint.config.js",
+    "lint:client": "eslint client/src client/scripts client/vite.config.js",
+    "check:seo": "npm --prefix client run check:seo"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
-    "@testing-library/jest-dom": "^6.8.0",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/user-event": "^14.6.1",
-    "@vitejs/plugin-react": "^6.1.1",
-    "autoprefixer": "^10.4.21",
     "eslint": "^9.39.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.0.0",
-    "globals": "^16.5.0",
-    "jsdom": "^30.0.1",
-    "postcss": "^8.5.26",
-    "tailwindcss": "^3.4.19",
-    "vite": "^8.2.2",
-    "vitest": "^4.1.11"
+    "globals": "^16.5.0"
   }
 }
