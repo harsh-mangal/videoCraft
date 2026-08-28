@@ -1,9 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const WeddingStory3 = () => {
-    const navigate = useNavigate();
     const sections = [
         {
             heading: "Introduction to the Client’s Love Story",
@@ -11,7 +10,7 @@ const WeddingStory3 = () => {
         },
         {
             heading: "The Proposal: How it All Began",
-            content: `It was a crisp autumn day, the leaves painted in vibrant hues. James had planned everything down to the last detail. He wanted it to be perfect. They strolled through a charming park, hand in hand. Laughter filled the air as they reminisced about their favorite memories together. Suddenly, he led her to a hidden alcove adorned with twinkling fairy lights. He took a deep breath and knelt on one knee, pulling out a small velvet box. Her heart raced as she realized what was happening. Time seemed to stand still. “Will you marry me?” he asked, eyes sparkling with hope and love. Tears welled up as she nodded vigorously, overwhelmed by joy. The world around them faded away; it was just the two of them in that magical moment. Their engagement marked the beginning of an unforgettable journey—a true wedding story waiting to unfold.`,
+            content: `It was a crisp autumn day, the leaves painted in vibrant hues. Tom had planned everything down to the last detail. He wanted it to be perfect. They strolled through a charming park, hand in hand. Laughter filled the air as they reminisced about their favorite memories together. Suddenly, he led her to a hidden alcove adorned with twinkling fairy lights. He took a deep breath and knelt on one knee, pulling out a small velvet box. Her heart raced as she realized what was happening. Time seemed to stand still. “Will you marry me?” he asked, eyes sparkling with hope and love. Tears welled up as she nodded vigorously, overwhelmed by joy. The world around them faded away; it was just the two of them in that magical moment. Their engagement marked the beginning of an unforgettable journey—a true wedding story waiting to unfold.`,
         },
         {
             heading: "Planning the Wedding: The Good, the Bad, and the Hilarious",
@@ -43,14 +42,14 @@ const WeddingStory3 = () => {
         {
             img: "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp-1.jpg?updatedAt=1758112615847",
             title: "From ‘I Do’ to Forever | Celebrating a Client’s Unique Wedding Experience",
-            link: "/From-‘I-Do’-to%20Forever",
-            meta: "Leave a Comment / Wedding Stories / By videocraftsindia",
+            link: "/wedding-stories/from-i-do-to-forever",
+            meta: "Wedding Stories / By Videocrafts India",
         },
         {
             img: "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp-3.jpg?updatedAt=1758112697885",
             title: "Tales of Romance | Highlighting a Client’s Beautiful Wedding Day",
-            link: "/tales-off-romance",
-            meta: "Leave a Comment / Wedding Stories / By videocraftsindia",
+            link: "/wedding-stories/tales-of-romance",
+            meta: "Wedding Stories / By Videocrafts India",
         },
     ];
 
@@ -60,7 +59,7 @@ const WeddingStory3 = () => {
                 <div className="max-w-6xl mx-auto px-4 py-12 bg-white pr-8 pl-8">
 
                     {/* Top Heading */}
-                    <motion.h2
+                    <motion.h1
                         className="text-[#1E293B] font-semibold mb-4 text-2xl sm:text-3xl md:text-4xl"
                         style={{ fontFamily: "Roboto, sans-serif" }}
                         initial={{ opacity: 0, y: -20 }}
@@ -69,7 +68,7 @@ const WeddingStory3 = () => {
                         transition={{ duration: 0.6 }}
                     >
                         Every Love Has a Story | Client Chronicles Their Unforgettable Wedding Day
-                    </motion.h2>
+                    </motion.h1>
 
                     {/* Date */}
                     <motion.p
@@ -93,7 +92,7 @@ const WeddingStory3 = () => {
                     >
                         <img
                             src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp.jpg?updatedAt=1758112778257"
-                            alt="Wedding Story"
+                            alt="Wedding celebration captured by Videocrafts India"
                             className="w-full h-auto object-cover rounded-lg"
                         />
                     </motion.div>
@@ -128,12 +127,12 @@ const WeddingStory3 = () => {
                         Related Posts
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                        {relatedPosts.map((post, idx) => (
-                            <div key={idx} className="cursor-pointer" onClick={() => navigate(post.link)}>
+                        {relatedPosts.map((post) => (
+                            <Link key={post.link} to={post.link} className="block rounded-md focus:outline-none focus:ring-2 focus:ring-[#4D504A]">
                                 <img
                                     src={post.img}
                                     alt={post.title}
-                                    className="w-full h-52 object-cover rounded-md mb-4"
+                                    className="w-full h-52 object-cover rounded-md mb-4" loading="lazy" decoding="async"
                                 />
                                 <h3
                                     className="text-lg font-semibold text-[#1E293B] mb-2"
@@ -142,7 +141,7 @@ const WeddingStory3 = () => {
                                     {post.title}
                                 </h3>
                                 <p className="text-[#046bd0] text-sm">{post.meta}</p>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

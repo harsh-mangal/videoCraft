@@ -1,99 +1,79 @@
-import React from "react";
-import { FaFacebookF, FaInstagram, FaYoutube, FaWhatsapp, FaEnvelope } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaEnvelope, FaFacebookF, FaInstagram, FaWhatsapp, FaYoutube } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { openWhatsApp } from "../utils/whatsapp";
 
 const Footer = () => {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+
+  const submitNewsletter = (event) => {
+    event.preventDefault();
+    const cleanEmail = email.trim();
+    if (!/^\S+@\S+\.\S+$/.test(cleanEmail)) {
+      setError("Enter a valid email address.");
+      return;
+    }
+    setError("");
+    openWhatsApp(`Hello Videocrafts India, please add ${cleanEmail} to your updates list.`);
+  };
+
+  const socialLinks = [
+    { href: "https://www.facebook.com/videocrafts9572", label: "Facebook", icon: <FaFacebookF size={26} />, className: "text-blue-600" },
+    { href: "https://www.instagram.com/videocrafts/", label: "Instagram", icon: <FaInstagram size={26} />, className: "text-pink-500" },
+    { href: "https://www.youtube.com/@videocrafts84", label: "YouTube", icon: <FaYoutube size={26} />, className: "text-red-600" },
+    { href: "https://wa.me/919888626212", label: "WhatsApp", icon: <FaWhatsapp size={26} />, className: "text-green-600" },
+  ];
+
   return (
-    <div className="w-full">
-      {/* Main Footer */}
-      <div className="w-full bg-white py-20 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12">
-
-          {/* Column 1: Social Media */}
-          <div className="flex-1 flex flex-col items-center text-center md:items-start md:pr-8 md:border-r border-gray-300 h-full">
-            <h3
-              className="uppercase mb-6"
-              style={{
-                fontFamily: '"Cormorant Garamond", serif',
-                color: "#5E5E56",
-                fontSize: "22px",
-              }}
-            >
-              Follow Us
-            </h3>
-            <div className="flex justify-center md:justify-start space-x-6 mb-6">
-              <a href="https://www.facebook.com/videocrafts9572?mibextid=LQQJ4d&rdid=HjXI6anXYVR1TyvK&share_url=https%3A%2F%2Fwww.facebook.com%2Fshare%2F185CuwCPXh%2F%3Fmibextid%3DLQQJ4d#" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:opacity-80 transition"><FaFacebookF size={26} /></a>
-              <a href="https://www.instagram.com/videocrafts/?igsh=ZDhlZnRvdGQ2b3Jo#" target="_blank" rel="noopener noreferrer" className="text-pink-500 hover:opacity-80 transition"><FaInstagram size={26} /></a>
-              <a href="https://www.youtube.com/@videocrafts84" target="_blank" rel="noopener noreferrer" className="text-red-600 hover:opacity-80 transition"><FaYoutube size={26} /></a>
-              <a href="https://api.whatsapp.com/resolve/?deeplink=%2F%2520919814527271%2520&not_found=1" target="_blank" rel="noopener noreferrer" className="text-green-500 hover:opacity-80 transition"><FaWhatsapp size={26} /></a>
+    <footer className="w-full">
+      <div className="w-full bg-white px-4 py-16">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-12 md:flex-row md:items-stretch">
+          <div className="flex flex-1 flex-col items-center text-center md:items-start md:border-r md:border-gray-300 md:pr-8 md:text-left">
+            <h2 className="mb-6 text-[22px] uppercase text-[#5E5E56]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Follow Us</h2>
+            <div className="mb-6 flex space-x-6">
+              {socialLinks.map((item) => (
+                <a key={item.label} href={item.href} aria-label={item.label} target="_blank" rel="noopener noreferrer" className={`${item.className} transition hover:opacity-70`}>
+                  {item.icon}
+                </a>
+              ))}
             </div>
-            <p
-              style={{
-                fontFamily: '"Cormorant Garamond", serif',
-                color: "#84847C",
-                fontSize: "16px",
-              }}
-            >
+            <a href="mailto:videocrafts95@gmail.com" className="text-[#84847C] hover:underline" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
               videocrafts95@gmail.com
-            </p>
+            </a>
           </div>
 
-          {/* Column 2: Logo */}
-          <div className="flex-1 flex justify-center items-center md:px-8 md:border-r border-gray-300 h-full">
-            <img
-              src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025"
-              alt="Logo"
-              className="lg:w-56 h-auto cursor-pointer group"
-            />
-            <style>{`
-              .group:hover {
-                animation: heartbeat 1s infinite;
-              }
-              @keyframes heartbeat {
-                0%, 100% { transform: scale(1); }
-                25%, 75% { transform: scale(1.1); }
-                50% { transform: scale(1.2); }
-              }
-            `}</style>
+          <div className="flex flex-1 items-center justify-center md:border-r md:border-gray-300 md:px-8">
+            <Link to="/" aria-label="Videocrafts India home">
+              <img src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025" alt="Videocrafts India" className="w-52 h-auto transition hover:scale-105" loading="lazy" decoding="async" />
+            </Link>
           </div>
 
-          {/* Column 3: Newsletter */}
-          <div className="flex-1 flex flex-col items-center text-center md:items-start md:pl-8 h-full">
-            <h3
-              className="uppercase mb-4"
-              style={{ fontFamily: '"Cormorant Garamond", serif', color: "#5E5E56", fontSize: "22px" }}
-            >
-              Newsletter
-            </h3>
-            <p
-              className="mb-6 italic"
-              style={{ fontFamily: '"Cormorant Garamond", serif', color: "#84847C", fontSize: "16px" }}
-            >
-              Follow our latest stories.
+          <div className="flex flex-1 flex-col items-center text-center md:items-start md:pl-8 md:text-left">
+            <h2 className="mb-4 text-[22px] uppercase text-[#5E5E56]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Stay Connected</h2>
+            <p className="mb-5 italic text-[#84847C]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+              Share your email to receive photography updates.
             </p>
-            <div className="flex w-full md:w-auto justify-center md:justify-start">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="border-b-2 border-gray-400 bg-transparent placeholder-gray-500 text-gray-700 focus:outline-none py-3 px-3 w-full md:w-64"
-              />
-              <button className="bg-gray-400 text-white px-5 py-3 ml-2 hover:bg-gray-500 transition">
-                <FaEnvelope size={20} />
-              </button>
-            </div>
+            <form onSubmit={submitNewsletter} className="w-full">
+              <div className="flex w-full max-w-sm">
+                <label htmlFor="footer-email" className="sr-only">Email address</label>
+                <input id="footer-email" type="email" value={email} onChange={(event) => { setEmail(event.target.value); setError(""); }} placeholder="Enter your email" className="min-w-0 flex-1 border-b-2 border-gray-400 bg-transparent px-3 py-3 text-gray-700 outline-none focus:border-[#4D504A]" />
+                <button type="submit" aria-label="Continue on WhatsApp" className="ml-2 bg-[#4D504A] px-5 py-3 text-white transition hover:bg-[#343731]">
+                  <FaEnvelope size={20} aria-hidden="true" />
+                </button>
+              </div>
+              {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
+            </form>
           </div>
         </div>
       </div>
 
-      {/* Bottom Copyright Bar */}
-      <div className="w-full bg-[#f5f0eb] py-4">
-        <p
-          className="text-center text-gray-600"
-          style={{ fontFamily: '"Cormorant Garamond", serif', fontSize: "14px" }}
-        >
-          Copyright © {new Date().getFullYear()} All Rights Reserved. Videocraftsindia
+      <div className="w-full bg-[#f5f0eb] px-4 py-4">
+        <p className="text-center text-sm text-gray-600" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+          Copyright © {new Date().getFullYear()} Videocrafts India. All rights reserved.
         </p>
       </div>
-    </div>
+    </footer>
   );
 };
 

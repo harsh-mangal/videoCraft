@@ -19,10 +19,9 @@ const BridalPortraits = () => {
                 }}
             >
                 <h1
-                    className="text-white text-center uppercase"
+                    className="text-4xl sm:text-5xl md:text-6xl text-white text-center uppercase"
                     style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: "60px",
                         fontWeight: 700,
                         textShadow: "2px 2px 8px rgba(0,0,0,0.6)",
                     }}
@@ -38,7 +37,7 @@ const BridalPortraits = () => {
                         <img
                             src={img}
                             alt={`Bridal Portrait ${index + 1}`}
-                            className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
+                            className="aspect-[4/5] w-full object-cover transform transition-transform duration-500 hover:scale-105" loading="lazy" decoding="async"
                         />
                     </div>
                 ))}

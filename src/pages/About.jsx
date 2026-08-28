@@ -73,14 +73,6 @@ const AboutUs = () => {
         setTouchStartX(null);
     };
 
-    // Auto-slide every 3 seconds
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setCurrent(prev => (prev + 1) % historyImages.length);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, []);
-
     return (
         <>
             <div className="w-full">
@@ -144,7 +136,7 @@ const AboutUs = () => {
                                 textAlign: "left",
                             }}
                         >
-                            Founded in the 1980s by Late Mr. Ashwani Sood, Videocrafts has evolved into one of the most trusted names for wedding photographers in Chandigarh. What started as a small photography business has grown into a full-service studio that now offers everything from pre-wedding shoots to corporate photography fueled by challenges and a lot of hard work, has since grown into one of the most respected names in photography and videography. Today, we’re proud to carry forward Mr. Sood’s legacy of capturing the essence of life’s most beautiful moments.
+                            Founded in the 1980s by Late Mr. Ashwani Sood, Videocrafts has grown from a small Chandigarh photography business into a full-service photography and videography studio. Built through dedication, creativity and hard work, the studio continues his legacy of capturing life’s most meaningful moments with care.
                         </p>
 
                         <p
@@ -158,7 +150,7 @@ const AboutUs = () => {
                                 textAlign: "left",
                             }}
                         >
-                            Under the guidance of Abhir Sood, Ashwani’s son, Videocrafts has embraced modern technology while staying true to its roots. Abhir carries forward his father’s legacy, blending innovative techniques with a deep respect for tradition. Today, Videocraftsindia offers a wide range of services, from capturing the magic of weddings and pre-wedding shoots to telling powerful brand stories and creating corporate videos. What sets us apart from others is our ability to present each frame with your unique narrative, making sure that every visual we create is as emotional as it is beautiful.
+                            Under the guidance of Abhir Sood, Videocrafts combines modern technology with a deep respect for its roots. Our team covers weddings, pre-wedding shoots, family milestones, brand photography and corporate films, shaping every frame around the client’s own story.
                         </p>
 
                         <p
@@ -172,7 +164,7 @@ const AboutUs = () => {
                                 textAlign: "left",
                             }}
                         >
-                            Our mission is clear: to make your lovely moments last forever. No matter if it’s your wedding memories, family moments or a corporate function, our passionate team is here to capture every moments of memories.
+                            Our mission is simple: to preserve the moments that matter. Whether it is a wedding, a family milestone or a corporate event, our team captures each story with emotion, detail and consistency.
                         </p>
 
                         <p
@@ -185,7 +177,7 @@ const AboutUs = () => {
                                 textAlign: "left",
                             }}
                         >
-                            Videocraftsindia is not just a photography studio — it’s a place of memories. Through our lens, we transform special moments into long lasting memories.
+                            Videocrafts India is more than a photography studio. Through our lens, special moments become long-lasting memories.
                         </p>
                     </div>
 
@@ -198,8 +190,8 @@ const AboutUs = () => {
                         <img
                             key={index}
                             src={img}
-                            alt={`Scroll ${index}`}
-                            className="w-56 h-66 object-cover flex-shrink-0 rounded-lg"
+                            alt="Videocrafts photography portfolio"
+                            className="w-56 h-64 object-cover flex-shrink-0 rounded-lg" loading="lazy" decoding="async"
                         />
                     ))}
                 </div>
@@ -223,7 +215,7 @@ const AboutUs = () => {
 
     @media (max-width: 768px) {
       .animate-scroll img {
-        width: calc(8% - 8px); /* 2 images per screen with small gap */
+        width: 14rem;
         height: 230px; /* mobile height */
         margin-right: 8px;
       }
@@ -291,7 +283,7 @@ const AboutUs = () => {
 
                     {/* Right Side: Full Image Slider */}
                     <div
-                        className="md:w-1/2 w-full h-98 md:h-[530px] relative overflow-hidden rounded-lg"
+                        className="md:w-1/2 w-full h-[390px] md:h-[530px] relative overflow-hidden rounded-lg"
                         onMouseEnter={() => setIsPaused(true)}
                         onMouseLeave={() => setIsPaused(false)}
                         onTouchStart={handleTouchStart}
@@ -559,8 +551,8 @@ const AboutUs = () => {
                         <img
                             key={`top-${i}`}
                             src={img}
-                            alt={`Slide ${i}`}
-                            className="w-60 h-44 object-cover flex-shrink-0"
+                            alt="Videocrafts photography portfolio"
+                            className="w-60 h-44 object-cover flex-shrink-0" loading="lazy" decoding="async"
                         />
                     ))}
                 </div>
@@ -571,8 +563,8 @@ const AboutUs = () => {
                         <img
                             key={`bottom-${i}`}
                             src={img}
-                            alt={`Slide ${i}`}
-                            className="w-60 h-44 object-cover  flex-shrink-0"
+                            alt="Videocrafts photography portfolio"
+                            className="w-60 h-44 object-cover flex-shrink-0" loading="lazy" decoding="async"
                         />
                     ))}
                 </div>
@@ -605,7 +597,7 @@ const AboutUs = () => {
         @media (max-width: 768px) {
           .animate-scroll-left img,
           .animate-scroll-right img {
-            width: 8%;
+            width: 14rem;
             height: 180px;
           }
         }

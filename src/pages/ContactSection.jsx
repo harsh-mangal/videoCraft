@@ -1,46 +1,20 @@
 import React from "react";
 import ContactForm from "./ContactForm";
-import InstagramSection from "./IntsagramSection";
 
-const ContactSection = () => {
-    return (
-        <>
-            <div className="w-full bg-white  px-4">
-                <div className="max-w-4xl mx-auto text-center">
-                    {/* Heading */}
-                    <h2
-                        className="uppercase"
-                        style={{
-                            fontFamily: '"Cormorant Garamond", serif',
-                            fontSize: "35px",
-                            fontWeight: 400,
-                            color: "#5E5E56",
-                            textAlign: "center",
-                        }}
-                    >
-                        GET IN TOUCH
-                    </h2>
-
-                    {/* Subheading */}
-                    <p
-                        className="mb-12 italic"
-                        style={{
-                            fontFamily: '"Cormorant Garamond", serif',
-                            fontSize: "22px",
-                            fontWeight: 400,
-                            color: "#84847C",
-                            textAlign: "center",
-                        }}
-                    >
-                        Follow our latest stories.
-                    </p>
-                </div>
-            </div>
-            <ContactForm />
-
-            {/* <InstagramSection /> */}
-        </>
-    );
-};
+const ContactSection = () => (
+  <section id="contact" className="bg-white px-4 py-16">
+    <div className="mx-auto max-w-5xl rounded-2xl bg-[#f7f3f0] p-5 shadow-sm sm:p-10">
+      <div className="mx-auto mb-10 max-w-3xl text-center">
+        <h2 className="text-3xl font-normal uppercase text-[#5E5E56] sm:text-4xl" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+          Get in touch
+        </h2>
+        <p className="mt-3 text-xl italic text-[#84847C]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+          Tell us about your event and continue the enquiry on WhatsApp.
+        </p>
+      </div>
+      <ContactForm compact />
+    </div>
+  </section>
+);
 
 export default ContactSection;

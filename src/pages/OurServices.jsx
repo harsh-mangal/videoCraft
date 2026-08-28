@@ -14,7 +14,7 @@ const services = [
     {
         img: "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/newborn.png?updatedAt=1758103560471",
         title: "Newborn Shoots",
-        desc: "We are specialized in newborn photography, offering gentle and creative sessions to capture your baby’s first precious milestones. With a focus on safety, comfort, and stunning details, we create beautiful memories that last a lifetime."
+        desc: "We specialize in newborn photography, offering gentle and creative sessions to capture your baby’s first precious milestones. With a focus on safety, comfort, and stunning details, we create beautiful memories that last a lifetime."
     },
     {
         img: "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/product.png?updatedAt=1758103559991",
@@ -46,9 +46,9 @@ const OurServices = () => {
                 }}
             >
                 <div className="absolute inset-0 bg-black/50" />
-                <h2 className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase tracking-widest text-center px-4">
+                <h1 className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase tracking-widest text-center px-4">
                     Our Services
-                </h2>
+                </h1>
             </div>
 
 
@@ -97,11 +97,11 @@ const OurServices = () => {
                 ))}
             </div>
 
-            <div className="flex items-center justify-left w-full h-full  transition duration-300">
+            <div className="flex items-center justify-start w-full h-full  transition duration-300">
                 <img
                     src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/landing-img-18.png?updatedAt=1758085212783"
                     alt="icon"
-                    className="w-27 h-27 object-contain ml-24"
+                    className="w-24 h-24 sm:w-28 sm:h-28 object-contain mx-auto md:mx-0 md:ml-12" loading="lazy" decoding="async"
                 />
             </div>
 

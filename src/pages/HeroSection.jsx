@@ -1,5 +1,5 @@
 import React from "react";
-import { CalendarHeart, Camera, Mic2, Video } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
     return (
@@ -12,7 +12,7 @@ const HeroSection = () => {
                         "url('https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Untitled-design-8.jpg?updatedAt=1758086811812')",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
-                    backgroundAttachment: "fixed",
+                    backgroundAttachment: "scroll",
                 }}
             >
                 {/* Overlay for dark effect */}
@@ -22,11 +22,10 @@ const HeroSection = () => {
                 <div className="relative z-10 max-w-3xl px-6">
                     {/* Main Heading */}
                     <h1
-                        className="mb-6"
+                        className="mb-6 text-4xl sm:text-5xl"
                         style={{
                             fontFamily: '"Cormorant Garamond", serif',
                             fontWeight: 500,
-                            fontSize: "48px",
                             textTransform: "uppercase",
                             fontStyle: "normal",
                             lineHeight: 1.2,
@@ -52,12 +51,12 @@ const HeroSection = () => {
                         be remembered with artistry and heart.
                     </p>
 
-                    <a
-                        href="#contact"
-                        className="border border-white px-6 py-2 rounded-md text-lg hover:bg-white hover:text-black transition"
+                    <Link
+                        to="/contact"
+                        className="inline-flex border border-white px-6 py-2 rounded-md text-lg hover:bg-white hover:text-black transition"
                     >
                         Contact Us
-                    </a>
+                    </Link>
                 </div>
             </div>
 
@@ -71,7 +70,7 @@ const HeroSection = () => {
                         <img
                             src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/h1-custom-icon-1.png?updatedAt=1758087922100"
                             alt="Wedding Photography"
-                            className="w-20 h-20 mb-4"
+                            className="w-20 h-20 mb-4" loading="lazy" decoding="async"
                         />
                         <h3
                             className="mb-4"
@@ -109,7 +108,7 @@ const HeroSection = () => {
                         <img
                             src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/h1-custom-icon-2.png?updatedAt=1758087922084"
                             alt="Pre-Wedding Photography"
-                            className="w-20 h-20 mb-4"
+                            className="w-20 h-20 mb-4" loading="lazy" decoding="async"
                         />
                         <h3
                             className="mb-4"
@@ -148,7 +147,7 @@ const HeroSection = () => {
                         <img
                             src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/h1-custom-icon-3.png?updatedAt=1758087921838"
                             alt="Maternity Shoots"
-                            className="w-20 h-20 mb-4"
+                            className="w-20 h-20 mb-4" loading="lazy" decoding="async"
                         />
                         <h3
                             className="mb-4"
@@ -186,7 +185,7 @@ const HeroSection = () => {
                         <img
                             src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/h1-custom-icon-4.png?updatedAt=1758087921729"
                             alt="Newborn Shoots"
-                            className="w-20 h-20 mb-4"
+                            className="w-20 h-20 mb-4" loading="lazy" decoding="async"
                         />
                         <h3
                             className="mb-4"
@@ -210,7 +209,7 @@ const HeroSection = () => {
                                 letterSpacing: "0.5px",
                             }}
                         >
-                            We are specialized in newborn photography, offering gentle and
+                            We specialize in newborn photography, offering gentle and
                             creative sessions to capture your baby’s first precious milestones.
                             With a focus on safety, comfort, and stunning details, we create
                             beautiful memories that last a lifetime.

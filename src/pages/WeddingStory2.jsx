@@ -1,9 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const WeddingStory2 = () => {
-    const navigate=useNavigate();
     const sections = [
         {
             heading: "Introduction to the client and their unique love story",
@@ -43,14 +42,14 @@ const WeddingStory2 = () => {
         {
             img: "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp.jpg?updatedAt=1758112778257",
             title: "Every Love Has a Story | Client Chronicles Their Unforgettable Wedding Day",
-            link: "/Unforgettable-Wedding-Day",
-            meta: "Leave a Comment / Wedding Stories / By videocraftsindia",
+            link: "/wedding-stories/unforgettable-wedding-day",
+            meta: "Wedding Stories / By Videocrafts India",
         },
         {
             img: "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp-3.jpg?updatedAt=1758112697885",
             title: "Tales of Romance | Highlighting a Client’s Beautiful Wedding Day",
-            link: "/tales-off-romance",
-            meta: "Leave a Comment / Wedding Stories / By videocraftsindia",
+            link: "/wedding-stories/tales-of-romance",
+            meta: "Wedding Stories / By Videocrafts India",
         },
     ];
 
@@ -61,7 +60,7 @@ const WeddingStory2 = () => {
 
 
                 {/* Top Heading */}
-                <motion.h2
+                <motion.h1
                     className="text-[#1E293B] font-semibold mb-4 text-2xl sm:text-3xl md:text-4xl"
                     style={{ fontFamily: "Roboto, sans-serif" }}
                     initial={{ opacity: 0, y: -20 }}
@@ -70,7 +69,7 @@ const WeddingStory2 = () => {
                     transition={{ duration: 0.6 }}
                 >
                     From ‘I Do’ to Forever | Celebrating a Client’s Unique Wedding Experience
-                </motion.h2>
+                </motion.h1>
 
                 {/* Date */}
                 <motion.p
@@ -94,7 +93,7 @@ const WeddingStory2 = () => {
                 >
                     <img
                         src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp-1.jpg?updatedAt=1758112615847"
-                        alt="Wedding Story"
+                        alt="Wedding celebration captured by Videocrafts India"
                         className="w-full h-auto object-cover rounded-lg"
                     />
                 </motion.div>
@@ -129,12 +128,12 @@ const WeddingStory2 = () => {
                         Related Posts
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                        {relatedPosts.map((post, idx) => (
-                            <div key={idx} className="cursor-pointer" onClick={() => navigate(post.link)}>
+                        {relatedPosts.map((post) => (
+                            <Link key={post.link} to={post.link} className="block rounded-md focus:outline-none focus:ring-2 focus:ring-[#4D504A]">
                                 <img
                                     src={post.img}
                                     alt={post.title}
-                                    className="w-full h-52 object-cover rounded-md mb-4"
+                                    className="w-full h-52 object-cover rounded-md mb-4" loading="lazy" decoding="async"
                                 />
                                 <h3
                                     className="text-lg font-semibold text-[#1E293B] mb-2"
@@ -143,7 +142,7 @@ const WeddingStory2 = () => {
                                     {post.title}
                                 </h3>
                                 <p className="text-[#046bd0] text-sm">{post.meta}</p>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

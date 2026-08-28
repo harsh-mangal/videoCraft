@@ -2,7 +2,7 @@ import React from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const preWeddingImages = [
     "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Pre%20Wedding/pre-wedding-3%20(1).jpg?updatedAt=1758021539395",
@@ -38,7 +38,6 @@ const juniorImages = [
 ];
 
 const WeddingSection = () => {
-    const navigate = useNavigate();
     const sliderSettings = {
         infinite: true,
         speed: 500,
@@ -87,14 +86,14 @@ const WeddingSection = () => {
                             </div>
 
                             {/* Wedding Section */}
-                            <div className="relative mb-2 cursor-pointer" onClick={() => navigate('/bridal-potraits')}>
+                            <Link to="/bridal-portraits" className="relative mb-2 block focus:outline-none focus:ring-2 focus:ring-[#4D504A]">
                                 <Slider {...sliderSettings}>
                                     {weddingImages.map((src, index) => (
                                         <div key={index} className="flex justify-center">
                                             <img
                                                 src={src}
                                                 alt={`Wedding ${index + 1}`}
-                                                className="w-full h-[700px] object-cover rounded-md"
+                                                className="w-full h-[440px] sm:h-[560px] lg:h-[700px] object-cover rounded-md" loading="lazy" decoding="async"
                                             />
                                         </div>
                                     ))}
@@ -112,7 +111,7 @@ const WeddingSection = () => {
                                 >
                                     WEDDING
                                 </div>
-                            </div>
+                            </Link>
 
                             <div className="flex justify-center mt-16">
                                 <img
@@ -127,14 +126,14 @@ const WeddingSection = () => {
                         {/* Right Column - Pre-Wedding and Junior Sections */}
                         <div className="w-full lg:w-1/2 flex flex-col  lg:gap-28 pt-0 lg:pt-32">
                             {/* Pre-Wedding Section */}
-                            <div className="relative p-3 w-full lg:w-3/4 lg:self-end mx-auto lg:mx-0 mb-6 lg:mb-0 cursor-pointer" onClick={() => navigate('/pre-wedding')}>
+                            <Link to="/pre-wedding" className="relative block p-3 w-full lg:w-3/4 lg:self-end mx-auto lg:mx-0 mb-6 lg:mb-0 focus:outline-none focus:ring-2 focus:ring-[#4D504A]">
                                 <Slider {...sliderSettings}>
                                     {preWeddingImages.map((src, index) => (
                                         <div key={index}>
                                             <img
                                                 src={src}
                                                 alt={`Pre-Wedding ${index + 1}`}
-                                                className="w-[40] h-[500px] object-cover rounded-md"
+                                                className="w-full h-[380px] sm:h-[500px] object-cover rounded-md" loading="lazy" decoding="async"
                                             />
                                         </div>
                                     ))}
@@ -152,17 +151,17 @@ const WeddingSection = () => {
                                 >
                                     PRE-WEDDING
                                 </div>
-                            </div>
+                            </Link>
 
                             {/* Junior Section */}
-                            <div className="relative w-full lg:w-3/5 lg:self-start mx-auto lg:mx-0 cursor-pointer" onClick={() => navigate('/video-craft-junion')}>
+                            <Link to="/videocrafts-junior" className="relative block w-full lg:w-3/5 lg:self-start mx-auto lg:mx-0 focus:outline-none focus:ring-2 focus:ring-[#4D504A]">
                                 <Slider {...sliderSettings}>
                                     {juniorImages.map((src, index) => (
                                         <div key={index}>
                                             <img
                                                 src={src}
                                                 alt={`Junior ${index + 1}`}
-                                                className="w-full h-[300px] object-cover rounded-md"
+                                                className="w-full h-[300px] object-cover rounded-md" loading="lazy" decoding="async"
                                             />
                                         </div>
                                     ))}
@@ -180,7 +179,7 @@ const WeddingSection = () => {
                                 >
                                     VIDEOCRAFTS JUNIOR
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -193,8 +192,8 @@ const WeddingSection = () => {
                         fontStyle: "normal",
                     }}
                 >
-                    Live your magic and save your precious love!<br /> memories
-                    Our team of professional photographers!<br /> is here to help you.
+                    Live your magic and preserve your precious memories.<br />
+                    Our professional photographers are here to capture every moment.
                 </p>
             </div>
 

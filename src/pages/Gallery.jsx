@@ -61,10 +61,9 @@ const Gallery = () => {
                 }}
             >
                 <h1
-                    className="text-white uppercase text-center"
+                    className="text-4xl sm:text-5xl md:text-6xl text-white uppercase text-center"
                     style={{
                         fontFamily: "'Cormorant Garamond', serif",
-                        fontSize: "60px",
                         fontWeight: 700,
                         textShadow: "2px 2px 8px rgba(0,0,0,0.6)",
                     }}
@@ -74,7 +73,7 @@ const Gallery = () => {
             </div>
 
             {/* Image Grid */}
-            <div className="max-w-[1200px] mx-auto px-2 py-10 grid grid-cols-3 gap-4">
+            <div className="max-w-[1200px] mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {galleryImages.map((img, index) => (
                     <motion.div
                         key={index}
@@ -82,12 +81,12 @@ const Gallery = () => {
                         initial={{ opacity: 0, y: 50 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                        transition={{ duration: 0.45, delay: Math.min(index * 0.03, 0.3) }}
                     >
                         <img
                             src={img}
-                            alt={`Gallery ${index + 1}`}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            alt={`Videocrafts India portfolio photograph ${index + 1}`}
+                            className="aspect-[4/5] w-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" decoding="async"
                         />
                     </motion.div>
                 ))}

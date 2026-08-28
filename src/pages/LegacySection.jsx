@@ -2,7 +2,7 @@ import React from "react";
 
 const LegacySection = () => {
     return (
-        <div className="bg-[#f4f0ed] py-12 px-6 text-center border-8 border-[#6e6c6a]-800  shadow-xl">
+        <div className="bg-[#f4f0ed] py-12 px-6 text-center border-8 border-[#6e6c6a]  shadow-xl">
             {/* Heading */}
             <h2
                 className="mb-8"

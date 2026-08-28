@@ -1,8 +1,7 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Banner = () => {
-  const navigate = useNavigate();
   return (
     <div
       className="w-full min-h-[400px] sm:min-h-[500px] md:min-h-[600px] lg:h-screen bg-cover bg-center relative"

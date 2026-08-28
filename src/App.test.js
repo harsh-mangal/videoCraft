@@ -1,8 +1,8 @@
-import { render, screen } from '@testing-library/react';
-import App from './App';
+import { buildWhatsAppUrl, WHATSAPP_NUMBER } from "./utils/whatsapp";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+test("builds the enquiry WhatsApp URL for the correct number", () => {
+  const url = buildWhatsAppUrl("Hello Videocrafts India");
+  expect(WHATSAPP_NUMBER).toBe("919888626212");
+  expect(url).toContain("https://wa.me/919888626212");
+  expect(url).toContain("Hello%20Videocrafts%20India");
 });

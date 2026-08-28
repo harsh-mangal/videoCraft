@@ -41,12 +41,12 @@ const VideoCraftsJunior = () => {
                         initial={{ opacity: 0, y: 50 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6, delay: index * 0.2 }}
+                        transition={{ duration: 0.45, delay: Math.min(index * 0.05, 0.25) }}
                     >
                         <img
                             src={img}
                             alt={`Junior ${index + 1}`}
-                            className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
+                            className="aspect-[4/5] w-full object-cover transform transition-transform duration-500 hover:scale-105" loading="lazy" decoding="async"
                         />
                     </motion.div>
                 ))}

@@ -1,13 +1,12 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const TalesOf = () => {
-    const navigate = useNavigate();
     const sections = [
         {
             heading: "Introduction to the wedding story and the client",
-            content: `Every couple has a unique story, but some shine brighter than others. Today, we’re diving into the enchanting wedding day of Emma and Jake—a celebration filled with love, laughter, and unforgettable moments. From their first encounter at a coffee shop to saying “I do” surrounded by family and friends, this wedding story is one for the books. Join us as we explore their journey from romance to vows in an event that beautifully captured the essence of true love.`,
+            content: `Every couple has a unique story, but some shine brighter than others. Today, we’re diving into the enchanting wedding day of Sarah and Jack—a celebration filled with love, laughter, and unforgettable moments. From their first encounter at a coffee shop to saying “I do” surrounded by family and friends, this wedding story is one for the books. Join us as we explore their journey from romance to vows in an event that beautifully captured the essence of true love.`,
         },
         {
             heading: "The love story of the couple, how they met and fell in love",
@@ -48,14 +47,14 @@ const TalesOf = () => {
         {
             img: "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp.jpg?updatedAt=1758112778257",
             title: "Every Love Has a Story | Client Chronicles Their Unforgettable Wedding Day",
-            link: "/Unforgettable-Wedding-Day",
-            meta: "Leave a Comment / Wedding Stories / By videocraftsindia",
+            link: "/wedding-stories/unforgettable-wedding-day",
+            meta: "Wedding Stories / By Videocrafts India",
         },
         {
             img: "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp-1.jpg?updatedAt=1758112615847",
             title: "From ‘I Do’ to Forever | Celebrating a Client’s Unique Wedding Experience",
-            link: "/From-‘I-Do’-to%20Forever",
-            meta: "Leave a Comment / Wedding Stories / By videocraftsindia",
+            link: "/wedding-stories/from-i-do-to-forever",
+            meta: "Wedding Stories / By Videocrafts India",
         },
     ];
 
@@ -65,7 +64,7 @@ const TalesOf = () => {
                 <div className="max-w-6xl mx-auto px-4 py-12 bg-white pr-8 pl-8">
 
                     {/* Top Heading */}
-                    <motion.h2
+                    <motion.h1
                         className="text-[#1E293B] font-semibold mb-4 text-2xl sm:text-3xl md:text-4xl"
                         style={{ fontFamily: "Roboto, sans-serif" }}
                         initial={{ opacity: 0, y: -20 }}
@@ -74,7 +73,7 @@ const TalesOf = () => {
                         transition={{ duration: 0.6 }}
                     >
                         Tales of Romance | Highlighting a Client’s Beautiful Wedding Day
-                    </motion.h2>
+                    </motion.h1>
 
                     {/* Date */}
                     <motion.p
@@ -98,7 +97,7 @@ const TalesOf = () => {
                     >
                         <img
                             src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp-3.jpg?updatedAt=1758112697885"
-                            alt="Wedding Story"
+                            alt="Wedding celebration captured by Videocrafts India"
                             className="w-full h-auto object-cover rounded-lg"
                         />
                     </motion.div>
@@ -133,12 +132,12 @@ const TalesOf = () => {
                         Related Posts
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-                        {relatedPosts.map((post, idx) => (
-                            <div key={idx} className="cursor-pointer" onClick={() => navigate(post.link)}>
+                        {relatedPosts.map((post) => (
+                            <Link key={post.link} to={post.link} className="block rounded-md focus:outline-none focus:ring-2 focus:ring-[#4D504A]">
                                 <img
                                     src={post.img}
                                     alt={post.title}
-                                    className="w-full h-52 object-cover rounded-md mb-4"
+                                    className="w-full h-52 object-cover rounded-md mb-4" loading="lazy" decoding="async"
                                 />
                                 <h3
                                     className="text-lg font-semibold text-[#1E293B] mb-2"
@@ -147,7 +146,7 @@ const TalesOf = () => {
                                     {post.title}
                                 </h3>
                                 <p className="text-[#046bd0] text-sm">{post.meta}</p>
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 </div>

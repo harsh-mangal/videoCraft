@@ -1,7 +1,6 @@
-import logo from './logo.svg';
-import './App.css';
-import Layout from './Layout';
-import { BrowserRouter } from 'react-router-dom';
+import "./App.css";
+import Layout from "./Layout";
+import { BrowserRouter } from "react-router-dom";
 
 function App() {
   return (
