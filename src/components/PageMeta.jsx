@@ -1,92 +1,37 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { getPageMeta, structuredData, SITE_NAME } from "../config/seo";
 
-const SITE_NAME = "Videocrafts India";
+function setMeta(attribute, name, content) {
+  let element = document.head.querySelector('meta[' + attribute + '="' + name + '"]');
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute(attribute, name);
+    document.head.appendChild(element);
+  }
+  element.content = content;
+}
 
-const routeMeta = {
-  "/": {
-    title: "Wedding Photographers in Chandigarh | Videocrafts India",
-    description:
-      "Wedding, pre-wedding, maternity, newborn, product and food photography by Videocrafts India in Chandigarh.",
-  },
-  "/about": {
-    title: "About Videocrafts India | Photography Studio Chandigarh",
-    description:
-      "Discover the story, team, mission and creative approach behind Videocrafts India.",
-  },
-  "/services": {
-    title: "Photography Services in Chandigarh | Videocrafts India",
-    description:
-      "Explore wedding, pre-wedding, maternity, newborn, product and food photography services in Chandigarh.",
-  },
-  "/gallery": {
-    title: "Photography Gallery | Videocrafts India",
-    description:
-      "Browse wedding, pre-wedding, family, maternity and newborn photographs captured by Videocrafts India.",
-  },
-  "/contact": {
-    title: "Contact Videocrafts India | Book a Photography Session",
-    description:
-      "Share your event details and connect with Videocrafts India on WhatsApp for availability and packages.",
-  },
-  "/bridal-portraits": {
-    title: "Bridal Portraits | Videocrafts India",
-    description: "View bridal portrait photography by Videocrafts India.",
-  },
-  "/pre-wedding": {
-    title: "Pre-Wedding Photography | Videocrafts India",
-    description: "View pre-wedding photography by Videocrafts India.",
-  },
-  "/videocrafts-junior": {
-    title: "Kids and Family Photography | Videocrafts Junior",
-    description: "View newborn, kids and family photography by Videocrafts Junior.",
-  },
-  "/wedding-stories/tales-of-romance": {
-    title: "Tales of Romance | Videocrafts Wedding Stories",
-    description: "A wedding story captured by Videocrafts India.",
-  },
-  "/wedding-stories/from-i-do-to-forever": {
-    title: "From I Do to Forever | Videocrafts Wedding Stories",
-    description: "A unique wedding experience captured by Videocrafts India.",
-  },
-  "/wedding-stories/unforgettable-wedding-day": {
-    title: "An Unforgettable Wedding Day | Videocrafts Wedding Stories",
-    description: "An unforgettable wedding celebration captured by Videocrafts India.",
-  },
-};
-
-const setMetaContent = (selector, content) => {
-  const element = document.querySelector(selector);
-  if (element) element.setAttribute("content", content);
-};
-
-const PageMeta = () => {
+export default function PageMeta() {
   const { pathname } = useLocation();
-
   useEffect(() => {
-    const meta = routeMeta[pathname] || {
-      title: `Page Not Found | ${SITE_NAME}`,
-      description: "The requested page could not be found.",
-    };
-
-    const baseUrl = window.location.origin;
-
+    const meta = getPageMeta(pathname);
     document.title = meta.title;
-    setMetaContent('meta[name="description"]', meta.description);
-    setMetaContent('meta[property="og:title"]', meta.title);
-    setMetaContent('meta[property="og:description"]', meta.description);
-    setMetaContent('meta[property="og:url"]', `${baseUrl}${pathname}`);
+    for (const [name, content] of Object.entries({ description: meta.description, robots: meta.robots, "twitter:card": "summary_large_image", "twitter:title": meta.title, "twitter:description": meta.description, "twitter:image": meta.image })) setMeta("name", name, content);
+    for (const [name, content] of Object.entries({ "og:title": meta.title, "og:description": meta.description, "og:url": meta.canonical || "", "og:image": meta.image, "og:type": "website", "og:site_name": SITE_NAME, "og:locale": "en_IN" })) setMeta("property", name, content);
 
-    let canonical = document.querySelector('link[rel="canonical"]');
-    if (!canonical) {
-      canonical = document.createElement("link");
-      canonical.setAttribute("rel", "canonical");
-      document.head.appendChild(canonical);
-    }
-    canonical.setAttribute("href", `${baseUrl}${pathname}`);
+    let canonical = document.head.querySelector('link[rel="canonical"]');
+    if (meta.canonical) {
+      if (!canonical) { canonical = document.createElement("link"); canonical.rel = "canonical"; document.head.appendChild(canonical); }
+      canonical.href = meta.canonical;
+    } else canonical?.remove();
+
+    let schema = document.getElementById("site-schema");
+    const data = structuredData(meta);
+    if (data) {
+      if (!schema) { schema = document.createElement("script"); schema.id = "site-schema"; schema.type = "application/ld+json"; document.head.appendChild(schema); }
+      schema.textContent = JSON.stringify(data);
+    } else schema?.remove();
   }, [pathname]);
-
   return null;
-};
-
-export default PageMeta;
+}

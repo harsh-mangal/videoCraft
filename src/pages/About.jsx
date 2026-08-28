@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from "react";
+import PageBanner from "../components/PageBanner";
+import { imageUrl } from "../utils/images";
+import ResponsiveImage from "../components/ResponsiveImage";
+import React from "react";
+import Carousel from "../components/Carousel";
 
 
 const AboutUs = () => {
@@ -37,70 +41,18 @@ const AboutUs = () => {
         { name: "Maternity Shoots", percent: 92 },
     ];
 
-    const [isPaused, setIsPaused] = useState(false);
-    const [touchStartX, setTouchStartX] = useState(null);
-
-    const [current, setCurrent] = useState(0);
-
-
-    useEffect(() => {
-        if (isPaused) return; // stop auto-slide when paused
-        const interval = setInterval(() => {
-            setCurrent((prev) => (prev + 1) % historyImages.length);
-        }, 3000);
-        return () => clearInterval(interval);
-    }, [isPaused, historyImages.length]);
-
-    // Touch handlers
-    const handleTouchStart = (e) => {
-        setTouchStartX(e.touches[0].clientX);
-    };
-
-    const handleTouchEnd = (e) => {
-        if (touchStartX === null) return;
-        const touchEndX = e.changedTouches[0].clientX;
-        const diff = touchStartX - touchEndX;
-
-        if (diff > 50) {
-            // swipe left → next
-            setCurrent((prev) => (prev + 1) % historyImages.length);
-        } else if (diff < -50) {
-            // swipe right → previous
-            setCurrent((prev) =>
-                prev === 0 ? historyImages.length - 1 : prev - 1
-            );
-        }
-        setTouchStartX(null);
-    };
-
     return (
         <>
             <div className="w-full">
                 {/* Banner */}
-                <div
-                    className="w-full h-96 md:h-[500px] bg-cover bg-center flex items-center justify-center"
-                    style={{
-                        backgroundImage: `url('https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/about-banner.jpg?updatedAt=1758094499336')`
-                    }}
-                >
-                    <h1
-                        className="text-4xl md:text-6xl uppercase font-semibold"
-                        style={{
-                            fontFamily: '"Cormorant Garamond", serif',
-                            color: "#FFFFFF",
-                            textShadow: "2px 2px 8px rgba(0,0,0,0.5)",
-                        }}
-                    >
-                        ABOUT US
-                    </h1>
-                </div>
+                <PageBanner title="About Us" image="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/about-banner.jpg?updatedAt=1758094499336" />
 
                 {/* Content Section */}
                 <div className="max-w-7xl mx-auto py-16 px-4 flex flex-col md:flex-row items-start gap-8">
 
                     {/* Left Image */}
                     <div className="md:w-1/2 w-full -mt-6">
-                        <img
+                        <ResponsiveImage
                             src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/385007931_18251174875201135_9088427915493833893_n.jpg?updatedAt=1758094499523"
                             alt="About"
                             className="w-full h-[450px] md:h-full object-cover rounded-lg border-2 border-gray-300 shadow-lg"
@@ -185,42 +137,19 @@ const AboutUs = () => {
             </div>
 
             <div className="w-full overflow-hidden bg-white">
-                <div className="flex animate-scroll hover:pause-animation">
-                    {images.concat(images).map((img, index) => (
-                        <img
+                <div className="grid grid-cols-2 gap-3 p-4 sm:grid-cols-3 lg:grid-cols-6">
+                    {images.map((img, index) => (
+                        <ResponsiveImage
                             key={index}
                             src={img}
                             alt="Videocrafts photography portfolio"
-                            className="w-56 h-64 object-cover flex-shrink-0 rounded-lg" loading="lazy" decoding="async"
+                            className="w-full aspect-[4/5] object-cover rounded-lg" loading="lazy" decoding="async"
                         />
                     ))}
                 </div>
 
                 {/* Animation styles */}
-                <style>{`
-    @keyframes scroll {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
-    }
 
-    .animate-scroll {
-      display: flex;
-      width: max-content;
-      animation: scroll 25s linear infinite;
-    }
-
-    .hover\\:pause-animation:hover {
-      animation-play-state: paused;
-    }
-
-    @media (max-width: 768px) {
-      .animate-scroll img {
-        width: 14rem;
-        height: 230px; /* mobile height */
-        margin-right: 8px;
-      }
-    }
-  `}</style>
             </div>
 
             <div className="w-full bg-white py-16 px-4">
@@ -281,23 +210,10 @@ const AboutUs = () => {
                         </p>
                     </div>
 
-                    {/* Right Side: Full Image Slider */}
-                    <div
-                        className="md:w-1/2 w-full h-[390px] md:h-[530px] relative overflow-hidden rounded-lg"
-                        onMouseEnter={() => setIsPaused(true)}
-                        onMouseLeave={() => setIsPaused(false)}
-                        onTouchStart={handleTouchStart}
-                        onTouchEnd={handleTouchEnd}
-                    >
-                        {historyImages.map((img, index) => (
-                            <img
-                                key={index}
-                                src={img}
-                                alt={`History ${index}`}
-                                className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${index === current ? "opacity-100" : "opacity-0"
-                                    }`}
-                            />
-                        ))}
+                    <div className="w-full min-w-0 md:w-1/2">
+                        <Carousel items={historyImages} label="studio history photographs" renderItem={(src, index) =>
+                            <ResponsiveImage src={src} alt={"Videocrafts studio history photograph " + (index + 1)} className="h-[390px] w-full rounded-lg object-cover md:h-[530px]" />
+                        } />
                     </div>
 
                 </div>
@@ -372,8 +288,7 @@ const AboutUs = () => {
             <section
                 className="relative bg-fixed bg-center bg-cover py-16 px-6 bg-[#f4f0ed]"
                 style={{
-                    backgroundImage:
-                        "url('https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/455841250_18292334629201135_8028869471403628683_n.jpg?updatedAt=1758102107890')",
+                    backgroundImage: "url(" + imageUrl("https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/455841250_18292334629201135_8028869471403628683_n.jpg?updatedAt=1758102107890", 1600) + ")",
                 }}
             >
                 {/* Overlay for better readability */}
@@ -401,13 +316,13 @@ const AboutUs = () => {
                             <div>
                                 <h3
                                     className="text-[20px] font-bold mb-2"
-                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#66665F" }}
+                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#62625AF" }}
                                 >
                                     1. What makes us stand out?
                                 </h3>
                                 <p
                                     className="text-[18px] italic font-medium text-justify"
-                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#84847C" }}
+                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#62625A" }}
                                 >
                                     Our team combines cutting-edge technology with creative expertise
                                     to produce high-quality visuals that capture the true essence of
@@ -421,13 +336,13 @@ const AboutUs = () => {
                             <div>
                                 <h3
                                     className="text-[20px] font-bold mb-2"
-                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#66665F" }}
+                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#62625AF" }}
                                 >
                                     2. How do we ensure your moments are captured flawlessly?
                                 </h3>
                                 <p
                                     className="text-[18px] italic font-medium text-justify"
-                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#84847C" }}
+                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#62625A" }}
                                 >
                                     From the first consultation to the final product, we focus on
                                     delivering a seamless experience. Our experienced team works
@@ -464,7 +379,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#84847C",
+                                color: "#62625A",
                                 fontSize: "19px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -478,7 +393,7 @@ const AboutUs = () => {
                         <p
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#84847C",
+                                color: "#62625A",
                                 fontSize: "19px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -512,7 +427,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#84847C",
+                                color: "#62625A",
                                 fontSize: "19px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -526,7 +441,7 @@ const AboutUs = () => {
                         <p
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#84847C",
+                                color: "#62625A",
                                 fontSize: "19px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -546,62 +461,19 @@ const AboutUs = () => {
 
             <section className="w-full bg-white py-10 overflow-hidden">
                 {/* Top Row → Right to Left */}
-                <div className="flex animate-scroll-left">
-                    {images1.concat(images1).map((img, i) => (
-                        <img
+                <div className="grid grid-cols-2 gap-3 px-4 sm:grid-cols-3 lg:grid-cols-6">
+                    {images1.map((img, i) => (
+                        <ResponsiveImage
                             key={`top-${i}`}
                             src={img}
                             alt="Videocrafts photography portfolio"
-                            className="w-60 h-44 object-cover flex-shrink-0" loading="lazy" decoding="async"
-                        />
-                    ))}
-                </div>
-
-                {/* Bottom Row → Left to Right */}
-                <div className="flex animate-scroll-right">
-                    {images1.concat(images1).map((img, i) => (
-                        <img
-                            key={`bottom-${i}`}
-                            src={img}
-                            alt="Videocrafts photography portfolio"
-                            className="w-60 h-44 object-cover flex-shrink-0" loading="lazy" decoding="async"
+                            className="w-full aspect-[4/3] object-cover" loading="lazy" decoding="async"
                         />
                     ))}
                 </div>
 
                 {/* Animations */}
-                <style>{`
-        @keyframes scroll-left {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        @keyframes scroll-right {
-          0% { transform: translateX(-50%); }
-          100% { transform: translateX(0); }
-        }
-        .animate-scroll-left {
-          animation: scroll-left 25s linear infinite;
-          width: max-content;
-        }
-        .animate-scroll-right {
-          animation: scroll-right 25s linear infinite;
-          width: max-content;
-        }
-        /* Pause on hover */
-        .animate-scroll-left:hover,
-        .animate-scroll-right:hover {
-          animation-play-state: paused;
-        }
 
-        /* Mobile styling */
-        @media (max-width: 768px) {
-          .animate-scroll-left img,
-          .animate-scroll-right img {
-            width: 14rem;
-            height: 180px;
-          }
-        }
-      `}</style>
             </section>
 
         </>

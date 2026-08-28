@@ -8,7 +8,7 @@ const ContactSection = () => (
         <h2 className="text-3xl font-normal uppercase text-[#5E5E56] sm:text-4xl" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
           Get in touch
         </h2>
-        <p className="mt-3 text-xl italic text-[#84847C]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+        <p className="mt-3 text-xl italic text-[#62625A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
           Tell us about your event and continue the enquiry on WhatsApp.
         </p>
       </div>

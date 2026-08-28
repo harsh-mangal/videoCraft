@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const NotFound = () => (
   <section className="min-h-[60vh] bg-[#f4f0ed] px-4 py-24 text-center flex items-center justify-center">
     <div>
-      <p className="text-sm uppercase tracking-[0.3em] text-[#84847C]">404</p>
+      <p className="text-sm uppercase tracking-[0.3em] text-[#62625A]">404</p>
       <h1 className="mt-4 text-4xl sm:text-5xl font-semibold text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
         Page not found
       </h1>

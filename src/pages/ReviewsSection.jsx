@@ -1,8 +1,6 @@
-import React from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/pagination";
+import Carousel from "../components/Carousel";
+import ResponsiveImage from "../components/ResponsiveImage";
+import { Star } from "lucide-react";
 
 const reviews = [
   {
@@ -27,33 +25,21 @@ const reviews = [
   },
 ];
 
-const ReviewsSection = () => (
-  <section className="mx-auto mb-14 max-w-7xl bg-white px-4">
+export default function ReviewsSection() {
+  return <section aria-label="Client reviews" className="mx-auto mb-14 max-w-7xl bg-white px-4">
     <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-3">
-      <div className="flex justify-center lg:col-span-1">
-        <img src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/junior/award.jpg?updatedAt=1758032457095" alt="Videocrafts photography award certificate" className="h-auto w-full rounded-lg shadow-md" loading="lazy" decoding="async" />
-      </div>
-
-      <div className="lg:col-span-2">
-        <Swiper modules={[Autoplay, Pagination]} autoplay={{ delay: 3500, disableOnInteraction: false }} pagination={{ clickable: true }} spaceBetween={20} slidesPerView={1} breakpoints={{ 768: { slidesPerView: 2 } }}>
-          {reviews.map((review) => (
-            <SwiperSlide key={review.name} className="h-auto pb-10">
-              <article className="h-full rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
-                <div className="mb-4 flex items-center">
-                  <div className="mr-3 flex h-12 w-12 items-center justify-center rounded-full bg-gray-200" aria-hidden="true">👤</div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800">{review.name}</h3>
-                    <p className="text-sm text-yellow-500" aria-label="5 out of 5 stars">★★★★★</p>
-                  </div>
-                </div>
-                <p className="text-sm leading-relaxed text-gray-600">{review.text}</p>
-              </article>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+      <ResponsiveImage src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/junior/award.jpg?updatedAt=1758032457095" alt="Videocrafts photography award certificate" className="mx-auto h-auto w-full max-w-sm rounded-lg" sizes="(min-width: 1024px) 33vw, 384px" />
+      <div className="min-w-0 lg:col-span-2">
+        <Carousel items={reviews} label="client reviews" renderItem={review =>
+          <article className="min-h-64 rounded-lg border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+            <h3 className="font-semibold text-gray-800">{review.name}</h3>
+            <div className="mt-2 flex gap-1 text-amber-700" role="img" aria-label="5 out of 5 stars">
+              {Array.from({ length: 5 }, (_, index) => <Star key={index} size={18} fill="currentColor" aria-hidden="true" focusable="false" />)}
+            </div>
+            <p className="mt-4 leading-relaxed text-gray-700">{review.text}</p>
+          </article>
+        } />
       </div>
     </div>
-  </section>
-);
-
-export default ReviewsSection;
+  </section>;
+}

@@ -1,3 +1,4 @@
+import ResponsiveImage from "../components/ResponsiveImage";
 import React from "react";
 import ReviewsSection from "./ReviewsSection";
 
@@ -20,13 +21,13 @@ const ClientFeedback = () => (
       <h2 className="text-3xl font-normal uppercase text-[#5E5E56] sm:text-4xl" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
         Client Feedback
       </h2>
-      <p className="mx-auto mt-4 max-w-2xl text-lg italic text-[#84847C]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+      <p className="mx-auto mt-4 max-w-2xl text-lg italic text-[#62625A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
         Our clients are at the heart of everything we do. Their trust inspires us to turn meaningful moments into lasting visual stories.
       </p>
       <div className="mt-6 flex justify-center gap-6">
         {reviewProfiles.map((profile) => (
           <a key={profile.href} href={profile.href} target="_blank" rel="noopener noreferrer" aria-label={profile.label} className="rounded-full focus:outline-none focus:ring-2 focus:ring-[#4D504A]">
-            <img src={profile.image} alt="" className="h-16 w-16 rounded-full object-contain transition hover:scale-105" loading="lazy" decoding="async" />
+            <ResponsiveImage src={profile.image} alt="" className="h-16 w-16 rounded-full object-contain transition hover:scale-105" loading="lazy" decoding="async" />
           </a>
         ))}
       </div>

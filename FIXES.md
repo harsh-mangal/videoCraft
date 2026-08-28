@@ -1,29 +1,17 @@
-# Completed Fixes
+# Current implementation and validation
 
-- Added browser-side validation to both enquiry forms.
-- Contact forms now redirect to WhatsApp number `919888626212` with all entered details prefilled.
-- Kept the project backend-free; no enquiry data is stored by the website.
-- Added working WhatsApp newsletter/update enquiry.
-- Corrected phone and WhatsApp links across navbar, footer and contact page.
-- Repaired malformed route names and retained redirects for older URLs.
-- Added a proper 404 page and SPA rewrite files for Apache/Hostinger and Netlify-style hosting.
-- Removed the duplicate About-page autoplay timer.
-- Fixed invalid Tailwind utility classes and responsive gallery layouts.
-- Improved mobile image sizing and added lazy loading to image-heavy sections.
-- Corrected inconsistent wedding-story names, related-post URLs and metadata.
-- Removed duplicate/misleading testimonial content.
-- Updated public review profile links.
-- Added route-specific page titles, descriptions, Open Graph metadata and canonical URLs.
-- Improved form labels, keyboard navigation, social-link labels and reduced-motion handling.
-- Replaced default Create React App manifest, test and README content.
-- Cleaned unused files and corrected misspelled component filenames.
+The original enquiry/routing fixes are preserved. The 2026-08-28 follow-up additionally:
 
-## Validation performed
+- Records the ClientFeedback filename with the correct case in Git.
+- Replaces CRA with Vite and Vitest and removes unused slider/animation packages.
+- Generates complete static HTML for 11 routes plus the 404 page.
+- Adds shared canonical metadata, structured data, sitemap, robots and host rewrite/cache rules.
+- Fixes tablet navigation, service card height, mobile footer layout and keyboard focus handling.
+- Uses responsive optimized images, measured intrinsic dimensions and route code splitting.
+- Uses Lucide React for service icons, arrows, review stars, contact details and controls; replaces 11 external icon images while retaining brand logos.
+- Replaces autoplay with manual carousels and removes JavaScript reveal animations.
+- Strengthens phone/email validation and accessible error reporting.
+- Adds regression tests, production SEO/HTTP checks and a Linux CI workflow.
+- Removes generated builds and OS metadata from Git tracking while retaining local files.
 
-- JSX/JavaScript syntax parse: passed with zero errors.
-- Relative import resolution: passed with zero missing imports.
-- JSON files: valid.
-- HTML entry file: parsed successfully.
-- Package manifest and lockfile dependency lists: matched.
-
-A full `npm run build` could not be executed in the audit container because its private npm mirror does not contain one transitive package from the supplied lockfile. The source and configuration checks above passed; run `npm install && npm run build` in a normal npm environment before deployment.
+See SEO_AUDIT.md for measured results and remaining owner/deployment checks. See README.md for commands and deployment instructions. The old statement that a production build could not be run is superseded by the successful local build and checks in the current audit.

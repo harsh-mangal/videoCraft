@@ -1,11 +1,11 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    "./public/index.html",
+    "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: { fontFamily: { serif: ["Cormorant Garamond", "Georgia", "serif"] } },
   },
   plugins: [],
 };

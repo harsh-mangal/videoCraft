@@ -1,6 +1,8 @@
+import ResponsiveImage from "../components/ResponsiveImage";
 import React, { useState } from "react";
-import { FaEnvelope, FaFacebookF, FaInstagram, FaWhatsapp, FaYoutube } from "react-icons/fa";
+import { Send, Facebook, Instagram, MessageCircle, Youtube } from "lucide-react";
 import { Link } from "react-router-dom";
+import { EMAIL_PATTERN } from "../utils/enquiry";
 import { openWhatsApp } from "../utils/whatsapp";
 
 const Footer = () => {
@@ -10,7 +12,7 @@ const Footer = () => {
   const submitNewsletter = (event) => {
     event.preventDefault();
     const cleanEmail = email.trim();
-    if (!/^\S+@\S+\.\S+$/.test(cleanEmail)) {
+    if (!EMAIL_PATTERN.test(cleanEmail)) {
       setError("Enter a valid email address.");
       return;
     }
@@ -19,17 +21,17 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { href: "https://www.facebook.com/videocrafts9572", label: "Facebook", icon: <FaFacebookF size={26} />, className: "text-blue-600" },
-    { href: "https://www.instagram.com/videocrafts/", label: "Instagram", icon: <FaInstagram size={26} />, className: "text-pink-500" },
-    { href: "https://www.youtube.com/@videocrafts84", label: "YouTube", icon: <FaYoutube size={26} />, className: "text-red-600" },
-    { href: "https://wa.me/919888626212", label: "WhatsApp", icon: <FaWhatsapp size={26} />, className: "text-green-600" },
+    { href: "https://www.facebook.com/videocrafts9572", label: "Facebook", icon: <Facebook size={26} aria-hidden="true" focusable="false" />, className: "text-blue-600" },
+    { href: "https://www.instagram.com/videocrafts/", label: "Instagram", icon: <Instagram size={26} aria-hidden="true" focusable="false" />, className: "text-pink-500" },
+    { href: "https://www.youtube.com/@videocrafts84", label: "YouTube", icon: <Youtube size={26} aria-hidden="true" focusable="false" />, className: "text-red-600" },
+    { href: "https://wa.me/919888626212", label: "WhatsApp", icon: <MessageCircle size={26} aria-hidden="true" focusable="false" />, className: "text-green-600" },
   ];
 
   return (
     <footer className="w-full">
       <div className="w-full bg-white px-4 py-16">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-12 md:flex-row md:items-stretch">
-          <div className="flex flex-1 flex-col items-center text-center md:items-start md:border-r md:border-gray-300 md:pr-8 md:text-left">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-12 lg:flex-row lg:items-stretch">
+          <div className="flex min-w-0 flex-1 flex-col items-center text-center lg:items-start lg:border-r lg:border-gray-300 lg:pr-8 lg:text-left">
             <h2 className="mb-6 text-[22px] uppercase text-[#5E5E56]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Follow Us</h2>
             <div className="mb-6 flex space-x-6">
               {socialLinks.map((item) => (
@@ -38,31 +40,36 @@ const Footer = () => {
                 </a>
               ))}
             </div>
-            <a href="mailto:videocrafts95@gmail.com" className="text-[#84847C] hover:underline" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+            <a href="mailto:videocrafts95@gmail.com" className="text-[#62625A] hover:underline" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
               videocrafts95@gmail.com
             </a>
+            <a href="tel:+919888626212" className="mt-3 inline-flex min-h-11 items-center text-[#62625A] hover:underline">+91 98886 26212</a>
+            <address className="mt-2 text-sm not-italic leading-relaxed text-[#62625A]">
+              First Floor, 56-57-58, Madhya Marg,<br />Sector 9-D, Chandigarh 160009
+            </address>
+            <Link to="/contact" className="mt-3 inline-flex min-h-11 items-center text-sm underline underline-offset-4">Contact our Chandigarh studio</Link>
           </div>
 
-          <div className="flex flex-1 items-center justify-center md:border-r md:border-gray-300 md:px-8">
+          <div className="flex min-w-0 flex-1 items-center justify-center lg:border-r lg:border-gray-300 lg:px-8">
             <Link to="/" aria-label="Videocrafts India home">
-              <img src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025" alt="Videocrafts India" className="w-52 h-auto transition hover:scale-105" loading="lazy" decoding="async" />
+              <ResponsiveImage src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025" alt="Videocrafts India" className="w-52 h-auto transition hover:scale-105" loading="lazy" decoding="async" />
             </Link>
           </div>
 
-          <div className="flex flex-1 flex-col items-center text-center md:items-start md:pl-8 md:text-left">
+          <div className="flex min-w-0 flex-1 flex-col items-center text-center lg:items-start lg:pl-8 lg:text-left">
             <h2 className="mb-4 text-[22px] uppercase text-[#5E5E56]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Stay Connected</h2>
-            <p className="mb-5 italic text-[#84847C]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-              Share your email to receive photography updates.
+            <p className="mb-5 italic text-[#62625A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+              Request photography updates on WhatsApp. You can review your message before sending.
             </p>
-            <form onSubmit={submitNewsletter} className="w-full">
+            <form noValidate onSubmit={submitNewsletter} className="w-full">
               <div className="flex w-full max-w-sm">
                 <label htmlFor="footer-email" className="sr-only">Email address</label>
-                <input id="footer-email" type="email" value={email} onChange={(event) => { setEmail(event.target.value); setError(""); }} placeholder="Enter your email" className="min-w-0 flex-1 border-b-2 border-gray-400 bg-transparent px-3 py-3 text-gray-700 outline-none focus:border-[#4D504A]" />
+                <input id="footer-email" type="email" autoComplete="email" maxLength={254} required aria-invalid={!!error} aria-describedby={error ? "updates-error" : undefined} value={email} onChange={(event) => { setEmail(event.target.value); setError(""); }} placeholder="Enter your email" className="min-w-0 flex-1 border-b-2 border-gray-400 bg-transparent px-3 py-3 text-gray-700 outline-none focus:border-[#4D504A]" />
                 <button type="submit" aria-label="Continue on WhatsApp" className="ml-2 bg-[#4D504A] px-5 py-3 text-white transition hover:bg-[#343731]">
-                  <FaEnvelope size={20} aria-hidden="true" />
+                  <Send size={20} aria-hidden="true" focusable="false" />
                 </button>
               </div>
-              {error && <p role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
+              {error && <p id="updates-error" role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
             </form>
           </div>
         </div>

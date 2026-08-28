@@ -1,5 +1,7 @@
+import ResponsiveImage from "../components/ResponsiveImage";
 import React from "react";
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 const blogPosts = [
   {
@@ -34,7 +36,7 @@ const WeddingStories = () => (
       <h2 className="text-3xl font-normal uppercase tracking-wide text-[#5E5E56] sm:text-4xl" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
         Videocrafts Wedding Stories
       </h2>
-      <p className="mt-2 text-xl italic text-[#84847C]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+      <p className="mt-2 text-xl italic text-[#62625A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
         Tales of love, laughter and happily ever after
       </p>
     </div>
@@ -43,11 +45,11 @@ const WeddingStories = () => (
       {blogPosts.map((post) => (
         <article key={post.id} className="flex min-h-[28rem] flex-col overflow-hidden rounded-md bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
           <Link to={post.path} className="flex h-full flex-col focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#4D504A]" aria-label={`Read ${post.title}`}>
-            <img src={post.image} alt={post.title} className="h-64 w-full object-cover" loading="lazy" decoding="async" />
+            <ResponsiveImage src={post.image} alt={post.title} className="h-64 w-full object-cover" loading="lazy" decoding="async" />
             <div className="flex flex-grow flex-col p-6">
               <h3 className="mb-3 text-lg font-semibold text-gray-800">{post.title}</h3>
               <p className="flex-grow text-sm text-gray-600">{post.description}</p>
-              <span className="mt-4 text-sm font-semibold text-[#4D504A]">Read story →</span>
+              <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#4D504A]">Read story <ArrowRight size={18} className="shrink-0" aria-hidden="true" focusable="false" /></span>
               <time className="mt-4 border-t pt-3 text-sm text-gray-500" dateTime="2024-11-18">{post.date}</time>
             </div>
           </Link>

@@ -1,8 +1,79 @@
+Options -Indexes -MultiViews
+ErrorDocument 404 /404.html
 <IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteBase /
-  RewriteRule ^index\.html$ - [L]
-  RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule . /index.html [L]
+RewriteEngine On
+RewriteBase /
+RewriteCond %{THE_REQUEST} \s/+index\.html[?\s] [NC]
+RewriteRule ^index\.html$ / [R=301,L,NC]
+RewriteRule ^bridal-potraits/?$ /bridal-portraits [R=301,L,NC]
+RewriteRule ^video-craft-junion/?$ /videocrafts-junior [R=301,L,NC]
+RewriteRule ^tales-off-romance/?$ /wedding-stories/tales-of-romance [R=301,L,NC]
+RewriteRule ^from-‘i-do’-to\x20forever/?$ /wedding-stories/from-i-do-to-forever [R=301,L,NC]
+RewriteRule ^unforgettable-wedding-day/?$ /wedding-stories/unforgettable-wedding-day [R=301,L,NC]
+RewriteCond %{THE_REQUEST} \s/+about\.html[?\s] [NC]
+RewriteRule ^about\.html$ /about [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/about$
+RewriteRule ^about/?$ /about [R=301,L,NC]
+RewriteRule ^about$ about.html [END]
+RewriteCond %{THE_REQUEST} \s/+services\.html[?\s] [NC]
+RewriteRule ^services\.html$ /services [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/services$
+RewriteRule ^services/?$ /services [R=301,L,NC]
+RewriteRule ^services$ services.html [END]
+RewriteCond %{THE_REQUEST} \s/+gallery\.html[?\s] [NC]
+RewriteRule ^gallery\.html$ /gallery [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/gallery$
+RewriteRule ^gallery/?$ /gallery [R=301,L,NC]
+RewriteRule ^gallery$ gallery.html [END]
+RewriteCond %{THE_REQUEST} \s/+contact\.html[?\s] [NC]
+RewriteRule ^contact\.html$ /contact [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/contact$
+RewriteRule ^contact/?$ /contact [R=301,L,NC]
+RewriteRule ^contact$ contact.html [END]
+RewriteCond %{THE_REQUEST} \s/+bridal-portraits\.html[?\s] [NC]
+RewriteRule ^bridal-portraits\.html$ /bridal-portraits [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/bridal-portraits$
+RewriteRule ^bridal-portraits/?$ /bridal-portraits [R=301,L,NC]
+RewriteRule ^bridal-portraits$ bridal-portraits.html [END]
+RewriteCond %{THE_REQUEST} \s/+pre-wedding\.html[?\s] [NC]
+RewriteRule ^pre-wedding\.html$ /pre-wedding [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/pre-wedding$
+RewriteRule ^pre-wedding/?$ /pre-wedding [R=301,L,NC]
+RewriteRule ^pre-wedding$ pre-wedding.html [END]
+RewriteCond %{THE_REQUEST} \s/+videocrafts-junior\.html[?\s] [NC]
+RewriteRule ^videocrafts-junior\.html$ /videocrafts-junior [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/videocrafts-junior$
+RewriteRule ^videocrafts-junior/?$ /videocrafts-junior [R=301,L,NC]
+RewriteRule ^videocrafts-junior$ videocrafts-junior.html [END]
+RewriteCond %{THE_REQUEST} \s/+wedding-stories/tales-of-romance\.html[?\s] [NC]
+RewriteRule ^wedding-stories/tales-of-romance\.html$ /wedding-stories/tales-of-romance [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/wedding-stories/tales-of-romance$
+RewriteRule ^wedding-stories/tales-of-romance/?$ /wedding-stories/tales-of-romance [R=301,L,NC]
+RewriteRule ^wedding-stories/tales-of-romance$ wedding-stories/tales-of-romance.html [END]
+RewriteCond %{THE_REQUEST} \s/+wedding-stories/from-i-do-to-forever\.html[?\s] [NC]
+RewriteRule ^wedding-stories/from-i-do-to-forever\.html$ /wedding-stories/from-i-do-to-forever [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/wedding-stories/from-i-do-to-forever$
+RewriteRule ^wedding-stories/from-i-do-to-forever/?$ /wedding-stories/from-i-do-to-forever [R=301,L,NC]
+RewriteRule ^wedding-stories/from-i-do-to-forever$ wedding-stories/from-i-do-to-forever.html [END]
+RewriteCond %{THE_REQUEST} \s/+wedding-stories/unforgettable-wedding-day\.html[?\s] [NC]
+RewriteRule ^wedding-stories/unforgettable-wedding-day\.html$ /wedding-stories/unforgettable-wedding-day [R=301,L,NC]
+RewriteCond %{REQUEST_URI} !^/wedding-stories/unforgettable-wedding-day$
+RewriteRule ^wedding-stories/unforgettable-wedding-day/?$ /wedding-stories/unforgettable-wedding-day [R=301,L,NC]
+RewriteRule ^wedding-stories/unforgettable-wedding-day$ wedding-stories/unforgettable-wedding-day.html [END]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule . - [R=404,L]
+</IfModule>
+<IfModule mod_headers.c>
+Header always set X-Content-Type-Options "nosniff"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+<FilesMatch "\.html$">
+Header set Cache-Control "no-cache"
+</FilesMatch>
+<IfModule mod_setenvif.c>
+SetEnvIf Request_URI "^/assets/" hashed_asset
+Header set Cache-Control "public, max-age=31536000, immutable" env=hashed_asset
+</IfModule>
+</IfModule>
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml application/xml
 </IfModule>

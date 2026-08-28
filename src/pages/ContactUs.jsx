@@ -1,26 +1,27 @@
+import ResponsiveImage from "../components/ResponsiveImage";
 import React from "react";
-import { FaFacebookF, FaInstagram, FaWhatsapp, FaYoutube } from "react-icons/fa";
+import { Facebook, Instagram, Mail, MapPin, MessageCircle, Phone, Youtube } from "lucide-react";
 import ContactForm from "./ContactForm";
 
 const socialLinks = [
-  { href: "https://www.facebook.com/videocrafts9572", label: "Facebook", icon: <FaFacebookF /> },
-  { href: "https://www.instagram.com/videocrafts/", label: "Instagram", icon: <FaInstagram /> },
-  { href: "https://www.youtube.com/@videocrafts84", label: "YouTube", icon: <FaYoutube /> },
-  { href: "https://wa.me/919888626212", label: "WhatsApp", icon: <FaWhatsapp /> },
+  { href: "https://www.facebook.com/videocrafts9572", label: "Facebook", icon: <Facebook aria-hidden="true" focusable="false" /> },
+  { href: "https://www.instagram.com/videocrafts/", label: "Instagram", icon: <Instagram aria-hidden="true" focusable="false" /> },
+  { href: "https://www.youtube.com/@videocrafts84", label: "YouTube", icon: <Youtube aria-hidden="true" focusable="false" /> },
+  { href: "https://wa.me/919888626212", label: "WhatsApp", icon: <MessageCircle aria-hidden="true" focusable="false" /> },
 ];
 
 const ContactUs = () => (
   <section className="bg-white px-4 py-14">
     <div className="mx-auto grid max-w-7xl grid-cols-1 items-start gap-12 lg:grid-cols-2">
       <div>
-        <p className="text-sm uppercase tracking-[0.25em] text-[#84847C]">Contact Videocrafts India</p>
+        <p className="text-sm uppercase tracking-[0.25em] text-[#62625A]">Contact Videocrafts India</p>
         <h1 className="mt-3 text-4xl font-medium uppercase text-[#4D504A] sm:text-5xl" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
           Let’s capture your story
         </h1>
         <p className="mt-5 max-w-xl text-[#6C6C63]">
           Tell us about your event, preferred date and location. After you submit the form, WhatsApp will open with your enquiry ready to review and send.
         </p>
-        <img
+        <ResponsiveImage
           src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/contact.jpg?updatedAt=1758104863608"
           alt="A wedding moment photographed by Videocrafts India"
           className="mt-8 aspect-[4/3] w-full rounded-xl object-cover shadow-lg"
@@ -29,16 +30,16 @@ const ContactUs = () => (
 
         <div className="mt-8 grid gap-5 sm:grid-cols-2">
           <div>
-            <h2 className="text-xl uppercase text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Call or WhatsApp</h2>
-            <a href="tel:+919888626212" className="mt-1 block text-[#84847C] hover:underline">+91 98886 26212</a>
+            <h2 className="flex items-center gap-2 text-xl uppercase text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}><Phone size={20} className="shrink-0" aria-hidden="true" focusable="false" />Call or WhatsApp</h2>
+            <a href="tel:+919888626212" className="mt-1 block text-[#62625A] hover:underline">+91 98886 26212</a>
           </div>
           <div>
-            <h2 className="text-xl uppercase text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Email</h2>
-            <a href="mailto:videocrafts95@gmail.com" className="mt-1 block text-[#84847C] hover:underline">videocrafts95@gmail.com</a>
+            <h2 className="flex items-center gap-2 text-xl uppercase text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}><Mail size={20} className="shrink-0" aria-hidden="true" focusable="false" />Email</h2>
+            <a href="mailto:videocrafts95@gmail.com" className="mt-1 block text-[#62625A] hover:underline">videocrafts95@gmail.com</a>
           </div>
           <div className="sm:col-span-2">
-            <h2 className="text-xl uppercase text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Studio</h2>
-            <address className="mt-1 not-italic text-[#84847C]">First Floor, 56-57-58, Madhya Marg, Sector 9-D, Chandigarh 160009</address>
+            <h2 className="flex items-center gap-2 text-xl uppercase text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}><MapPin size={20} className="shrink-0" aria-hidden="true" focusable="false" />Studio</h2>
+            <address className="mt-1 not-italic text-[#62625A]">First Floor, 56-57-58, Madhya Marg, Sector 9-D, Chandigarh 160009</address>
           </div>
         </div>
 

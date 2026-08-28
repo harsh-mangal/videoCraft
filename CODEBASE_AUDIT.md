@@ -1,4 +1,6 @@
-# Videocrafts India: code flow and audit
+# Videocrafts India: historical baseline audit
+
+> Superseded by SEO_AUDIT.md and the current README.md. The findings below describe the pre-fix CRA baseline, not the current implementation.
 
 Audited on 2026-08-28 against the current working tree, including its pre-existing uncommitted changes. This audit adds `.gitignore` and this document; it does not fix application code or update dependencies.
 

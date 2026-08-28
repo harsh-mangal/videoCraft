@@ -1,5 +1,8 @@
+import { imageUrl } from "../utils/images";
+import ResponsiveImage from "../components/ResponsiveImage";
 import React from "react";
 import { Link } from "react-router-dom";
+import { Baby, Camera, HandHeart, Heart } from "lucide-react";
 
 const HeroSection = () => {
     return (
@@ -8,8 +11,7 @@ const HeroSection = () => {
             <div
                 className="relative flex items-center justify-center text-center text-white min-h-[300px] md:min-h-[400px] lg:min-h-[500px] px-4"
                 style={{
-                    backgroundImage:
-                        "url('https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Untitled-design-8.jpg?updatedAt=1758086811812')",
+                    backgroundImage: "url(" + imageUrl("https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Untitled-design-8.jpg?updatedAt=1758086811812", 1600) + ")",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     backgroundAttachment: "scroll",
@@ -21,7 +23,7 @@ const HeroSection = () => {
                 {/* Content */}
                 <div className="relative z-10 max-w-3xl px-6">
                     {/* Main Heading */}
-                    <h1
+                    <h2
                         className="mb-6 text-4xl sm:text-5xl"
                         style={{
                             fontFamily: '"Cormorant Garamond", serif',
@@ -32,7 +34,7 @@ const HeroSection = () => {
                         }}
                     >
                         YOU JUST ENJOY YOUR DAY!
-                    </h1>
+                    </h2>
 
                     {/* Subheading */}
                     <p
@@ -67,11 +69,7 @@ const HeroSection = () => {
                     <div className="flex flex-col p-6 rounded-lg border border-white/30 bg-[#757b66] shadow-lg hover:shadow-2xl transition-all duration-300"
                         style={{ minHeight: "400px" }} // increased height
                     >
-                        <img
-                            src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/h1-custom-icon-1.png?updatedAt=1758087922100"
-                            alt="Wedding Photography"
-                            className="w-20 h-20 mb-4" loading="lazy" decoding="async"
-                        />
+                        <Camera className="mb-4 h-20 w-20 shrink-0" strokeWidth={1.5} aria-hidden="true" focusable="false" />
                         <h3
                             className="mb-4"
                             style={{
@@ -105,11 +103,7 @@ const HeroSection = () => {
                     <div className="flex flex-col p-6 rounded-lg border border-white/30 bg-[#757b66] shadow-lg hover:shadow-2xl transition-all duration-300"
                         style={{ minHeight: "400px" }}
                     >
-                        <img
-                            src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/h1-custom-icon-2.png?updatedAt=1758087922084"
-                            alt="Pre-Wedding Photography"
-                            className="w-20 h-20 mb-4" loading="lazy" decoding="async"
-                        />
+                        <Heart className="mb-4 h-20 w-20 shrink-0" strokeWidth={1.5} aria-hidden="true" focusable="false" />
                         <h3
                             className="mb-4"
                             style={{
@@ -144,11 +138,7 @@ const HeroSection = () => {
                     <div className="flex flex-col p-6 rounded-lg border border-white/30 bg-[#757b66] shadow-lg hover:shadow-2xl transition-all duration-300"
                         style={{ minHeight: "400px" }}
                     >
-                        <img
-                            src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/h1-custom-icon-3.png?updatedAt=1758087921838"
-                            alt="Maternity Shoots"
-                            className="w-20 h-20 mb-4" loading="lazy" decoding="async"
-                        />
+                        <HandHeart className="mb-4 h-20 w-20 shrink-0" strokeWidth={1.5} aria-hidden="true" focusable="false" />
                         <h3
                             className="mb-4"
                             style={{
@@ -182,11 +172,7 @@ const HeroSection = () => {
                     <div className="flex flex-col p-6 rounded-lg border border-white/30 bg-[#757b66] shadow-lg hover:shadow-2xl transition-all duration-300"
                         style={{ minHeight: "400px" }}
                     >
-                        <img
-                            src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/h1-custom-icon-4.png?updatedAt=1758087921729"
-                            alt="Newborn Shoots"
-                            className="w-20 h-20 mb-4" loading="lazy" decoding="async"
-                        />
+                        <Baby className="mb-4 h-20 w-20 shrink-0" strokeWidth={1.5} aria-hidden="true" focusable="false" />
                         <h3
                             className="mb-4"
                             style={{
@@ -234,7 +220,7 @@ const HeroSection = () => {
                             >
                                 {/* Image with zoom-out effect on hover */}
                                 <div className="overflow-hidden w-full h-[500px] ">
-                                    <img
+                                    <ResponsiveImage
                                         src={img}
                                         alt={`Gallery ${index + 1}`}
                                         className="gallery-img w-full h-full object-cover "

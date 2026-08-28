@@ -1,5 +1,5 @@
+import ResponsiveImage from "../components/ResponsiveImage";
 import React from "react";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const WeddingStory2 = () => {
@@ -60,59 +60,43 @@ const WeddingStory2 = () => {
 
 
                 {/* Top Heading */}
-                <motion.h1
+                <h1
                     className="text-[#1E293B] font-semibold mb-4 text-2xl sm:text-3xl md:text-4xl"
-                    style={{ fontFamily: "Roboto, sans-serif" }}
-                    initial={{ opacity: 0, y: -20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
+                    style={{ fontFamily: "Mulish, sans-serif" }}
                 >
                     From ‘I Do’ to Forever | Celebrating a Client’s Unique Wedding Experience
-                </motion.h1>
+                </h1>
 
                 {/* Date */}
-                <motion.p
+                <p
                     className="text-[#046bd0] font-medium mb-6"
-                    style={{ fontFamily: "Roboto, sans-serif" }}
-                    initial={{ opacity: 0, y: -10 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: 0.2 }}
+                    style={{ fontFamily: "Mulish, sans-serif" }}
                 >
                     November 18, 2024
-                </motion.p>
+                </p>
 
                 {/* Main Image */}
-                <motion.div
+                <div
                     className="mb-8 overflow-hidden rounded-lg"
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.8 }}
                 >
-                    <img
+                    <ResponsiveImage priority width={1280} sizes="(min-width: 1152px) 1088px, 100vw"
                         src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wp-1.jpg?updatedAt=1758112615847"
                         alt="Wedding celebration captured by Videocrafts India"
                         className="w-full h-auto object-cover rounded-lg"
                     />
-                </motion.div>
+                </div>
 
                 {/* Sections */}
-                <div className="space-y-6 text-[#7A7A7A]" style={{ fontFamily: "Roboto, sans-serif", fontSize: "16px", fontWeight: 400, lineHeight: "1.8" }}>
+                <div className="space-y-6 text-[#62625A]" style={{ fontFamily: "Mulish, sans-serif", fontSize: "16px", fontWeight: 400, lineHeight: "1.8" }}>
                     {sections.map((section, index) => (
-                        <motion.div
+                        <div
                             key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: index * 0.1 }}
                         >
-                            <h3 className="text-[#1E293B] font-semibold text-xl mb-2" style={{ fontFamily: "Roboto, sans-serif" }}>
+                            <h2 className="text-[#1E293B] font-semibold text-xl mb-2" style={{ fontFamily: "Mulish, sans-serif" }}>
                                 {section.heading}
-                            </h3>
+                            </h2>
                             <p>{section.content}</p>
-                        </motion.div>
+                        </div>
                     ))}
                 </div>
             </div>
@@ -123,24 +107,24 @@ const WeddingStory2 = () => {
                 <div className="max-w-6xl mx-auto px-4 py-12 bg-white pr-8 pl-8 bg-white">
                     <h2
                         className="text-[#1E293B] font-semibold mb-6 text-2xl"
-                        style={{ fontFamily: "Roboto, sans-serif" }}
+                        style={{ fontFamily: "Mulish, sans-serif" }}
                     >
                         Related Posts
                     </h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                         {relatedPosts.map((post) => (
                             <Link key={post.link} to={post.link} className="block rounded-md focus:outline-none focus:ring-2 focus:ring-[#4D504A]">
-                                <img
+                                <ResponsiveImage
                                     src={post.img}
                                     alt={post.title}
                                     className="w-full h-52 object-cover rounded-md mb-4" loading="lazy" decoding="async"
                                 />
-                                <h3
+                                <h2
                                     className="text-lg font-semibold text-[#1E293B] mb-2"
-                                    style={{ fontFamily: "Roboto, sans-serif" }}
+                                    style={{ fontFamily: "Mulish, sans-serif" }}
                                 >
                                     {post.title}
-                                </h3>
+                                </h2>
                                 <p className="text-[#046bd0] text-sm">{post.meta}</p>
                             </Link>
                         ))}

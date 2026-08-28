@@ -1,5 +1,6 @@
+import PageBanner from "../components/PageBanner";
+import ResponsiveImage from "../components/ResponsiveImage";
 import React from "react";
-import { motion } from "framer-motion";
 
 const galleryImages = [
     "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/461267915_18297353080201135_2943885549578416297_n.jpg?updatedAt=1758114059614",
@@ -51,44 +52,21 @@ const Gallery = () => {
     return (
         <div className="w-full">
             {/* Banner */}
-            <div
-                className="relative w-full h-[430px] md:h-[530px] flex items-center justify-center"
-                style={{
-                    backgroundImage:
-                        "url('https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/gallery-banner-1.jpg?updatedAt=1758114079587')",
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                }}
-            >
-                <h1
-                    className="text-4xl sm:text-5xl md:text-6xl text-white uppercase text-center"
-                    style={{
-                        fontFamily: "'Cormorant Garamond', serif",
-                        fontWeight: 700,
-                        textShadow: "2px 2px 8px rgba(0,0,0,0.6)",
-                    }}
-                >
-                    GALLERY
-                </h1>
-            </div>
+            <PageBanner title="GALLERY" image="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/gallery-banner-1.jpg?updatedAt=1758114079587" />
 
             {/* Image Grid */}
             <div className="max-w-[1200px] mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {galleryImages.map((img, index) => (
-                    <motion.div
+                {Array.from(new Set(galleryImages)).map((img, index) => (
+                    <div
                         key={index}
                         className="w-full overflow-hidden"
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.45, delay: Math.min(index * 0.03, 0.3) }}
                     >
-                        <img
+                        <ResponsiveImage
                             src={img}
                             alt={`Videocrafts India portfolio photograph ${index + 1}`}
                             className="aspect-[4/5] w-full object-cover hover:scale-105 transition-transform duration-300" loading="lazy" decoding="async"
                         />
-                    </motion.div>
+                    </div>
                 ))}
             </div>
         </div>

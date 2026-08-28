@@ -1,3 +1,4 @@
+import ResponsiveImage from "../components/ResponsiveImage";
 import React from "react";
 
 const LegacySection = () => {
@@ -18,7 +19,7 @@ const LegacySection = () => {
 
             {/* Image */}
             <div className="flex justify-center mb-10">
-                <img
+                <ResponsiveImage
                     src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/junior/fatherson?updatedAt=1758034149989"
                     alt="Father and Son Legacy"
                     className="rounded-lg shadow-lg max-w-4xl w-full"
