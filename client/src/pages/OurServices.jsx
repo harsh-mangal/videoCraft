@@ -47,7 +47,7 @@ const OurServices = () => {
                 {services.map((service, idx) => (
                     <div
                         key={idx}
-                        className="bg-white rounded-xl shadow-lg p-6 h-full min-h-[350px] flex flex-col hover:shadow-2xl transition duration-300"
+                        className="luxury-card flex h-full min-h-[350px] flex-col bg-white p-7 transition duration-300"
                     >
                         {/* Icon Left */}
                         <div className="mb-4">

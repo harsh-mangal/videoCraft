@@ -122,6 +122,10 @@ test("multiple enquiry forms have distinct label and error IDs", () => {
 test("footer validates updates requests and composes a WhatsApp message", async () => {
   const user = userEvent.setup();
   render(<MemoryRouter><Footer /></MemoryRouter>);
+  expect(screen.getByRole("heading", { name: "Your story deserves to be remembered beautifully." })).toBeInTheDocument();
+  expect(screen.getByRole("navigation", { name: "Footer navigation" })).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Begin a conversation" })).toHaveAttribute("href", "/contact");
+  expect(screen.getByRole("link", { name: "+91 98886 26212" })).toHaveAttribute("href", "tel:+919888626212");
   await user.click(screen.getByRole("button", { name: "Continue on WhatsApp" }));
   expect(screen.getByRole("alert")).toHaveTextContent("Enter a valid email address.");
   expect(openWhatsApp).not.toHaveBeenCalled();

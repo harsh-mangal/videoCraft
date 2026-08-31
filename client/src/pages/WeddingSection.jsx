@@ -42,18 +42,19 @@ const portfolios = [
 ];
 
 export default function WeddingSection() {
-  return <section className="bg-[#f4f0ed] px-4 py-16">
+  return <section className="bg-[#f4f0ed] px-4 py-24">
     <div className="mx-auto max-w-7xl">
-      <h2 className="mx-auto max-w-3xl text-center font-serif text-3xl uppercase text-[#4D504A] sm:text-4xl">Top wedding and candid photographers in Chandigarh</h2>
+      <p className="luxury-kicker text-center">Selected portfolios</p>
+      <h2 className="section-heading mx-auto mt-4 max-w-4xl text-center">Stories that deserve to feel timeless</h2>
       <p className="mx-auto mt-5 max-w-3xl text-center leading-relaxed text-[#686861]">We turn life's most precious moments into timeless memories. Through photography and videography, we capture the emotions and stories that matter most.</p>
-      <div className="mt-10 grid gap-8 md:grid-cols-3">
+      <div className="mt-14 grid gap-10 md:grid-cols-3">
         {portfolios.map(portfolio => <div key={portfolio.href} className="min-w-0">
           <Carousel items={portfolio.images} label={portfolio.title + " photographs"} renderItem={(src, index) =>
             <Link to={portfolio.href} aria-label={"Explore " + portfolio.title + " photography"}>
-              <ResponsiveImage src={src} alt={portfolio.title + " photography, portfolio image " + (index + 1)} sizes="(min-width: 768px) 33vw, 100vw" className="aspect-[4/5] w-full rounded-md object-cover" />
+              <ResponsiveImage src={src} alt={portfolio.title + " photography, portfolio image " + (index + 1)} sizes="(min-width: 768px) 33vw, 100vw" className="luxury-image aspect-[4/5] w-full object-cover" />
             </Link>
           } />
-          <h3 className="mt-4 text-center font-serif text-2xl uppercase"><Link to={portfolio.href} className="underline-offset-4 hover:underline">{portfolio.title}</Link></h3>
+          <h3 className="mt-6 text-center font-serif text-3xl"><Link to={portfolio.href} className="luxury-text-link">{portfolio.title}</Link></h3>
         </div>)}
       </div>
       <p className="mt-12 text-center text-lg text-[#5E5E56]">Live your magic and preserve your precious memories.</p>

@@ -6,7 +6,7 @@ import ThemeToggle from "./ThemeToggle";
 import { SITE_LOGO } from "../config/seo";
 
 const navItems = [["Home", "/"], ["About Us", "/about"], ["Gallery", "/gallery"], ["Our Services", "/services"], ["Contact Us", "/contact"]];
-const navClass = ({ isActive }) => "inline-flex min-h-11 items-center whitespace-nowrap rounded px-2 transition hover:text-black " + (isActive ? "text-[#4D504A] underline underline-offset-8" : "text-gray-800");
+const navClass = ({ isActive }) => "nav-link inline-flex min-h-11 items-center whitespace-nowrap px-2 " + (isActive ? "is-active" : "");
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -21,8 +21,8 @@ export default function Navbar() {
     document.addEventListener("keydown", escape);
     return () => document.removeEventListener("keydown", escape);
   }, [menuOpen]);
-  return <nav className="sticky top-0 z-50 w-full border-b border-gray-300 bg-[#f3efec]" aria-label="Primary navigation">
-    <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
+  return <nav className="luxury-nav sticky top-0 z-50 w-full" aria-label="Primary navigation">
+    <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:py-4">
       <div className="relative flex items-center justify-between lg:justify-center">
         <Link to="/" aria-label="Videocrafts India home" onClick={() => setMenuOpen(false)}>
           <ResponsiveImage src={SITE_LOGO} alt="Videocrafts India" width={320} sizes="140px" loading="eager" className="theme-logo h-12 w-auto max-w-[160px] object-contain" />
@@ -38,10 +38,10 @@ export default function Navbar() {
         </div>
       </div>
       <div className="mt-2 hidden items-center justify-center gap-6 lg:flex">
-        <div className="flex flex-wrap items-center justify-center gap-3 text-base font-medium xl:gap-5">
+        <div className="flex flex-wrap items-center justify-center gap-3 font-medium xl:gap-5">
           {navItems.map(([label, path]) => <NavLink key={path} to={path} end={path === "/"} className={navClass}>{label}</NavLink>)}
         </div>
-        <a href="tel:+919888626212" className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-md border border-black px-4 py-2 text-base hover:bg-white"><Phone className="h-4 w-4" aria-hidden="true" />+91 98886 26212</a>
+        <a href="tel:+919888626212" className="luxury-outline inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap px-5 py-2 text-sm"><Phone className="h-4 w-4" aria-hidden="true" />+91 98886 26212</a>
       </div>
       <div id="mobile-navigation" hidden={!menuOpen} className={menuOpen ? "mt-3 flex flex-col gap-1 border-t border-gray-300 pt-3 text-lg font-medium lg:hidden" : "hidden"}>
         {navItems.map(([label, path]) => <NavLink key={path} to={path} end={path === "/"} className={navClass} onClick={() => setMenuOpen(false)}>{label}</NavLink>)}

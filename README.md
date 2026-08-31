@@ -124,4 +124,6 @@ Lucide React supplies interface and service icons. [Simple Icons React](https://
 
 The public navigation includes a Lucide light/dark theme control. It follows the visitor's system preference on the first visit, stores an explicit choice locally with a first-party cookie fallback, and applies the selected palette before the React app loads to avoid a theme flash.
 
+The public visual system uses an editorial luxury direction: Cormorant Garamond display typography, warm ivory and charcoal surfaces, restrained antique-gold accents, fine borders, quieter shadows and photography-led layouts. The same design tokens adapt to dark mode without altering managed images.
+
 Contact forms still validate locally and prepare a WhatsApp message to **+91 98886 26212**; the visitor reviews and sends it. The admin backend manages images, not enquiries, email delivery or newsletter subscribers.

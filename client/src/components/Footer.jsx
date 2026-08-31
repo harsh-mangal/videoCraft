@@ -1,10 +1,18 @@
 import ResponsiveImage from "../components/ResponsiveImage";
 import React, { useState } from "react";
-import { Send } from "lucide-react";
+import { ArrowUpRight, Mail, MapPin, Phone, Send } from "lucide-react";
 import SocialLinks from "./SocialLinks";
 import { Link } from "react-router-dom";
 import { EMAIL_PATTERN } from "../utils/enquiry";
 import { openWhatsApp } from "../utils/whatsapp";
+
+const footerLinks = [
+  ["About", "/about"],
+  ["Gallery", "/gallery"],
+  ["Services", "/services"],
+  ["Wedding stories", "/wedding-stories/tales-of-romance"],
+  ["Contact", "/contact"],
+];
 
 const Footer = () => {
   const [email, setEmail] = useState("");
@@ -23,51 +31,71 @@ const Footer = () => {
 
 
   return (
-    <footer className="w-full">
-      <div className="w-full bg-white px-4 py-16">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-12 lg:flex-row lg:items-stretch">
-          <div className="flex min-w-0 flex-1 flex-col items-center text-center lg:items-start lg:border-r lg:border-gray-300 lg:pr-8 lg:text-left">
-            <h2 className="mb-6 text-[22px] uppercase text-[#5E5E56]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Follow Us</h2>
-            <div className="mb-6"><SocialLinks /></div>
-            <a href="mailto:videocrafts95@gmail.com" className="text-[#62625A] hover:underline" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-              videocrafts95@gmail.com
-            </a>
-            <a href="tel:+919888626212" className="mt-3 inline-flex min-h-11 items-center text-[#62625A] hover:underline">+91 98886 26212</a>
-            <address className="mt-2 text-sm not-italic leading-relaxed text-[#62625A]">
-              First Floor, 56-57-58, Madhya Marg,<br />Sector 9-D, Chandigarh 160009
-            </address>
-            <Link to="/contact" className="mt-3 inline-flex min-h-11 items-center text-sm underline underline-offset-4">Contact our Chandigarh studio</Link>
+    <footer className="site-footer w-full">
+      <section className="footer-invitation px-5 py-16 sm:py-20" aria-labelledby="footer-invitation-title">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
+          <div className="max-w-3xl">
+            <p className="footer-kicker">Private consultations · Chandigarh</p>
+            <h2 id="footer-invitation-title" className="footer-display mt-4">Your story deserves to be remembered beautifully.</h2>
           </div>
+          <Link to="/contact" className="footer-cta inline-flex min-h-12 shrink-0 items-center gap-3 px-6 py-3">
+            Begin a conversation <ArrowUpRight size={18} aria-hidden="true" />
+          </Link>
+        </div>
+      </section>
 
-          <div className="flex min-w-0 flex-1 items-center justify-center lg:border-r lg:border-gray-300 lg:px-8">
-            <Link to="/" aria-label="Videocrafts India home">
-              <ResponsiveImage src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025" alt="Videocrafts India" className="theme-logo h-auto w-52 transition hover:scale-105" loading="lazy" decoding="async" />
+      <div className="footer-main px-5 py-16 sm:py-20">
+        <div className="mx-auto grid max-w-7xl gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-10">
+          <div className="footer-brand sm:col-span-2 lg:col-span-4 lg:pr-10">
+            <Link to="/" aria-label="Videocrafts India home" className="inline-flex">
+              <ResponsiveImage src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025" alt="Videocrafts India" className="footer-logo h-auto w-52" loading="lazy" decoding="async" />
             </Link>
+            <p className="mt-6 max-w-sm font-serif text-xl italic leading-relaxed">
+              Photography and films made with feeling, craft and an eye for the moments in between.
+            </p>
+            <div className="mt-7"><SocialLinks /></div>
           </div>
 
-          <div className="flex min-w-0 flex-1 flex-col items-center text-center lg:items-start lg:pl-8 lg:text-left">
-            <h2 className="mb-4 text-[22px] uppercase text-[#5E5E56]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>Stay Connected</h2>
-            <p className="mb-5 italic text-[#62625A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-              Request photography updates on WhatsApp. You can review your message before sending.
-            </p>
-            <form noValidate onSubmit={submitNewsletter} className="w-full">
-              <div className="flex w-full max-w-sm">
-                <label htmlFor="footer-email" className="sr-only">Email address</label>
-                <input id="footer-email" type="email" autoComplete="email" maxLength={254} required aria-invalid={!!error} aria-describedby={error ? "updates-error" : undefined} value={email} onChange={(event) => { setEmail(event.target.value); setError(""); }} placeholder="Enter your email" className="min-w-0 flex-1 border-b-2 border-gray-400 bg-transparent px-3 py-3 text-gray-700 outline-none focus:border-[#4D504A]" />
-                <button type="submit" aria-label="Continue on WhatsApp" className="ml-2 bg-[#4D504A] px-5 py-3 text-white transition hover:bg-[#343731]">
-                  <Send size={20} aria-hidden="true" focusable="false" />
+          <nav className="lg:col-span-2" aria-label="Footer navigation">
+            <h3 className="footer-heading">Explore</h3>
+            <ul className="mt-5 space-y-2">
+              {footerLinks.map(([label, path]) => <li key={path}>
+                <Link to={path} className="footer-link inline-flex min-h-10 items-center">{label}</Link>
+              </li>)}
+            </ul>
+          </nav>
+
+          <div className="lg:col-span-3">
+            <h3 className="footer-heading">The studio</h3>
+            <address className="mt-5 space-y-3 not-italic">
+              <a href="tel:+919888626212" className="footer-contact"><Phone size={17} aria-hidden="true" />+91 98886 26212</a>
+              <a href="mailto:videocrafts95@gmail.com" className="footer-contact"><Mail size={17} aria-hidden="true" />videocrafts95@gmail.com</a>
+              <p className="footer-contact items-start"><MapPin size={17} className="mt-1 shrink-0" aria-hidden="true" /><span>First Floor, 56-57-58,<br />Madhya Marg, Sector 9-D,<br />Chandigarh 160009</span></p>
+            </address>
+          </div>
+
+          <div className="sm:col-span-2 lg:col-span-3">
+            <h3 className="footer-heading">Studio notes</h3>
+            <p className="mt-5 max-w-sm text-sm leading-relaxed">Receive occasional photography updates through WhatsApp. You can review the message before sending.</p>
+            <form noValidate onSubmit={submitNewsletter} className="mt-6 w-full max-w-md">
+              <label htmlFor="footer-email" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em]">Email address</label>
+              <div className="footer-form flex w-full">
+                <input id="footer-email" type="email" autoComplete="email" maxLength={254} required aria-invalid={!!error} aria-describedby={error ? "updates-error" : undefined} value={email} onChange={(event) => { setEmail(event.target.value); setError(""); }} placeholder="you@example.com" className="min-w-0 flex-1 bg-transparent px-4 py-3 outline-none" />
+                <button type="submit" aria-label="Continue on WhatsApp" className="footer-submit inline-flex min-w-12 items-center justify-center px-4">
+                  <Send size={18} aria-hidden="true" focusable="false" />
                 </button>
               </div>
-              {error && <p id="updates-error" role="alert" className="mt-2 text-sm text-red-600">{error}</p>}
+              {error && <p id="updates-error" role="alert" className="mt-2 text-sm text-red-300">{error}</p>}
             </form>
           </div>
         </div>
       </div>
 
-      <div className="w-full bg-[#f5f0eb] px-4 py-4">
-        <p className="text-center text-sm text-gray-600" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
-          Copyright © {new Date().getFullYear()} Videocrafts India. All rights reserved.
-        </p>
+      <div className="footer-legal px-5 py-5">
+        <div className="mx-auto flex max-w-7xl flex-col gap-2 text-xs sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Videocrafts India. All rights reserved.</p>
+          <p>Wedding · Portrait · Commercial photography and films</p>
+        </div>
       </div>
     </footer>
   );

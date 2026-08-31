@@ -17,8 +17,9 @@ const reviewProfiles = [
 
 const ClientFeedback = () => (
   <>
-    <section className="bg-white px-4 pb-10 text-center">
-      <h2 className="text-3xl font-normal uppercase text-[#5E5E56] sm:text-4xl" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+    <section className="bg-white px-4 pb-12 pt-20 text-center">
+      <p className="luxury-kicker">Kind words</p>
+      <h2 className="section-heading mt-4">
         Client Feedback
       </h2>
       <p className="mx-auto mt-4 max-w-2xl text-lg italic text-[#62625A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>

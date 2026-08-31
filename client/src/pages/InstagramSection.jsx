@@ -12,7 +12,8 @@ const images = [
 
 const InstagramSection = () => (
   <section className="bg-white px-4 py-16 text-center">
-    <h2 className="text-3xl font-normal uppercase text-[#5E5E56] sm:text-4xl" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+    <p className="luxury-kicker">Latest frames</p>
+    <h2 className="section-heading mt-4">
       Follow us on Instagram
     </h2>
     <a href="https://www.instagram.com/videocrafts/" target="_blank" rel="noopener noreferrer" className="mt-2 inline-block text-xl italic text-[#62625A] hover:underline" style={{ fontFamily: '"Cormorant Garamond", serif' }}>

@@ -31,9 +31,10 @@ const blogPosts = [
 ];
 
 const WeddingStories = () => (
-  <section className="relative z-10 bg-white pb-24">
-    <div className="px-4 pt-16 text-center sm:px-6 lg:px-20">
-      <h2 className="text-3xl font-normal uppercase tracking-wide text-[#5E5E56] sm:text-4xl" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
+  <section className="relative z-10 bg-white pb-28">
+    <div className="px-4 pt-24 text-center sm:px-6 lg:px-20">
+      <p className="luxury-kicker">The journal</p>
+      <h2 className="section-heading mt-4">
         Videocrafts Wedding Stories
       </h2>
       <p className="mt-2 text-xl italic text-[#62625A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}>
@@ -43,7 +44,7 @@ const WeddingStories = () => (
 
     <div className="relative z-20 mx-auto mt-12 grid max-w-7xl grid-cols-1 gap-8 px-4 sm:px-6 md:grid-cols-2 lg:grid-cols-3">
       {blogPosts.map((post) => (
-        <article key={post.id} className="flex min-h-[28rem] flex-col overflow-hidden rounded-md bg-white shadow-md transition duration-300 hover:-translate-y-2 hover:shadow-2xl">
+        <article key={post.id} className="luxury-card flex min-h-[28rem] flex-col overflow-hidden bg-white transition duration-300">
           <Link to={post.path} className="flex h-full flex-col focus:outline-none focus:ring-2 focus:ring-inset focus:ring-[#4D504A]" aria-label={`Read ${post.title}`}>
             <ResponsiveImage src={post.image} alt={post.title} className="h-64 w-full object-cover" loading="lazy" decoding="async" />
             <div className="flex flex-grow flex-col p-6">
