@@ -36,13 +36,6 @@ const AboutUs = () => {
         "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/339827585_768796091489364_739165343552228577_n.jpg?updatedAt=1758102950069",
     ];
 
-    const services = [
-        { name: "Pre-Wedding", percent: 90 },
-        { name: "Wedding", percent: 100 },
-        { name: "Newborn Shoots", percent: 95 },
-        { name: "Maternity Shoots", percent: 92 },
-    ];
-
     return (
         <>
             <div className="w-full">
@@ -69,7 +62,7 @@ const AboutUs = () => {
                             className="mb-6 uppercase"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#5E5E56",
+                                color: "var(--theme-heading)",
                                 fontSize: "35px",
                                 fontWeight: 500,
                                 textAlign: "left",
@@ -83,7 +76,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#6C6C63",
+                                color: "var(--theme-text)",
                                 fontSize: "18px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -97,7 +90,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#6C6C63",
+                                color: "var(--theme-text)",
                                 fontSize: "18px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -111,7 +104,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#6C6C63",
+                                color: "var(--theme-text)",
                                 fontSize: "18px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -124,7 +117,7 @@ const AboutUs = () => {
                         <p
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#6C6C63",
+                                color: "var(--theme-text)",
                                 fontSize: "18px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -163,7 +156,7 @@ const AboutUs = () => {
                             className="mb-6"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#5E5E56",
+                                color: "var(--theme-heading)",
                                 fontSize: "35px",
                                 fontWeight: 500,
                                 textTransform: "uppercase",
@@ -176,7 +169,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#686861",
+                                color: "var(--theme-text)",
                                 fontSize: "18px",
                                 fontWeight: 400,
                                 fontStyle: "italic",
@@ -189,7 +182,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#686861",
+                                color: "var(--theme-text)",
                                 fontSize: "18px",
                                 fontWeight: 400,
                                 fontStyle: "italic",
@@ -202,7 +195,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#686861",
+                                color: "var(--theme-text)",
                                 fontSize: "18px",
                                 fontWeight: 400,
                                 fontStyle: "italic",
@@ -221,17 +214,16 @@ const AboutUs = () => {
                 </div>
             </div>
 
-            <div className="bg-[#f4f0ed] py-16 px-8 flex flex-col lg:flex-row gap-10">
-                {/* Left Content */}
-                <div className="lg:w-1/2 flex flex-col gap-6">
+            <div className="bg-[#f4f0ed] px-6 py-16">
+                <div className="mx-auto flex max-w-3xl flex-col gap-6 text-center">
                     <h2
                         className="uppercase"
                         style={{
                             fontFamily: "'Cormorant Garamond', serif",
                             fontSize: "35px",
                             fontWeight: 400,
-                            color: "rgb(77, 80, 74)",
-                            textAlign: "left",
+                            color: "var(--theme-heading)",
+                            textAlign: "center",
                         }}
                     >
                         Our Services
@@ -242,8 +234,8 @@ const AboutUs = () => {
                             fontSize: "22px",
                             fontStyle: "italic",
                             fontWeight: 400,
-                            color: "rgb(132, 132, 124)",
-                            textAlign: "justify",
+                            color: "var(--theme-muted)",
+                            textAlign: "center",
                         }}
                     >
                         Let us help you preserve your cherished memories in stunning,
@@ -254,8 +246,8 @@ const AboutUs = () => {
                             fontFamily: "Mulish, sans-serif",
                             fontSize: "15px",
                             fontWeight: 400,
-                            color: "rgb(114, 114, 108)",
-                            textAlign: "justify",
+                            color: "var(--theme-text)",
+                            textAlign: "center",
                         }}
                     >
                         At our photography studio, we offer a wide range of services tailored
@@ -268,23 +260,6 @@ const AboutUs = () => {
                     </p>
                 </div>
 
-                {/* Right Progress Bars */}
-                <div className="lg:w-1/2 flex flex-col gap-6">
-                    {services.map((service) => (
-                        <div key={service.name} className="flex flex-col gap-2">
-                            <div className="flex justify-between text-[#4D504A] font-semibold">
-                                <span>{service.name}</span>
-                                <span>{service.percent}%</span>
-                            </div>
-                            <div className="w-full bg-[#84847c] h-4 rounded-full overflow-hidden">
-                                <div
-                                    className="h-full bg-[#4D504A]"
-                                    style={{ width: `${service.percent}%` }}
-                                ></div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
             </div>
 
             <section
@@ -303,7 +278,7 @@ const AboutUs = () => {
                         <div className="md:w-1/3 text-center md:text-left">
                             <h2
                                 className="text-[62px] italic uppercase font-bold leading-tight"
-                                style={{ fontFamily: '"Cormorant Garamond", serif', color: "#5E5E56" }}
+                                style={{ fontFamily: '"Cormorant Garamond", serif', color: "var(--theme-heading)" }}
                             >
                                 Why <br /> Choose <br /> Us?
                             </h2>
@@ -318,13 +293,13 @@ const AboutUs = () => {
                             <div>
                                 <h3
                                     className="text-[20px] font-bold mb-2"
-                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#62625AF" }}
+                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "var(--theme-heading)" }}
                                 >
                                     1. What makes us stand out?
                                 </h3>
                                 <p
                                     className="text-[18px] italic font-medium text-justify"
-                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#62625A" }}
+                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "var(--theme-text)" }}
                                 >
                                     Our team combines cutting-edge technology with creative expertise
                                     to produce high-quality visuals that capture the true essence of
@@ -338,13 +313,13 @@ const AboutUs = () => {
                             <div>
                                 <h3
                                     className="text-[20px] font-bold mb-2"
-                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#62625AF" }}
+                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "var(--theme-heading)" }}
                                 >
                                     2. How do we ensure your moments are captured flawlessly?
                                 </h3>
                                 <p
                                     className="text-[18px] italic font-medium text-justify"
-                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "#62625A" }}
+                                    style={{ fontFamily: '"Cormorant Garamond", serif', color: "var(--theme-text)" }}
                                 >
                                     From the first consultation to the final product, we focus on
                                     delivering a seamless experience. Our experienced team works
@@ -368,7 +343,7 @@ const AboutUs = () => {
                             className="mb-3 uppercase"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#5E5E56",
+                                color: "var(--theme-heading)",
                                 fontSize: "30px",
                                 fontWeight: 700,
                             }}
@@ -381,7 +356,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#62625A",
+                                color: "var(--theme-text)",
                                 fontSize: "19px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -395,7 +370,7 @@ const AboutUs = () => {
                         <p
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#62625A",
+                                color: "var(--theme-text)",
                                 fontSize: "19px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -416,7 +391,7 @@ const AboutUs = () => {
                             className="mb-3 uppercase"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#5E5E56",
+                                color: "var(--theme-heading)",
                                 fontSize: "30px",
                                 fontWeight: 700,
                             }}
@@ -429,7 +404,7 @@ const AboutUs = () => {
                             className="mb-4"
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#62625A",
+                                color: "var(--theme-text)",
                                 fontSize: "19px",
                                 fontWeight: 500,
                                 fontStyle: "italic",
@@ -443,7 +418,7 @@ const AboutUs = () => {
                         <p
                             style={{
                                 fontFamily: '"Cormorant Garamond", serif',
-                                color: "#62625A",
+                                color: "var(--theme-text)",
                                 fontSize: "19px",
                                 fontWeight: 500,
                                 fontStyle: "italic",

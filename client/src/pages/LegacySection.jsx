@@ -11,7 +11,7 @@ const LegacySection = () => {
                     fontFamily: '"Cormorant Garamond", serif',
                     fontSize: "36px",
                     fontWeight: 600,
-                    color: "#000000",
+                    color: "var(--theme-heading)",
                 }}
             >
                 Legacy of Father & Son – A Shared Vision
@@ -34,7 +34,7 @@ const LegacySection = () => {
                     fontSize: "20px",
                     fontWeight: 400,
                     fontStyle: "italic",
-                    color: "#4F4F47",
+                    color: "var(--theme-heading)",
                 }}
             >
                 <p className="mb-6">

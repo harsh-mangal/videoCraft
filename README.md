@@ -122,4 +122,6 @@ The sitemap includes only the 11 public routes. Admin pages have noindex metadat
 
 Lucide React supplies interface and service icons. [Simple Icons React](https://github.com/icons-pack/react-simple-icons) supplies recognizable Facebook, Instagram, YouTube and WhatsApp brand marks, with consistent button sizes. The fixed WhatsApp button is accessible and respects mobile safe areas.
 
+The public navigation includes a Lucide light/dark theme control. It follows the visitor's system preference on the first visit, stores an explicit choice locally with a first-party cookie fallback, and applies the selected palette before the React app loads to avoid a theme flash.
+
 Contact forms still validate locally and prepare a WhatsApp message to **+91 98886 26212**; the visitor reviews and sends it. The admin backend manages images, not enquiries, email delivery or newsletter subscribers.

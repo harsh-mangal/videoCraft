@@ -61,7 +61,7 @@ const OurServices = () => {
                                 fontFamily: '"Cormorant Garamond", serif',
                                 fontSize: "25px",
                                 fontWeight: 600,
-                                color: "#4D504A",
+                                color: "var(--theme-heading)",
                             }}
                         >
                             {service.title}
@@ -74,7 +74,7 @@ const OurServices = () => {
                                 fontFamily: '"Mulish", sans-serif',
                                 fontSize: "15px",
                                 fontWeight: 400,
-                                color: "#62625A",
+                                color: "var(--theme-text)",
                             }}
                         >
                             {service.desc}

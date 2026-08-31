@@ -19,14 +19,31 @@ import Layout from "./Layout";
 import RouteErrorBoundary from "./components/RouteErrorBoundary";
 import ReviewsSection from "./pages/ReviewsSection";
 import WhatsAppButton from "./components/WhatsAppButton";
+import About from "./pages/About";
 
 vi.mock("./utils/whatsapp", async importOriginal => ({
   ...await importOriginal(),
   openWhatsApp: vi.fn(),
 }));
 
-beforeEach(() => { vi.mocked(openWhatsApp).mockClear(); vi.stubGlobal("scrollTo", vi.fn()); });
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); document.head.innerHTML = ""; });
+const storedValues = new Map();
+const testStorage = {
+  getItem: key => storedValues.get(key) ?? null,
+  setItem: (key, value) => storedValues.set(key, String(value)),
+  removeItem: key => storedValues.delete(key),
+  clear: () => storedValues.clear(),
+  key: index => [...storedValues.keys()][index] ?? null,
+  get length() { return storedValues.size; },
+};
+Object.defineProperty(window, "localStorage", { configurable: true, value: testStorage });
+
+beforeEach(() => {
+  vi.mocked(openWhatsApp).mockClear();
+  vi.stubGlobal("scrollTo", vi.fn());
+  document.documentElement.classList.remove("dark");
+  window.localStorage.clear();
+});
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); document.documentElement.classList.remove("dark"); document.head.innerHTML = ""; });
 
 test("encodes a trimmed enquiry safely for the configured WhatsApp number", () => {
   const url = new URL(buildWhatsAppUrl("  Hello & welcome\nभारत  "));
@@ -130,6 +147,26 @@ test("mobile route selection closes the menu", async () => {
   await user.click(screen.getByRole("button", { name: "Open navigation menu" }));
   await user.click(within(document.getElementById("mobile-navigation")).getByRole("link", { name: "Contact Us" }));
   expect(screen.getByRole("button", { name: "Open navigation menu" })).toHaveAttribute("aria-expanded", "false");
+});
+
+test("theme control switches modes and preserves the visitor choice", async () => {
+  const user = userEvent.setup();
+  render(<MemoryRouter><Navbar /></MemoryRouter>);
+  const toggle = screen.getByRole("button", { name: "Switch to dark mode" });
+  await user.click(toggle);
+  expect(document.documentElement).toHaveClass("dark");
+  expect(window.localStorage.getItem("videocrafts-theme")).toBe("dark");
+  expect(document.cookie).toContain("videocrafts-theme=dark");
+  expect(toggle).toHaveAccessibleName("Switch to light mode");
+  await user.click(toggle);
+  expect(document.documentElement).not.toHaveClass("dark");
+  expect(window.localStorage.getItem("videocrafts-theme")).toBe("light");
+});
+
+test("about page keeps the services introduction without percentage ratings", () => {
+  render(<MemoryRouter initialEntries={["/about"]}><About /></MemoryRouter>);
+  expect(screen.getByRole("heading", { name: "Our Services" })).toBeInTheDocument();
+  for (const value of ["90%", "100%", "95%", "92%"] ) expect(screen.queryByText(value)).not.toBeInTheDocument();
 });
 
 test("manual carousel advances and wraps with accessible buttons", async () => {

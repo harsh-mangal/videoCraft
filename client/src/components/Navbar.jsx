@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import ResponsiveImage from "./ResponsiveImage";
+import ThemeToggle from "./ThemeToggle";
 import { SITE_LOGO } from "../config/seo";
 
 const navItems = [["Home", "/"], ["About Us", "/about"], ["Gallery", "/gallery"], ["Our Services", "/services"], ["Contact Us", "/contact"]];
@@ -22,15 +23,18 @@ export default function Navbar() {
   }, [menuOpen]);
   return <nav className="sticky top-0 z-50 w-full border-b border-gray-300 bg-[#f3efec]" aria-label="Primary navigation">
     <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6">
-      <div className="flex items-center justify-between lg:justify-center">
+      <div className="relative flex items-center justify-between lg:justify-center">
         <Link to="/" aria-label="Videocrafts India home" onClick={() => setMenuOpen(false)}>
-          <ResponsiveImage src={SITE_LOGO} alt="Videocrafts India" width={320} sizes="140px" loading="eager" className="h-12 w-auto max-w-[160px] object-contain" />
+          <ResponsiveImage src={SITE_LOGO} alt="Videocrafts India" width={320} sizes="140px" loading="eager" className="theme-logo h-12 w-auto max-w-[160px] object-contain" />
         </Link>
-        <div className="flex items-center gap-3 lg:hidden">
-          <a href="tel:+919888626212" aria-label="Call Videocrafts India" className="carousel-control"><Phone className="h-5 w-5" aria-hidden="true" /></a>
-          <button ref={menuButton} type="button" onClick={() => setMenuOpen(open => !open)} className="carousel-control" aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="mobile-navigation">
-            {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
-          </button>
+        <div className="flex items-center gap-2 lg:absolute lg:right-6">
+          <ThemeToggle />
+          <div className="flex items-center gap-2 lg:hidden">
+            <a href="tel:+919888626212" aria-label="Call Videocrafts India" className="carousel-control"><Phone className="h-5 w-5" aria-hidden="true" /></a>
+            <button ref={menuButton} type="button" onClick={() => setMenuOpen(open => !open)} className="carousel-control" aria-label={menuOpen ? "Close navigation menu" : "Open navigation menu"} aria-expanded={menuOpen} aria-controls="mobile-navigation">
+              {menuOpen ? <X aria-hidden="true" /> : <Menu aria-hidden="true" />}
+            </button>
+          </div>
         </div>
       </div>
       <div className="mt-2 hidden items-center justify-center gap-6 lg:flex">

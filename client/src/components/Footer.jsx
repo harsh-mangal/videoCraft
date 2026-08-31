@@ -41,7 +41,7 @@ const Footer = () => {
 
           <div className="flex min-w-0 flex-1 items-center justify-center lg:border-r lg:border-gray-300 lg:px-8">
             <Link to="/" aria-label="Videocrafts India home">
-              <ResponsiveImage src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025" alt="Videocrafts India" className="w-52 h-auto transition hover:scale-105" loading="lazy" decoding="async" />
+              <ResponsiveImage src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025" alt="Videocrafts India" className="theme-logo h-auto w-52 transition hover:scale-105" loading="lazy" decoding="async" />
             </Link>
           </div>
 
