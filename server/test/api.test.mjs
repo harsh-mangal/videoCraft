@@ -108,7 +108,7 @@ test("upload persists, serves optimized variants and updates public HTML and soc
   const html = await (await api("/")).text();
   assert(html.includes('data-media-id="' + hero.id + '"'));
   assert(html.includes('src="' + item.value.variants.find(variant => variant.width >= 960).src + '"') || html.includes('src="' + item.value.src + '"'));
-  assert(html.includes('property="og:image" content="https://videocrafts.in' + item.value.src + '"'));
+  assert(html.includes('property="og:image" content="https://www.videocraftsindia.com' + item.value.src + '"'));
   assert(html.includes('id="site-media"'));
   assert.equal((await (await api("/api/media")).json()).images[hero.id].src, item.value.src);
   await new Promise(resolve => server.close(resolve)); store.close();

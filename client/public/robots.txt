@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 
-Sitemap: https://videocrafts.in/sitemap.xml
+Sitemap: https://www.videocraftsindia.com/sitemap.xml

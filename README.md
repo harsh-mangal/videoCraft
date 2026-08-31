@@ -114,7 +114,7 @@ Generated output, local .env files, the database and uploads are ignored by Git.
 
 ## SEO and remaining owner checks
 
-The canonical domain is **https://videocrafts.in**, configured in client/src/config/seo.js. It did not resolve from the original audit environment on 2026-08-28. Confirm the intended domain and DNS before deployment; update SITE_URL and rebuild if necessary. PUBLIC_ORIGIN in server/.env should match the HTTPS site origin.
+The owner-confirmed canonical domain is **https://www.videocraftsindia.com**, configured in client/src/config/seo.js. `PUBLIC_ORIGIN` and `ADMIN_ORIGINS` in the production server environment must use this exact HTTPS origin, including `www`. Redirect any alternate hostname to the canonical hostname at the reverse proxy or hosting layer.
 
 The sitemap includes only the 11 public routes. Admin pages have noindex metadata/headers and are excluded from robots and sitemap. No fabricated ratings, hours or prices are added to structured data. See [SEO_AUDIT.md](SEO_AUDIT.md) for the original audit and the admin follow-up.
 

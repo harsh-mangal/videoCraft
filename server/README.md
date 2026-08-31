@@ -27,14 +27,14 @@ Copy server/.env.example to server/.env and set real values:
 NODE_ENV=production
 HOST=127.0.0.1
 PORT=3001
-PUBLIC_ORIGIN=https://your-confirmed-domain.example
-ADMIN_ORIGINS=https://your-confirmed-domain.example
+PUBLIC_ORIGIN=https://www.videocraftsindia.com
+ADMIN_ORIGINS=https://www.videocraftsindia.com
 DATA_DIR=/srv/videocrafts-data
 MAX_STORAGE_MB=1024
 TRUST_PROXY_HOPS=1
 ```
 
-Replace the example domain. Match the site's canonical SITE_URL in client/src/config/seo.js and rebuild. Do not copy the example configuration verbatim to a public server.
+Keep these origins synchronized with the site's canonical SITE_URL in client/src/config/seo.js and rebuild after any domain change. Both values must be exact origins without a trailing path.
 
 - Terminate TLS at a trusted reverse proxy and forward the site to the loopback Node port. Forward /admin, /api and /media along with public page routes. Set the proxy's upload body limit to at least 13 MB; the API enforces a 12 MB file limit.
 - Set TRUST_PROXY_HOPS=1 only when exactly one trusted proxy is in front of Node. Keep the Node port inaccessible from the public network so clients cannot spoof the proxy chain. Otherwise use 0.

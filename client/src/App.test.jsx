@@ -198,6 +198,10 @@ test.each(["/about/", "/About", "/ABOUT///"])("normalizes known route %s", path 
   expect(getPageMeta(path).title).not.toContain("Not Found");
 });
 
+test("uses the owner-confirmed canonical production origin", () => {
+  expect(SITE_URL).toBe("https://www.videocraftsindia.com");
+});
+
 test("preserves legacy URL redirects and handles malformed encodings safely", () => {
   expect(normalizePath("/From-%E2%80%98I-Do%E2%80%99-to%20Forever")).toBe("/wedding-stories/from-i-do-to-forever");
   expect(normalizePath("/bridal-potraits")).toBe("/bridal-portraits");
