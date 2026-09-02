@@ -19,9 +19,9 @@ try {
   stdout.write("\n"); hidden = false;
   if (password !== confirmation) throw new Error("Passwords do not match.");
   const hash = await hashPassword(password);
-  const store = new Store(loadConfig().dataDir);
-  try { store.createAdmin(email, hash, process.argv.includes("--reset")); }
-  finally { store.close(); }
+  const store = await Store.connect(loadConfig());
+  try { await store.createAdmin(email, hash, process.argv.includes("--reset")); }
+  finally { await store.close(); }
   console.log("Admin saved. Sign in at /admin/. No default admin credentials exist.");
 } catch (error) { console.error("\n" + error.message); process.exitCode = 1; }
 finally { rl.close(); }

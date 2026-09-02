@@ -4,6 +4,7 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "./App";
 import { request, ApiError } from "./api";
+import { ADMIN_URL, API_URL, PUBLIC_SITE_URL, apiUrl, mediaUrl, websiteUrl } from "./config";
 
 vi.mock("./api", async original => ({ ...await original(), request: vi.fn() }));
 const session = { email: "admin@example.test", csrf: "test-token" };
@@ -11,6 +12,19 @@ const photo = { id: "hero", label: "Home hero", src: "/original.png", width: 100
 beforeEach(() => { vi.mocked(request).mockReset(); URL.createObjectURL = vi.fn(() => "blob:preview"); URL.revokeObjectURL = vi.fn(); });
 afterEach(cleanup);
 function signedIn(items = [photo]) { vi.mocked(request).mockImplementation(async path => path === "/session" ? session : { images: items }); }
+
+test("uses the production website, admin and API subdomains while keeping local requests relative", () => {
+  const production = { hostname: "admin.videocraftsindia.com" };
+  const local = { hostname: "127.0.0.1" };
+  expect(PUBLIC_SITE_URL).toBe("https://www.videocraftsindia.com/");
+  expect(ADMIN_URL).toBe("https://admin.videocraftsindia.com/");
+  expect(API_URL).toBe("https://api.videocraftsindia.com");
+  expect(apiUrl("/api/admin/session", production)).toBe(API_URL + "/api/admin/session");
+  expect(mediaUrl("/media/photo.webp", production)).toBe(API_URL + "/media/photo.webp");
+  expect(websiteUrl(production)).toBe(PUBLIC_SITE_URL);
+  expect(apiUrl("/api/admin/session", local)).toBe("/api/admin/session");
+  expect(mediaUrl("/media/photo.webp", local)).toBe("/media/photo.webp");
+});
 
 test("login does not grant access after an invalid password", async () => {
   const user = userEvent.setup();

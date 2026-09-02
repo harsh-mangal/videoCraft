@@ -11,6 +11,8 @@ npm --prefix client run dev
 
 The development server opens at http://127.0.0.1:5173. Run npm --prefix server run dev in another terminal for the image API and uploaded media. Root npm start and npm run dev forward to this application.
 
+The production client is hosted at **https://www.videocraftsindia.com/** and always reads its published image map and managed uploads from **https://api.videocraftsindia.com/**, including when the client runs on localhost. To target another API for isolated development, set `VITE_API_ORIGIN` in an ignored local client environment file before starting Vite.
+
 ## Files and commands
 
 - src/ contains pages, components, styles, SEO configuration and tests.
@@ -18,7 +20,7 @@ The development server opens at http://127.0.0.1:5173. Run npm --prefix server r
 - scripts/ contains prerendering, SEO checks and the static preview server.
 - npm --prefix client run build generates client/build/ and the backend renderer in server/site-renderer/. It regenerates the shared image catalog and runs SEO/HTTP checks.
 - npm --prefix client test runs the public website tests.
-- npm --prefix client run preview serves the static snapshot on port 4173. Use the Node server on port 3001 to verify published admin changes.
+- npm --prefix client run preview serves the static snapshot on port 4173. Use the Node server on port 4691 to verify published admin changes.
 - npm --prefix client run lint uses the shared root ESLint tooling; install it with npm ci at the root first.
 
 Keep the repository layout when building: client source uses ../shared/ image defaults, and the backend uses the client's SEO helpers. This folder is a separate application package, not a standalone copy of the whole system.

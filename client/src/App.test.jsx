@@ -6,6 +6,7 @@ import { Link, MemoryRouter, useLocation } from "react-router-dom";
 import { buildWhatsAppUrl, openWhatsApp, WHATSAPP_NUMBER } from "./utils/whatsapp";
 import { normalizePhone, validateEnquiry } from "./utils/enquiry";
 import { getPageMeta, normalizePath, SITE_URL } from "./config/seo";
+import { ADMIN_URL, API_URL, apiUrl } from "./config/urls";
 import { imageUrl, imageSrcSet, resolveImage } from "./utils/images";
 import { MediaProvider } from "./components/MediaProvider";
 import ResponsiveImage from "./components/ResponsiveImage";
@@ -200,6 +201,9 @@ test.each(["/about/", "/About", "/ABOUT///"])("normalizes known route %s", path 
 
 test("uses the owner-confirmed canonical production origin", () => {
   expect(SITE_URL).toBe("https://www.videocraftsindia.com");
+  expect(ADMIN_URL).toBe("https://admin.videocraftsindia.com");
+  expect(API_URL).toBe("https://api.videocraftsindia.com");
+  expect(apiUrl("/api/media")).toBe("https://api.videocraftsindia.com/api/media");
 });
 
 test("preserves legacy URL redirects and handles malformed encodings safely", () => {

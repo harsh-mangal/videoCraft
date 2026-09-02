@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeft, ArrowUpRight, Camera, Check, ChevronRight, Eye, EyeOff, ImagePlus, Images, LoaderCircle, LogOut, LockKeyhole, RefreshCw, RotateCcw, Search, ShieldCheck, Upload, X } from "lucide-react";
 import { request, thumbnail } from "./api";
+import { websiteUrl } from "./config";
 
-const siteUrl = import.meta.env.DEV ? "http://127.0.0.1:3001/" : "/";
+const siteUrl = websiteUrl();
 const Icon = ({ component: Component, ...props }) => <Component size={20} strokeWidth={1.7} aria-hidden="true" focusable="false" {...props} />;
 const Brand = () => <div className="brand"><span className="brand-mark"><Icon component={Camera} size={25} /></span><span>Videocrafts<small>STUDIO ADMIN</small></span></div>;
 

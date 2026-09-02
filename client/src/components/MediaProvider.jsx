@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { apiUrl } from "../config/urls";
 import { resolveImage } from "../utils/images";
 
 const empty = {};
@@ -11,7 +12,7 @@ export function MediaProvider({ initialMedia = empty, children, live = true }) {
     const controller = new AbortController();
     const refresh = async () => {
       try {
-        const response = await fetch("/api/media", { signal: controller.signal });
+        const response = await fetch(apiUrl("/api/media"), { signal: controller.signal });
         if (!response.ok || !response.headers.get("content-type")?.includes("application/json")) return;
         const result = await response.json();
         if (result.images && typeof result.images === "object") setMedia(result.images);

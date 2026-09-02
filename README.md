@@ -4,12 +4,12 @@ Photography website with a **public React client**, **separate React admin app**
 
 | Part | Source | Development URL | Production |
 | --- | --- | --- | --- |
-| Public website | client/ | http://127.0.0.1:5173 | / |
-| React admin | admin/ | http://127.0.0.1:5174/admin/ | /admin/ |
-| Node.js API | server/ | http://127.0.0.1:3001 | /api/ |
-| Uploaded images | Private DATA_DIR/uploads/ | Served by the API | /media/ |
+| Public website | client/ | http://127.0.0.1:5173 | https://www.videocraftsindia.com/ |
+| React admin | admin/ | http://127.0.0.1:5174/admin/ | https://admin.videocraftsindia.com/ |
+| Node.js API | server/ | http://127.0.0.1:4691 | https://api.videocraftsindia.com/api/ |
+| Uploaded images | Private DATA_DIR/uploads/ | Served by the API | https://api.videocraftsindia.com/media/ |
 
-The apps have independent package.json files and lockfiles. In production the Node server serves both built frontends under one HTTPS origin. They run as separate development processes.
+The apps have independent package.json files and lockfiles. Production uses three HTTPS origins: the public client on `www`, the admin client on `admin`, and the Node API plus managed media on `api`. They remain separate development processes with Vite proxies for local use.
 
 ```text
 client/   Public React source, assets, Vite configuration and build scripts
@@ -22,7 +22,7 @@ The root package provides shared ESLint tooling and commands that forward to the
 
 ## Quick start
 
-Use Node.js 24 or newer. From this repository:
+Use Node.js 24 or newer. Start MongoDB on `mongodb://127.0.0.1:27017`, or create `server/.env` with another `MONGODB_URI`. Then, from this repository:
 
 ```sh
 npm ci
@@ -36,7 +36,7 @@ npm --prefix server start
 
 The account command asks for your email and a **14–128 character password** in your terminal. Password input is hidden. No default password, public registration, demo account or frontend secret is enabled.
 
-Open **http://127.0.0.1:3001/admin/** and sign in. The public website is **http://127.0.0.1:3001/**. Do not use the old static preview to check published admin changes.
+Open **http://127.0.0.1:4691/admin/** and sign in. The public website is **http://127.0.0.1:4691/**. Do not use the old static preview to check published admin changes.
 
 ### Development with three separate processes
 
@@ -51,7 +51,7 @@ npm --prefix client run dev
 npm --prefix admin run dev
 ```
 
-Both Vite apps proxy /api and /media to port 3001. Keep the backend running. The admin uses port 5174 and base path /admin/. Its “View website” link opens the built site on port 3001.
+The public Vite app calls `https://api.videocraftsindia.com` directly, even from localhost; `VITE_API_ORIGIN` can override this for isolated development. The admin Vite app keeps its local proxy to port 4691. The admin uses port 5174 and remains available at /admin/ locally; its production build also works at the root of the admin subdomain. Its “View website” link opens the local built site during development and the `www` production site after deployment.
 
 The existing root npm start and npm run dev commands also start the client. See [client/README.md](client/README.md) for client-only commands.
 
@@ -67,19 +67,20 @@ The library covers **122 entries: 121 existing photos/logos/backgrounds plus the
 
 Shared source images update everywhere they appear, including related story cards, navigation/footer logos and social previews. Decorative backgrounds keep empty alt text. Leave the description blank to retain existing page-specific alt text. Interface SVG icons are code components; brand logos/photos and the browser icon are editable images.
 
-Publishing persists changes in SQLite and stores optimized WebP variants on disk. Public HTML is rendered with the current images before JavaScript runs. Existing open pages refresh their image map when the visitor returns focus; a page reload also gets the latest version. No rebuild is required for an image edit.
+Publishing persists accounts, sessions, image metadata, version history and rate limits in MongoDB. Optimized WebP files remain in the private upload directory. Public HTML is rendered with the current images before JavaScript runs. Existing open pages refresh their image map when the visitor returns focus; a page reload also gets the latest version. No rebuild is required for an image edit.
 
 ## Architecture and code flow
 
 ```mermaid
 flowchart LR
-  Admin[Separate React admin] -->|Session + CSRF| API[Node API]
-  API --> DB[(SQLite: users, sessions, edits)]
+  Admin[admin.videocraftsindia.com] -->|Credentialed CORS + CSRF| API[api.videocraftsindia.com]
+  API --> DB[(MongoDB: users, sessions, edits)]
   API --> Files[Private image storage]
-  Browser[Public website] -->|GET page| Render[Node HTML renderer]
+  Browser[www.videocraftsindia.com] -->|GET page| Render[Node HTML renderer]
   Render --> DB
   Render --> HTML[Complete HTML + current image data]
-  Browser -->|Image requests| Files
+  Browser -->|API media map + image requests| API
+  API --> Files
 ```
 
 - **server/scripts/sync-catalog.mjs** discovers referenced images; stable IDs, labels and usage groups are generated in shared/media-catalog.json. It also generates the lightweight shared/media-defaults.json used by the website.
@@ -87,7 +88,7 @@ flowchart LR
 - **ResponsiveImage.jsx** uses the current image URL, dimensions, alt text and responsive variants. Both CSS backgrounds use the same resolver.
 - **client/src/config/seo.js** resolves current social preview and business-logo images. PageMeta updates browser metadata during navigation.
 - **client/src/entry-server.jsx** renders complete React page content. The build writes its self-contained renderer to server/site-renderer/.
-- **server/src/app.mjs** provides auth/image APIs and serves current public HTML, static assets and the independent admin build. SQLite revisions invalidate the HTML cache after edits.
+- **server/src/app.mjs** provides auth/image APIs and serves current public HTML, static assets and the independent admin build. MongoDB image versions invalidate the HTML cache after edits.
 - **server/src/uploads.mjs** validates file signatures and decoded formats, rejects SVG/animated images, applies orientation, strips metadata, and generates bounded responsive sizes.
 
 ## Verify
@@ -106,15 +107,15 @@ Build before running backend tests: those tests verify the real generated public
 
 ## Deployment
 
-**The image admin requires a running Node server and persistent disk. Uploading only client/build/ to static hosting does not enable image administration.** See [server/README.md](server/README.md) for configuration, security, backups and API routes. The root netlify.toml is only for deploying the static snapshot.
+**The image admin requires a running Node server and persistent disk. Uploading only the two frontend builds does not enable image administration.** See [server/README.md](server/README.md) for configuration, security, backups and API routes. The root netlify.toml deploys only the public static snapshot.
 
-Build all apps on the deployment platform, keep the repository layout, set server/.env from its example, and run npm --prefix server start behind an HTTPS reverse proxy. Restart the Node process after code/build deployments; image edits themselves do not need a restart. Do not serve the repository root as a static directory.
+Build all apps on the deployment platform. Publish `client/build/` at `https://www.videocraftsindia.com/`, publish `admin/dist/` at `https://admin.videocraftsindia.com/`, and expose the Node server's `/api/*` and `/media/*` routes at `https://api.videocraftsindia.com/`. For server-rendered current images and dynamic app icons, route the public host to the same Node process as documented in [server/README.md](server/README.md). Restart Node after code/build deployments; image edits themselves do not need a restart. Do not serve the repository root as a static directory.
 
-Generated output, local .env files, the database and uploads are ignored by Git. Keep the root tooling lockfile and all three application lockfiles. Preserve DATA_DIR between deployments and back it up separately. The server is designed for one Node process with local SQLite; use a shared database/object store before running multiple instances.
+Generated output, local .env files and uploads are ignored by Git. Keep the root tooling lockfile and all three application lockfiles. Protect and back up MongoDB separately, preserve DATA_DIR between deployments, and back up uploaded media. MongoDB supports shared application state, but multiple Node instances also require shared media storage and a distributed upload lock before horizontal scaling.
 
 ## SEO and remaining owner checks
 
-The owner-confirmed canonical domain is **https://www.videocraftsindia.com**, configured in client/src/config/seo.js. `PUBLIC_ORIGIN` and `ADMIN_ORIGINS` in the production server environment must use this exact HTTPS origin, including `www`. Redirect any alternate hostname to the canonical hostname at the reverse proxy or hosting layer.
+The production origins are **https://www.videocraftsindia.com**, **https://admin.videocraftsindia.com**, and **https://api.videocraftsindia.com**. They are configured in the two React clients and the server environment example. Keep `PUBLIC_ORIGIN`, `API_ORIGIN`, and `ADMIN_ORIGINS` exact, without paths or trailing slashes. Redirect alternate public hostnames to the canonical `www` hostname.
 
 The sitemap includes only the 11 public routes. Admin pages have noindex metadata/headers and are excluded from robots and sitemap. No fabricated ratings, hours or prices are added to structured data. See [SEO_AUDIT.md](SEO_AUDIT.md) for the original audit and the admin follow-up.
 

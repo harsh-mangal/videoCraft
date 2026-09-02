@@ -1,59 +1,132 @@
-import { DatabaseSync } from "node:sqlite";
-import { mkdirSync } from "node:fs";
-import path from "node:path";
+import { createHash } from "node:crypto";
+import { MongoClient } from "mongodb";
+
+const conflict = () => Object.assign(new Error("This image changed in another session. Refresh and review it before saving again."), { status: 409 });
+const imageRecord = (id, document) => document
+  ? { id, value: document.value ?? null, version: document.version, updated_at: document.updatedAt?.toISOString() || null }
+  : { id, value: null, version: 0, updated_at: null };
 
 export class Store {
-  constructor(dataDir) {
-    mkdirSync(dataDir, { recursive: true, mode: 0o700 });
-    this.db = new DatabaseSync(path.join(dataDir, "videocrafts.sqlite"));
-    this.db.exec(`PRAGMA journal_mode=WAL; PRAGMA foreign_keys=ON; PRAGMA busy_timeout=5000;
-      CREATE TABLE IF NOT EXISTS admins (id INTEGER PRIMARY KEY, email TEXT UNIQUE NOT NULL, password TEXT NOT NULL);
-      CREATE TABLE IF NOT EXISTS sessions (hash TEXT PRIMARY KEY, admin_id INTEGER NOT NULL REFERENCES admins(id), csrf TEXT NOT NULL, expires INTEGER NOT NULL);
-      CREATE TABLE IF NOT EXISTS images (id TEXT PRIMARY KEY, value TEXT, version INTEGER NOT NULL DEFAULT 0, updated_at TEXT);
-      CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY, image_id TEXT NOT NULL, previous TEXT, next TEXT, admin_id INTEGER NOT NULL, created_at TEXT NOT NULL);
-      CREATE TABLE IF NOT EXISTS revision (id INTEGER PRIMARY KEY CHECK(id=1), value INTEGER NOT NULL);
-      INSERT OR IGNORE INTO revision VALUES (1,0);
-      CREATE TABLE IF NOT EXISTS attempts (key TEXT PRIMARY KEY, count INTEGER NOT NULL, until INTEGER NOT NULL);`);
+  static async connect({ mongoUri, mongoDbName }) {
+    const client = new MongoClient(mongoUri, {
+      appName: "videocrafts-server",
+      maxPoolSize: 10,
+      retryWrites: true,
+      serverSelectionTimeoutMS: 5_000,
+    });
+    await client.connect();
+    const store = new Store(client, mongoDbName);
+    try { await store.initialize(); }
+    catch (error) { await client.close(); throw error; }
+    return store;
   }
-  close() { this.db.close(); }
-  user(email) { return this.db.prepare("SELECT * FROM admins WHERE email=?").get(email); }
-  hasAdmin() { return !!this.db.prepare("SELECT id FROM admins LIMIT 1").get(); }
-  createAdmin(email, password, reset = false) {
-    if (this.user(email) && !reset) throw new Error("This admin exists. Use --reset only to replace its password and revoke sessions.");
-    this.db.prepare("INSERT INTO admins(email,password) VALUES(?,?) ON CONFLICT(email) DO UPDATE SET password=excluded.password").run(email, password);
-    this.db.prepare("DELETE FROM sessions WHERE admin_id=?").run(this.user(email).id);
+
+  constructor(client, databaseName) {
+    this.client = client;
+    this.database = client.db(databaseName);
+    this.admins = this.database.collection("admins");
+    this.sessions = this.database.collection("sessions");
+    this.images = this.database.collection("images");
+    this.attempts = this.database.collection("attempts");
   }
-  createSession(hash, userId, csrf, expires) {
-    this.db.prepare("DELETE FROM sessions WHERE expires<?").run(Date.now());
-    this.db.prepare("INSERT INTO sessions VALUES(?,?,?,?)").run(hash, userId, csrf, expires);
+
+  async initialize() {
+    try { await this.database.createCollection("images"); }
+    catch (error) { if (error.codeName !== "NamespaceExists" && error.code !== 48) throw error; }
+    await Promise.all([
+      this.admins.createIndex({ email: 1 }, { unique: true }),
+      this.sessions.createIndex({ expires: 1 }, { expireAfterSeconds: 0 }),
+      this.attempts.createIndex({ until: 1 }, { expireAfterSeconds: 0 }),
+    ]);
   }
-  session(hash) { return this.db.prepare("SELECT sessions.*, admins.email FROM sessions JOIN admins ON admins.id=sessions.admin_id WHERE hash=? AND expires>?").get(hash, Date.now()); }
-  deleteSession(hash) { this.db.prepare("DELETE FROM sessions WHERE hash=?").run(hash); }
-  attempt(key, max = 10) {
-    const now = Date.now();
-    this.db.prepare("DELETE FROM attempts WHERE until<?").run(now);
-    this.db.prepare("INSERT INTO attempts VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET count=count+1").run(key, now + 15 * 60 * 1000);
-    return this.db.prepare("SELECT count FROM attempts WHERE key=?").get(key).count <= max;
+
+  async close() { await this.client.close(); }
+
+  async user(email) {
+    const document = await this.admins.findOne({ email });
+    return document ? { ...document, id: document._id } : null;
   }
-  revision() { return this.db.prepare("SELECT value FROM revision WHERE id=1").get().value; }
-  image(id) {
-    const row = this.db.prepare("SELECT * FROM images WHERE id=?").get(id);
-    return row ? { ...row, value: row.value ? JSON.parse(row.value) : null } : { id, value: null, version: 0, updated_at: null };
+
+  async hasAdmin() { return await this.admins.countDocuments({}, { limit: 1 }) > 0; }
+
+  async createAdmin(email, password, reset = false) {
+    const existing = await this.admins.findOne({ email });
+    if (existing && !reset) throw new Error("This admin exists. Use --reset only to replace its password and revoke sessions.");
+    const now = new Date();
+    const admin = await this.admins.findOneAndUpdate(
+      { email },
+      { $set: { password, updatedAt: now }, $setOnInsert: { createdAt: now } },
+      { upsert: true, returnDocument: "after" },
+    );
+    await this.sessions.deleteMany({ adminId: admin._id });
+    return { ...admin, id: admin._id };
   }
-  manifest() {
-    return Object.fromEntries(this.db.prepare("SELECT id,value FROM images WHERE value IS NOT NULL").all().map(row => [row.id, JSON.parse(row.value)]));
+
+  async createSession(hash, adminId, csrf, expires) {
+    await this.sessions.deleteMany({ expires: { $lte: new Date() } });
+    await this.sessions.insertOne({ _id: hash, adminId, csrf, expires: new Date(expires) });
   }
-  saveImage(id, value, expectedVersion, adminId) {
-    this.db.exec("BEGIN IMMEDIATE");
-    try {
-      const previous = this.image(id);
-      if (previous.version !== expectedVersion) throw Object.assign(new Error("This image changed in another session. Refresh and review it before saving again."), { status: 409 });
-      const updatedAt = new Date().toISOString();
-      const json = value === null ? null : JSON.stringify(value);
-      this.db.prepare("INSERT INTO images VALUES(?,?,?,?) ON CONFLICT(id) DO UPDATE SET value=excluded.value, version=excluded.version, updated_at=excluded.updated_at").run(id, json, expectedVersion + 1, updatedAt);
-      this.db.prepare("INSERT INTO history(image_id,previous,next,admin_id,created_at) VALUES(?,?,?,?,?)").run(id, previous.value ? JSON.stringify(previous.value) : null, json, adminId, updatedAt);
-      this.db.exec("UPDATE revision SET value=value+1 WHERE id=1; COMMIT");
-      return this.image(id);
-    } catch (error) { this.db.exec("ROLLBACK"); throw error; }
+
+  async session(hash) {
+    const session = await this.sessions.findOne({ _id: hash, expires: { $gt: new Date() } });
+    if (!session) return null;
+    const admin = await this.admins.findOne({ _id: session.adminId }, { projection: { email: 1 } });
+    return admin ? { hash: session._id, admin_id: session.adminId, csrf: session.csrf, expires: session.expires, email: admin.email } : null;
+  }
+
+  async deleteSession(hash) { await this.sessions.deleteOne({ _id: hash }); }
+
+  async attempt(key, max = 10) {
+    const now = new Date();
+    const until = new Date(now.getTime() + 15 * 60 * 1000);
+    await this.attempts.deleteOne({ _id: key, until: { $lte: now } });
+    for (let retry = 0; retry < 2; retry++) {
+      try {
+        const result = await this.attempts.findOneAndUpdate(
+          { _id: key },
+          { $inc: { count: 1 }, $setOnInsert: { until } },
+          { upsert: true, returnDocument: "after" },
+        );
+        return result.count <= max;
+      } catch (error) {
+        if (error.code !== 11000 || retry) throw error;
+      }
+    }
+    return false;
+  }
+
+  async revision() {
+    const documents = await this.images.find({}, { projection: { version: 1 } }).sort({ _id: 1 }).toArray();
+    if (!documents.length) return "0";
+    return createHash("sha256").update(JSON.stringify(documents.map(document => [document._id, document.version]))).digest("base64url").slice(0, 22);
+  }
+
+  async image(id) { return imageRecord(id, await this.images.findOne({ _id: id })); }
+
+  async manifest() {
+    const documents = await this.images.find({ value: { $ne: null } }, { projection: { value: 1 } }).toArray();
+    return Object.fromEntries(documents.map(document => [document._id, document.value]));
+  }
+
+  async saveImage(id, value, expectedVersion, adminId) {
+    await this.images.updateOne(
+      { _id: id },
+      { $setOnInsert: { value: null, version: 0, updatedAt: null, history: [] } },
+      { upsert: true },
+    );
+    const previous = await this.images.findOne({ _id: id, version: expectedVersion });
+    if (!previous) throw conflict();
+    const updatedAt = new Date();
+    const updated = await this.images.findOneAndUpdate(
+      { _id: id, version: expectedVersion },
+      {
+        $set: { value, updatedAt },
+        $inc: { version: 1 },
+        $push: { history: { $each: [{ previous: previous.value ?? null, next: value, adminId, createdAt: updatedAt }], $slice: -200 } },
+      },
+      { returnDocument: "after" },
+    );
+    if (!updated) throw conflict();
+    return imageRecord(id, updated);
   }
 }
