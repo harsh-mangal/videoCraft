@@ -33,6 +33,8 @@ export function loadConfig(env = process.env) {
   if (!Number.isInteger(proxy) || proxy < 0 || proxy > 2) throw new Error("TRUST_PROXY_HOPS must be 0, 1 or 2.");
   const maxStorageBytes = Number(env.MAX_STORAGE_MB || 1024) * 1024 * 1024;
   if (!Number.isFinite(maxStorageBytes) || maxStorageBytes < 1024 * 1024) throw new Error("MAX_STORAGE_MB must be a positive number of at least 1.");
+  const adminSetupToken = env.ADMIN_SETUP_TOKEN || "";
+  if (adminSetupToken && (adminSetupToken.length < 32 || adminSetupToken.length > 256)) throw new Error("ADMIN_SETUP_TOKEN must contain between 32 and 256 characters.");
   const dataDir = path.resolve(env.DATA_DIR || path.join(serverRoot, "data"));
   for (const publicDir of [path.join(root, "client/build"), path.join(root, "admin/dist"), path.join(root, "client/public")]) {
     if (dataDir === publicDir || dataDir.startsWith(publicDir + path.sep)) throw new Error("DATA_DIR must not be inside a public build or asset directory.");
@@ -42,5 +44,5 @@ export function loadConfig(env = process.env) {
     adminDir: path.resolve(env.ADMIN_DIR || path.join(root, "admin/dist")), rendererDir: path.resolve(env.RENDERER_DIR || path.join(serverRoot, "site-renderer")),
     clientSeoFile: path.resolve(env.CLIENT_SEO_FILE || path.join(root, "client/src/config/seo.js")),
     seoRendererFile: path.resolve(env.SEO_RENDERER_FILE || path.join(root, "client/scripts/seo.mjs")),
-    maxStorageBytes };
+    adminSetupToken, maxStorageBytes };
 }

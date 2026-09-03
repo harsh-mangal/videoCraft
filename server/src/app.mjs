@@ -61,7 +61,7 @@ export async function createApp(config) {
       return next();
     }
     if (origin && config.origins.includes(origin)) {
-      res.set({ "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token, If-Match", "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, OPTIONS" });
+      res.set({ "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token, X-Admin-Setup-Token, If-Match", "Access-Control-Allow-Methods": "GET, POST, PUT, PATCH, OPTIONS" });
       res.vary("Origin");
     }
     if (req.method === "OPTIONS") return config.origins.includes(origin) ? res.sendStatus(204) : res.sendStatus(403);
@@ -72,6 +72,18 @@ export async function createApp(config) {
   const cookieOptions = { httpOnly: true, secure: config.production, sameSite: "strict", path: "/api", maxAge: 8 * 60 * 60 * 1000 };
   app.get("/api/health", (_req, res) => res.json({ ok: true }));
   app.get("/api/media", async (_req, res) => res.set("Cache-Control", "no-cache").json({ revision: await store.revision(), images: await publicManifest() }));
+  app.post("/api/admin/setup", async (req, res) => {
+    if (!config.adminSetupToken) throw error(404, "Admin setup is not enabled.");
+    if (!req.is("application/json")) throw error(415, "Send a JSON setup request.");
+    if (!await store.attempt("setup:" + req.ip, 5)) throw error(429, "Too many setup attempts. Try again in 15 minutes.");
+    if (!constantEqual(tokenHash(req.get("x-admin-setup-token") || ""), tokenHash(config.adminSetupToken))) throw error(401, "The admin setup token is invalid.");
+    const email = typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : "";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) throw error(422, "Enter a valid email address.");
+    if (typeof req.body?.password !== "string" || req.body.password.length < 14 || req.body.password.length > 128) throw error(422, "Use a password or passphrase between 14 and 128 characters.");
+    const admin = await store.createInitialAdmin(email, await hashPassword(req.body.password));
+    if (!admin) throw error(409, "An admin account already exists. Use the server reset command to change its password.");
+    res.status(201).json({ email: admin.email });
+  });
   app.post("/api/admin/login", async (req, res) => {
     if (!req.is("application/json")) throw error(415, "Send a JSON login request.");
     if (!await store.attempt("login:" + req.ip, 10)) throw error(429, "Too many sign-in attempts. Try again in 15 minutes.");

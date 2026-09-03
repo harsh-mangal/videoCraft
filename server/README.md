@@ -11,7 +11,7 @@ npm --prefix server run admin:create
 npm --prefix server start
 ```
 
-The account command runs interactively with hidden password input. There is no public sign-up endpoint or default account. To reset an existing account's password and revoke its sessions:
+The account command runs interactively with hidden password input. There is no public sign-up or default account. A separately enabled, one-time setup endpoint is documented below for Postman. To reset an existing account's password and revoke its sessions:
 
 ```sh
 npm --prefix server run admin:create -- --reset
@@ -53,6 +53,32 @@ With no frontend build paths configured, `/api/*` and `/media/*` remain availabl
 
 If the same Node process must also serve the public or admin build, deploy those assets and set `SITE_DIR`, `ADMIN_DIR`, `RENDERER_DIR`, `CLIENT_SEO_FILE` and `SEO_RENDERER_FILE` to their absolute locations. All five website-rendering files must be available before public server-side rendering is enabled.
 
+### Create the first admin with Postman
+
+Generate a one-time secret on the API server:
+
+```sh
+openssl rand -hex 32
+```
+
+Add it to `.env` as `ADMIN_SETUP_TOKEN`, restart Node, and send this request from Postman:
+
+```http
+POST https://api.videocraftsindia.com/api/admin/setup
+Origin: https://admin.videocraftsindia.com
+Content-Type: application/json
+X-Admin-Setup-Token: paste-the-one-time-secret-here
+```
+
+```json
+{
+  "email": "your-admin@example.com",
+  "password": "a-private-password-of-at-least-14-characters"
+}
+```
+
+A successful request returns `201 Created`. The endpoint creates only the first admin and returns `409 Conflict` after an account exists. Remove `ADMIN_SETUP_TOKEN` from `.env` and restart Node immediately after successful setup. Password resets remain restricted to `npm run admin:create -- --reset` on the server.
+
 Keep the three web origins synchronized with `client/src/config/urls.js` and `admin/src/config.js`, then rebuild after a domain change. Every origin must omit paths and trailing slashes. The code uses these production origins by default when `NODE_ENV=production`; explicit values are recommended so deployment configuration remains visible.
 
 - Terminate TLS at a trusted reverse proxy. Route `api.videocraftsindia.com/api/*` and `api.videocraftsindia.com/media/*` to the loopback Node port. Route the `www` host to Node as well when current image replacements must be present in initial HTML and social metadata. Publish `admin/dist/` at the root of `admin.videocraftsindia.com`. Set the proxy's upload body limit to at least 13 MB; the API enforces a 12 MB file limit.
@@ -85,6 +111,7 @@ Old uploaded variants are retained so existing cached pages continue to load. Th
 | --- | --- | --- |
 | GET | /api/health | Basic liveness response |
 | GET | /api/media | Public image overrides and revision (no user data) |
+| POST | /api/admin/setup | One-time initial admin creation when explicitly enabled |
 | POST | /api/admin/login | JSON email/password; sets session cookie |
 | GET | /api/admin/session | Current admin email and CSRF token |
 | POST | /api/admin/logout | Revoke current session |
@@ -93,7 +120,7 @@ Old uploaded variants are retained so existing cached pages continue to load. Th
 | PATCH | /api/admin/images/:id | JSON alt text update |
 | POST | /api/admin/images/:id/restore | Restore original image and default alt |
 
-All mutations require an exact allowed Origin. Except login, they also require an authenticated cookie and X-CSRF-Token. Image mutations require a quoted version header, e.g. If-Match: "2". Conflicts return 409 instead of overwriting newer changes. Unknown image IDs cannot be created by the client.
+All mutations require an exact allowed Origin. The one-time setup route requires `X-Admin-Setup-Token`; other routes except login require an authenticated cookie and X-CSRF-Token. Image mutations require a quoted version header, e.g. If-Match: "2". Conflicts return 409 instead of overwriting newer changes. Unknown image IDs cannot be created by the client.
 
 Uploads accept one still JPEG/PNG/WebP, up to 12 MB and 40 megapixels. Signatures and decoded types are validated, EXIF orientation is applied, metadata is stripped, and images are resized within 2400 × 2400 with smaller variants. Arbitrary external URLs are not fetched, and SVG/executable files are not accepted.
 

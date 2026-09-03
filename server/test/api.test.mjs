@@ -74,6 +74,8 @@ after(async () => {
 
 test("project paths and MongoDB indexes keep runtime data private and expiring", async () => {
   const defaults = loadConfig({});
+  assert.equal(defaults.adminSetupToken, "");
+  assert.throws(() => loadConfig({ ADMIN_SETUP_TOKEN: "too-short" }), /between 32 and 256/);
   assert.equal(defaults.siteDir, path.join(root, "client/build"));
   assert.equal(defaults.adminDir, path.join(root, "admin/dist"));
   assert.equal(defaults.rendererDir, path.join(root, "server/site-renderer"));
@@ -83,6 +85,7 @@ test("project paths and MongoDB indexes keep runtime data private and expiring",
   assert.equal(production.apiOrigin, productionUrls.api);
   assert.deepEqual(production.origins, [productionUrls.public, productionUrls.api, productionUrls.admin]);
   assert((await store.admins.indexes()).some(index => index.key.email === 1 && index.unique));
+  assert((await store.admins.indexes()).some(index => index.key.bootstrapSlot === 1 && index.unique));
   assert((await store.sessions.indexes()).some(index => index.key.expires === 1 && index.expireAfterSeconds === 0));
   assert((await store.attempts.indexes()).some(index => index.key.until === 1 && index.expireAfterSeconds === 0));
   for (const directory of ["client/build", "client/public", "admin/dist"]) {
@@ -103,6 +106,7 @@ test("standalone API starts without client, admin or renderer files", async () =
     rendererDir: missing("site-renderer"),
     clientSeoFile: missing("seo.js"),
     seoRendererFile: missing("seo.mjs"),
+    adminSetupToken: "standalone-test-setup-token-1234567890",
   };
   const standalone = await createApp(standaloneConfig);
   const standaloneServer = standalone.app.listen(0, "127.0.0.1");
@@ -119,6 +123,22 @@ test("standalone API starts without client, admin or renderer files", async () =
     assert.equal(rootResponse.status, 200);
     assert.deepEqual(await rootResponse.json(), { ok: true, service: "Videocrafts API" });
     assert.equal((await fetch(standaloneOrigin + "/admin/")).status, 404);
+    const setup = (token, email = "first-admin@example.test") => fetch(standaloneOrigin + "/api/admin/setup", {
+      method: "POST",
+      headers: { Origin: adminOrigin, "Content-Type": "application/json", "X-Admin-Setup-Token": token },
+      body: JSON.stringify({ email, password }),
+    });
+    assert.equal((await setup("incorrect-setup-token-value-1234567890")).status, 401);
+    const createdAdmin = await setup(standaloneConfig.adminSetupToken);
+    assert.equal(createdAdmin.status, 201);
+    assert.deepEqual(await createdAdmin.json(), { email: "first-admin@example.test" });
+    assert.equal((await setup(standaloneConfig.adminSetupToken, "second-admin@example.test")).status, 409);
+    const signedIn = await fetch(standaloneOrigin + "/api/admin/login", {
+      method: "POST",
+      headers: { Origin: adminOrigin, "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "first-admin@example.test", password }),
+    });
+    assert.equal(signedIn.status, 200);
   } finally {
     await new Promise(resolve => standaloneServer.close(resolve));
     await standalone.store.database.dropDatabase();
@@ -127,6 +147,7 @@ test("standalone API starts without client, admin or renderer files", async () =
 });
 
 test("private APIs require authentication and login rejects a foreign origin", async () => {
+  assert.equal((await api("/api/admin/setup", { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })).status, 404);
   assert.equal((await api("/api/admin/images")).status, 401);
   assert.equal((await api("/api/admin/images/" + catalog[0].id, { method: "PUT" })).status, 401);
   assert.equal((await api("/api/admin/login", { method: "POST", headers: { Origin: "https://attacker.example", "Content-Type": "application/json" }, body: "{}" })).status, 403);

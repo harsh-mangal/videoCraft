@@ -35,6 +35,7 @@ export class Store {
     catch (error) { if (error.codeName !== "NamespaceExists" && error.code !== 48) throw error; }
     await Promise.all([
       this.admins.createIndex({ email: 1 }, { unique: true }),
+      this.admins.createIndex({ bootstrapSlot: 1 }, { unique: true, partialFilterExpression: { bootstrapSlot: { $type: "string" } } }),
       this.sessions.createIndex({ expires: 1 }, { expireAfterSeconds: 0 }),
       this.attempts.createIndex({ until: 1 }, { expireAfterSeconds: 0 }),
     ]);
@@ -48,6 +49,18 @@ export class Store {
   }
 
   async hasAdmin() { return await this.admins.countDocuments({}, { limit: 1 }) > 0; }
+
+  async createInitialAdmin(email, password) {
+    if (await this.hasAdmin()) return null;
+    const now = new Date();
+    try {
+      const result = await this.admins.insertOne({ email, password, bootstrapSlot: "initial", createdAt: now, updatedAt: now });
+      return { id: result.insertedId, email };
+    } catch (error) {
+      if (error.code === 11000) return null;
+      throw error;
+    }
+  }
 
   async createAdmin(email, password, reset = false) {
     const existing = await this.admins.findOne({ email });

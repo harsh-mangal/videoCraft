@@ -36,6 +36,8 @@ npm --prefix server start
 
 The account command asks for your email and a **14–128 character password** in your terminal. Password input is hidden. No default password, public registration, demo account or frontend secret is enabled.
 
+For initial production setup through Postman, the backend also has an explicitly enabled, one-time `POST /api/admin/setup` route protected by `ADMIN_SETUP_TOKEN`. See [server/README.md](server/README.md#create-the-first-admin-with-postman); remove the token and restart the backend immediately after creating the first account.
+
 Open **http://127.0.0.1:4691/admin/** and sign in. The public website is **http://127.0.0.1:4691/**. Do not use the old static preview to check published admin changes.
 
 ### Development with three separate processes
