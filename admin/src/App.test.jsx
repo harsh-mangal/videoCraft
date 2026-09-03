@@ -5,11 +5,20 @@ import userEvent from "@testing-library/user-event";
 import App from "./App";
 import { request, ApiError } from "./api";
 import { ADMIN_URL, API_URL, PUBLIC_SITE_URL, apiUrl, mediaUrl, websiteUrl } from "./config";
+import { compressImage } from "./imageCompression";
 
 vi.mock("./api", async original => ({ ...await original(), request: vi.fn() }));
+vi.mock("./imageCompression", async original => ({ ...await original(), compressImage: vi.fn() }));
 const session = { email: "admin@example.test", csrf: "test-token" };
 const photo = { id: "hero", label: "Home hero", src: "/original.png", width: 1000, height: 700, groups: ["Home"], usedIn: ["Banner"], version: 0, value: null };
-beforeEach(() => { vi.mocked(request).mockReset(); URL.createObjectURL = vi.fn(() => "blob:preview"); URL.revokeObjectURL = vi.fn(); });
+beforeEach(() => {
+  vi.mocked(request).mockReset();
+  vi.mocked(compressImage).mockReset().mockImplementation(async source => {
+    const file = new File(["webp"], source.name.replace(/\.[^.]+$/, "") + ".webp", { type: "image/webp" });
+    return { file, originalBytes: source.size, compressedBytes: file.size, width: 1000, height: 700 };
+  });
+  URL.createObjectURL = vi.fn(() => "blob:preview"); URL.revokeObjectURL = vi.fn();
+});
 afterEach(cleanup);
 function signedIn(items = [photo]) { vi.mocked(request).mockImplementation(async path => path === "/session" ? session : { images: items }); }
 
@@ -49,13 +58,22 @@ test("publishing sends the uploaded file, alt text, CSRF token and original vers
   const user = userEvent.setup(); signedIn(); render(<App />);
   await user.click(await screen.findByRole("button", { name: "Edit Home hero" }));
   await user.upload(screen.getByLabelText("Replacement image"), new File(["image"], "portrait.png", { type: "image/png" }));
+  expect(await screen.findByText("WebP ready to upload")).toBeInTheDocument();
   await user.type(screen.getByLabelText(/Image description/), "A wedding portrait");
   vi.mocked(request).mockResolvedValueOnce({ image: { ...photo, version: 1, value: { src: "/media/new.webp", alt: "A wedding portrait" } } });
   await user.click(screen.getByRole("button", { name: "Publish changes" }));
   expect(await screen.findByRole("status")).toHaveTextContent("Image changes published.");
   const [path, options] = vi.mocked(request).mock.calls.at(-1);
   expect(path).toBe("/images/hero"); expect(options.method).toBe("PUT"); expect(options.csrf).toBe("test-token"); expect(options.version).toBe(0);
-  expect(options.body.get("image").name).toBe("portrait.png"); expect(options.body.get("alt")).toBe("A wedding portrait");
+  expect(options.body.get("image").name).toBe("portrait.webp"); expect(options.body.get("image").type).toBe("image/webp"); expect(options.body.get("alt")).toBe("A wedding portrait");
+});
+test("a compression failure is shown and cannot be published", async () => {
+  const user = userEvent.setup(); signedIn(); render(<App />);
+  await user.click(await screen.findByRole("button", { name: "Edit Home hero" }));
+  vi.mocked(compressImage).mockRejectedValueOnce(new Error("This browser cannot create WebP images."));
+  await user.upload(screen.getByLabelText("Replacement image"), new File(["image"], "portrait.png", { type: "image/png" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("cannot create WebP");
+  expect(screen.getByRole("button", { name: "Publish changes" })).toBeDisabled();
 });
 test("conflicting edits stay open with an error instead of displaying success", async () => {
   const user = userEvent.setup(); signedIn(); render(<App />);

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, ArrowUpRight, Camera, Check, ChevronRight, Eye, EyeOff, ImagePlus, Images, LoaderCircle, LogOut, LockKeyhole, RefreshCw, RotateCcw, Search, ShieldCheck, Upload, X } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Camera, Check, CheckCircle2, ChevronRight, Eye, EyeOff, ImagePlus, Images, LoaderCircle, LogOut, LockKeyhole, RefreshCw, RotateCcw, Search, ShieldCheck, Upload, X } from "lucide-react";
 import { request, thumbnail } from "./api";
 import { websiteUrl } from "./config";
+import { compressImage, formatBytes } from "./imageCompression";
 
 const siteUrl = websiteUrl();
 const Icon = ({ component: Component, ...props }) => <Component size={20} strokeWidth={1.7} aria-hidden="true" focusable="false" {...props} />;
@@ -35,18 +36,23 @@ function Login({ onLogin, message }) {
 function Editor({ item, session, onClose, onSaved, onExpired }) {
   const dialog = useRef(null), input = useRef(null);
   const [file, setFile] = useState(null), [preview, setPreview] = useState("");
+  const [compression, setCompression] = useState(null), [compressing, setCompressing] = useState(false);
   const [alt, setAlt] = useState(item.value?.alt || "");
   const [busy, setBusy] = useState(false), [error, setError] = useState("");
   const [restore, setRestore] = useState(false);
   useEffect(() => { const node = dialog.current; node.showModal(); return () => node.close(); }, []);
   useEffect(() => { if (!file) { setPreview(""); return; } const url = URL.createObjectURL(file); setPreview(url); return () => URL.revokeObjectURL(url); }, [file]);
   const dirty = file || alt !== (item.value?.alt || "");
-  function close() { if (!busy && (!dirty || window.confirm("Discard your unpublished changes?"))) onClose(); }
-  function choose(next) {
+  function close() { if (!busy && !compressing && (!dirty || window.confirm("Discard your unpublished changes?"))) onClose(); }
+  async function choose(next) {
     setRestore(false); setError("");
     if (!next) return;
-    if (!["image/jpeg", "image/png", "image/webp"].includes(next.type) || next.size > 12 * 1024 * 1024) { setError("Choose one JPEG, PNG or WebP image, up to 12 MB."); return; }
-    setFile(next);
+    setFile(null); setCompression(null); setCompressing(true);
+    try {
+      const result = await compressImage(next);
+      setFile(result.file); setCompression(result);
+    } catch (err) { setError(err.message); input.current.value = ""; }
+    finally { setCompressing(false); }
   }
   async function save(event) {
     event.preventDefault(); setBusy(true); setError("");
@@ -65,14 +71,15 @@ function Editor({ item, session, onClose, onSaved, onExpired }) {
       <header className="editor-header"><div><span className="eyebrow">EDIT IMAGE</span><h2 id="editor-title">{item.label}</h2></div><button type="button" className="icon-button" onClick={close} disabled={busy} aria-label="Close image editor"><Icon component={X} /></button></header>
       <div className="editor-body"><div className="editor-preview"><img src={restore ? thumbnail(item.src, 960) : preview || thumbnail(current, 960)} alt={restore ? "Original image preview" : preview ? "Selected replacement preview" : "Current image preview"} /><span className="preview-tag">{restore ? "Original" : file ? "Unpublished preview" : "On your website"}</span></div>
         <div className="editor-settings"><span className="eyebrow">APPEARS IN</span><div className="tags">{item.groups.map(group => <span key={group}>{group}</span>)}</div><p className="muted small">{item.usedIn.join(" · ")}. A shared image changes everywhere it appears.</p>
-          <button type="button" className="upload-zone" onClick={() => input.current.click()} disabled={busy}><Icon component={Upload} size={26} /><strong>{file ? file.name : "Choose a replacement"}</strong><span>JPEG, PNG or WebP · up to 12 MB</span></button><input ref={input} className="sr-only" tabIndex={-1} type="file" accept="image/jpeg,image/png,image/webp" aria-label="Replacement image" disabled={busy} onChange={event => choose(event.target.files?.[0])} />
-          {file && <button type="button" className="text-link" onClick={() => { setFile(null); input.current.value = ""; }} disabled={busy}>Remove selection</button>}
+          <button type="button" className="upload-zone" onClick={() => input.current.click()} disabled={busy || compressing}>{compressing ? <Icon component={LoaderCircle} className="spin" size={26} /> : <Icon component={Upload} size={26} />}<strong>{compressing ? "Compressing image…" : file ? file.name : "Choose a replacement"}</strong><span>JPEG, PNG or WebP · automatically converted and compressed</span></button><input ref={input} className="sr-only" tabIndex={-1} type="file" accept="image/jpeg,image/png,image/webp" aria-label="Replacement image" disabled={busy || compressing} onChange={event => choose(event.target.files?.[0])} />
+          {compression && <div className="compression-summary" role="status"><Icon component={CheckCircle2} size={18} /><p><strong>WebP ready to upload</strong><span>{formatBytes(compression.originalBytes)} → {formatBytes(compression.compressedBytes)} · {compression.width} × {compression.height}</span></p></div>}
+          {file && <button type="button" className="text-link" onClick={() => { setFile(null); setCompression(null); input.current.value = ""; }} disabled={busy || compressing}>Remove selection</button>}
           <label htmlFor="image-alt">Image description <span className="muted">(alt text)</span></label><textarea id="image-alt" rows={3} maxLength={300} value={alt} onChange={event => setAlt(event.target.value)} disabled={busy || restore} placeholder="Describe what the photograph shows" /><p className="muted small">Leave blank to keep the website’s existing description. Decorative backgrounds stay hidden from screen readers.</p>
           <div className="image-specs"><span>Current dimensions</span><strong>{item.value?.width || item.width} × {item.value?.height || item.height}</strong></div>
           {item.value && <button type="button" className="text-link restore-link" disabled={busy} onClick={() => { setRestore(value => !value); setError(""); }}><Icon component={RotateCcw} size={16} />{restore ? "Cancel restore" : "Restore original image"}</button>}
           {restore && <p className="notice">Publishing will restore the original image and its default description.</p>}
         </div></div>
-      <footer className="editor-footer">{error && <p className="error" role="alert">{error}</p>}<span className="muted small">Updates are saved on your server.</span><div><button type="button" className="button" disabled={busy} onClick={close}>Cancel</button><button className="button primary" disabled={busy || (!dirty && !restore)}>{busy ? <Icon component={LoaderCircle} className="spin" /> : <Icon component={Check} />}{busy ? "Publishing…" : restore ? "Publish original" : "Publish changes"}</button></div></footer>
+      <footer className="editor-footer">{error && <p className="error" role="alert">{error}</p>}<span className="muted small">{compressing ? "Preparing your image…" : "Updates are saved on your server."}</span><div><button type="button" className="button" disabled={busy || compressing} onClick={close}>Cancel</button><button className="button primary" disabled={busy || compressing || (!dirty && !restore)}>{busy ? <Icon component={LoaderCircle} className="spin" /> : <Icon component={Check} />}{busy ? "Publishing…" : compressing ? "Compressing…" : restore ? "Publish original" : "Publish changes"}</button></div></footer>
     </form>
   </dialog>;
 }
