@@ -49,6 +49,9 @@ for (const file of files.sort()) {
 }
 catalog.set("/brand-icon.png", { id: "site-icon", key: "/brand-icon.png", src: "/brand-icon.png", width: 192, height: 192, label: "Browser icon / app icon", groups: ["Shared", "Branding"], usedIn: ["Browser tab", "App manifest"] });
 await mkdir(path.join(root, "shared"), { recursive: true });
-await writeFile(path.join(root, "shared/media-catalog.json"), JSON.stringify([...catalog.values()], null, 2) + "\n");
+await mkdir(path.join(root, "server/shared"), { recursive: true });
+const catalogJson = JSON.stringify([...catalog.values()], null, 2) + "\n";
+await writeFile(path.join(root, "shared/media-catalog.json"), catalogJson);
+await writeFile(path.join(root, "server/shared/media-catalog.json"), catalogJson);
 await writeFile(path.join(root, "shared/media-defaults.json"), JSON.stringify(Object.fromEntries([...catalog.values()].map(({ key, id, width, height }) => [key, { id, width, height }])), null, 2) + "\n");
 console.log("Registered " + catalog.size + " editable images, including the browser icon.");

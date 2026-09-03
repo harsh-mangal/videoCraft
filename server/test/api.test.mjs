@@ -8,7 +8,7 @@ import { createServer } from "node:net";
 import { MongoClient } from "mongodb";
 import sharp from "sharp";
 import { createApp } from "../src/app.mjs";
-import { loadConfig, productionUrls, root } from "../src/config.mjs";
+import { loadConfig, productionUrls, root, serverRoot } from "../src/config.mjs";
 import { hashPassword, tokenHash } from "../src/auth.mjs";
 import { routeMeta } from "../../client/src/config/seo.js";
 
@@ -62,7 +62,7 @@ before(async () => {
   server = created.app.listen(0, "127.0.0.1");
   await new Promise(resolve => server.once("listening", resolve));
   origin = "http://127.0.0.1:" + server.address().port;
-  catalog = JSON.parse(await readFile(path.join(root, "shared/media-catalog.json"), "utf8"));
+  catalog = JSON.parse(await readFile(path.join(serverRoot, "shared/media-catalog.json"), "utf8"));
 });
 after(async () => {
   await new Promise(resolve => server.close(resolve));
@@ -89,6 +89,40 @@ test("project paths and MongoDB indexes keep runtime data private and expiring",
     for (const suffix of ["", "/uploads"]) {
       assert.throws(() => loadConfig({ DATA_DIR: path.join(root, directory + suffix) }), /must not be inside a public/);
     }
+  }
+});
+
+test("standalone API starts without client, admin or renderer files", async () => {
+  const missing = name => path.join(directory, "not-deployed", name);
+  const standaloneConfig = {
+    ...config,
+    mongoDbName: config.mongoDbName + "_standalone",
+    dataDir: path.join(directory, "standalone-data"),
+    siteDir: missing("client-build"),
+    adminDir: missing("admin-build"),
+    rendererDir: missing("site-renderer"),
+    clientSeoFile: missing("seo.js"),
+    seoRendererFile: missing("seo.mjs"),
+  };
+  const standalone = await createApp(standaloneConfig);
+  const standaloneServer = standalone.app.listen(0, "127.0.0.1");
+  await new Promise(resolve => standaloneServer.once("listening", resolve));
+  const standaloneOrigin = "http://127.0.0.1:" + standaloneServer.address().port;
+  try {
+    const health = await fetch(standaloneOrigin + "/api/health");
+    assert.equal(health.status, 200);
+    assert.deepEqual(await health.json(), { ok: true });
+    const media = await fetch(standaloneOrigin + "/api/media");
+    assert.equal(media.status, 200);
+    assert.deepEqual((await media.json()).images, {});
+    const rootResponse = await fetch(standaloneOrigin + "/");
+    assert.equal(rootResponse.status, 200);
+    assert.deepEqual(await rootResponse.json(), { ok: true, service: "Videocrafts API" });
+    assert.equal((await fetch(standaloneOrigin + "/admin/")).status, 404);
+  } finally {
+    await new Promise(resolve => standaloneServer.close(resolve));
+    await standalone.store.database.dropDatabase();
+    await standalone.store.close();
   }
 });
 

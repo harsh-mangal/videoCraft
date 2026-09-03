@@ -22,7 +22,7 @@ The root package provides shared ESLint tooling and commands that forward to the
 
 ## Quick start
 
-Use Node.js 24 or newer. Start MongoDB on `mongodb://127.0.0.1:27017`, or create `server/.env` with another `MONGODB_URI`. Then, from this repository:
+Use Node.js 24 or newer for the full repository build. The standalone API also supports Node.js 22.19 or newer. Start MongoDB on `mongodb://127.0.0.1:27017`, or create `server/.env` with another `MONGODB_URI`. Then, from this repository:
 
 ```sh
 npm ci
@@ -110,6 +110,8 @@ Build before running backend tests: those tests verify the real generated public
 **The image admin requires a running Node server and persistent disk. Uploading only the two frontend builds does not enable image administration.** See [server/README.md](server/README.md) for configuration, security, backups and API routes. The root netlify.toml deploys only the public static snapshot.
 
 Build all apps on the deployment platform. Publish `client/build/` at `https://www.videocraftsindia.com/`, publish `admin/dist/` at `https://admin.videocraftsindia.com/`, and expose the Node server's `/api/*` and `/media/*` routes at `https://api.videocraftsindia.com/`. For server-rendered current images and dynamic app icons, route the public host to the same Node process as documented in [server/README.md](server/README.md). Restart Node after code/build deployments; image edits themselves do not need a restart. Do not serve the repository root as a static directory.
+
+The API host may contain only the complete `server/` directory. Its packaged `server/shared/media-catalog.json` replaces the old runtime dependency on `../client` and `../shared`; the client and admin builds are optional there. See the standalone deployment commands in [server/README.md](server/README.md).
 
 Generated output, local .env files and uploads are ignored by Git. Keep the root tooling lockfile and all three application lockfiles. Protect and back up MongoDB separately, preserve DATA_DIR between deployments, and back up uploaded media. MongoDB supports shared application state, but multiple Node instances also require shared media storage and a distributed upload lock before horizontal scaling.
 

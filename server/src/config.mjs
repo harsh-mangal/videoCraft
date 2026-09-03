@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+export const serverRoot = fileURLToPath(new URL("../", import.meta.url));
 export const root = fileURLToPath(new URL("../../", import.meta.url));
 export const productionUrls = Object.freeze({
   public: "https://www.videocraftsindia.com",
@@ -32,12 +33,14 @@ export function loadConfig(env = process.env) {
   if (!Number.isInteger(proxy) || proxy < 0 || proxy > 2) throw new Error("TRUST_PROXY_HOPS must be 0, 1 or 2.");
   const maxStorageBytes = Number(env.MAX_STORAGE_MB || 1024) * 1024 * 1024;
   if (!Number.isFinite(maxStorageBytes) || maxStorageBytes < 1024 * 1024) throw new Error("MAX_STORAGE_MB must be a positive number of at least 1.");
-  const dataDir = path.resolve(env.DATA_DIR || path.join(root, "server/data"));
+  const dataDir = path.resolve(env.DATA_DIR || path.join(serverRoot, "data"));
   for (const publicDir of [path.join(root, "client/build"), path.join(root, "admin/dist"), path.join(root, "client/public")]) {
     if (dataDir === publicDir || dataDir.startsWith(publicDir + path.sep)) throw new Error("DATA_DIR must not be inside a public build or asset directory.");
   }
   return { production, origin, apiOrigin, origins, proxy, host: env.HOST || "127.0.0.1", port: Number(env.PORT || 4691), mongoUri, mongoDbName,
-    dataDir, siteDir: path.join(root, "client/build"),
-    adminDir: path.join(root, "admin/dist"), rendererDir: path.join(root, "server/site-renderer"),
+    dataDir, siteDir: path.resolve(env.SITE_DIR || path.join(root, "client/build")),
+    adminDir: path.resolve(env.ADMIN_DIR || path.join(root, "admin/dist")), rendererDir: path.resolve(env.RENDERER_DIR || path.join(serverRoot, "site-renderer")),
+    clientSeoFile: path.resolve(env.CLIENT_SEO_FILE || path.join(root, "client/src/config/seo.js")),
+    seoRendererFile: path.resolve(env.SEO_RENDERER_FILE || path.join(root, "client/scripts/seo.mjs")),
     maxStorageBytes };
 }

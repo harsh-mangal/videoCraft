@@ -2,32 +2,45 @@ import express from "express";
 import helmet from "helmet";
 import compression from "compression";
 import multer from "multer";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import { root } from "./config.mjs";
+import { serverRoot } from "./config.mjs";
 import { Store } from "./store.mjs";
 import { randomToken, tokenHash, constantEqual, readSessionCookie, hashPassword, verifyPassword } from "./auth.mjs";
 import { createImageVariants, uploadLimit } from "./uploads.mjs";
-import { normalizePath, routeMeta, getPageMeta } from "../../client/src/config/seo.js";
-import { renderHead, jsonForHtml } from "../../client/scripts/seo.mjs";
 
-const catalog = JSON.parse(await readFile(path.join(root, "shared/media-catalog.json"), "utf8"));
+const catalog = JSON.parse(await readFile(path.join(serverRoot, "shared/media-catalog.json"), "utf8"));
 const catalogById = new Map(catalog.map(item => [item.id, item]));
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: uploadLimit, files: 1, fields: 1, parts: 3, fieldSize: 2000 },
   fileFilter(_req, file, done) { done(null, ["image/jpeg", "image/png", "image/webp"].includes(file.mimetype)); } }).single("image");
 const error = (status, message) => Object.assign(new Error(message), { status });
+const fileExists = async file => access(file).then(() => true, () => false);
 
 export async function createApp(config) {
   const app = express();
   const store = await Store.connect(config);
   const dummyPassword = await hashPassword(randomToken());
   const mediaDir = path.join(config.dataDir, "uploads");
-  let uploading = false, renderer, activeLogins = 0;
+  let uploading = false, activeLogins = 0;
   const pageCache = new Map();
   const externalMediaUrl = src => src?.startsWith("/media/") ? config.apiOrigin + src : src;
   const externalImage = image => image ? { ...image, src: externalMediaUrl(image.src), variants: image.variants?.map(variant => ({ ...variant, src: externalMediaUrl(variant.src) })) } : image;
   const publicManifest = async () => Object.fromEntries(Object.entries(await store.manifest()).map(([id, image]) => [id, externalImage(image)]));
+  const adminAvailable = await fileExists(path.join(config.adminDir, "index.html"));
+  const websiteAvailable = (await Promise.all([
+    path.join(config.siteDir, "index.html"),
+    path.join(config.rendererDir, "entry-server.js"),
+    path.join(config.rendererDir, "template.html"),
+    config.clientSeoFile,
+    config.seoRendererFile,
+  ].map(fileExists))).every(Boolean);
+  let websiteModules;
+  const loadWebsiteModules = async () => websiteModules ||= Promise.all([
+    import(pathToFileURL(config.clientSeoFile).href),
+    import(pathToFileURL(config.seoRendererFile).href),
+    import(pathToFileURL(path.join(config.rendererDir, "entry-server.js")).href),
+  ]);
   app.disable("x-powered-by");
   app.set("strict routing", true);
   app.use(compression({ filter: (req, res) => !req.path.startsWith("/api") && !req.path.startsWith("/media") && compression.filter(req, res) }));
@@ -134,37 +147,43 @@ export async function createApp(config) {
     res.set("Cache-Control", "public, max-age=31536000, immutable");
     res.sendFile(req.params.file, { root: mediaDir, dotfiles: "deny" }, err => { if (err) next(error(404, "Image not found.")); });
   });
-  app.get("/admin", (_req, res) => res.redirect(302, "/admin/"));
-  app.use("/admin", (_req, res, next) => { res.set({ "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store" }); next(); });
-  app.use("/admin/assets", express.static(path.join(config.adminDir, "assets"), { immutable: true, maxAge: "1y", fallthrough: false }));
-  app.get(["/admin/", "/admin/{*path}"], (_req, res, next) => res.sendFile(path.join(config.adminDir, "index.html"), err => { if (err) next(error(503, "Build the admin app first: npm --prefix admin run build")); }));
-  app.use("/assets", express.static(path.join(config.siteDir, "assets"), { immutable: true, maxAge: "1y", fallthrough: false }));
-  app.get("/manifest.json", async (_req, res) => {
-    const manifest = JSON.parse(await readFile(path.join(config.siteDir, "manifest.json"), "utf8"));
-    const icon = (await publicManifest())["site-icon"];
-    if (icon?.src) manifest.icons = [{ src: icon.src, sizes: icon.width + "x" + icon.height, type: "image/webp" }];
-    res.set("Cache-Control", "no-cache").json(manifest);
-  });
-  app.get(["/robots.txt", "/sitemap.xml", "/brand-icon.png"], (req, res) => res.set("Cache-Control", "no-cache").sendFile(path.join(config.siteDir, req.path)));
-  app.get(["/", "/{*path}"], async (req, res) => {
-    let pathname;
-    try { pathname = decodeURIComponent(req.path); } catch { throw error(400, "Invalid URL encoding."); }
-    const route = normalizePath(pathname.replace(/\.html$/i, "").replace(/^\/index$/i, "/"));
-    const known = !!routeMeta[route];
-    if (known && req.path !== route) return res.redirect(301, route + (req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : ""));
-    const canonical = known ? route : "/404";
-    const revision = await store.revision();
-    const key = canonical + ":" + revision;
-    if (!pageCache.has(key)) {
-      renderer ||= import(pathToFileURL(path.join(config.rendererDir, "entry-server.js")).href);
-      const { render } = await renderer;
-      const media = await publicManifest();
-      const template = await readFile(path.join(config.rendererDir, "template.html"), "utf8");
-      const html = template.replace("<!--seo-head-->", renderHead(getPageMeta(canonical, media), media)).replace("<!--app-html-->", await render(canonical, media)).replace("<!--media-data-->", '<script type="application/json" id="site-media">' + jsonForHtml(media) + "</script>");
-      if (revision === await store.revision()) pageCache.set(key, html);
-      res.status(known ? 200 : 404).set("Cache-Control", "no-cache").type("html").send(html);
-    } else res.status(known ? 200 : 404).set("Cache-Control", "no-cache").type("html").send(pageCache.get(key));
-  });
+  if (adminAvailable) {
+    app.get("/admin", (_req, res) => res.redirect(302, "/admin/"));
+    app.use("/admin", (_req, res, next) => { res.set({ "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store" }); next(); });
+    app.use("/admin/assets", express.static(path.join(config.adminDir, "assets"), { immutable: true, maxAge: "1y", fallthrough: false }));
+    app.get(["/admin/", "/admin/{*path}"], (_req, res, next) => res.sendFile(path.join(config.adminDir, "index.html"), err => { if (err) next(error(503, "The admin build is unavailable.")); }));
+  }
+
+  if (websiteAvailable) {
+    app.use("/assets", express.static(path.join(config.siteDir, "assets"), { immutable: true, maxAge: "1y", fallthrough: false }));
+    app.get("/manifest.json", async (_req, res) => {
+      const manifest = JSON.parse(await readFile(path.join(config.siteDir, "manifest.json"), "utf8"));
+      const icon = (await publicManifest())["site-icon"];
+      if (icon?.src) manifest.icons = [{ src: icon.src, sizes: icon.width + "x" + icon.height, type: "image/webp" }];
+      res.set("Cache-Control", "no-cache").json(manifest);
+    });
+    app.get(["/robots.txt", "/sitemap.xml", "/brand-icon.png"], (req, res) => res.set("Cache-Control", "no-cache").sendFile(path.join(config.siteDir, req.path)));
+    app.get(["/", "/{*path}"], async (req, res) => {
+      const [{ normalizePath, routeMeta, getPageMeta }, { renderHead, jsonForHtml }, { render }] = await loadWebsiteModules();
+      let pathname;
+      try { pathname = decodeURIComponent(req.path); } catch { throw error(400, "Invalid URL encoding."); }
+      const route = normalizePath(pathname.replace(/\.html$/i, "").replace(/^\/index$/i, "/"));
+      const known = !!routeMeta[route];
+      if (known && req.path !== route) return res.redirect(301, route + (req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : ""));
+      const canonical = known ? route : "/404";
+      const revision = await store.revision();
+      const key = canonical + ":" + revision;
+      if (!pageCache.has(key)) {
+        const media = await publicManifest();
+        const template = await readFile(path.join(config.rendererDir, "template.html"), "utf8");
+        const html = template.replace("<!--seo-head-->", renderHead(getPageMeta(canonical, media), media)).replace("<!--app-html-->", await render(canonical, media)).replace("<!--media-data-->", '<script type="application/json" id="site-media">' + jsonForHtml(media) + "</script>");
+        if (revision === await store.revision()) pageCache.set(key, html);
+        res.status(known ? 200 : 404).set("Cache-Control", "no-cache").type("html").send(html);
+      } else res.status(known ? 200 : 404).set("Cache-Control", "no-cache").type("html").send(pageCache.get(key));
+    });
+  } else {
+    app.get("/", (_req, res) => res.set("Cache-Control", "no-store").json({ ok: true, service: "Videocrafts API" }));
+  }
   app.use((_req, _res, next) => next(error(404, "Not found.")));
   app.use((err, req, res, _next) => {
     const status = err instanceof multer.MulterError ? (err.code === "LIMIT_FILE_SIZE" ? 413 : 422) : (err.status >= 400 && err.status < 600 ? err.status : 500);

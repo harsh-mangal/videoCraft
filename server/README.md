@@ -1,6 +1,6 @@
 # Node.js backend
 
-Express API, MongoDB persistence, image processing, public HTML rendering and static delivery of the two independent React builds. Requires Node.js 24+, MongoDB, and persistent writable storage for uploaded images. The local verification used Node 26.5.1; CI targets Node 24 and MongoDB 8.
+Express API, MongoDB persistence and image processing, with optional public HTML rendering and static delivery of the two independent React builds. The standalone API requires Node.js 22.19 or newer, MongoDB, and persistent writable storage for uploaded images. CI targets Node 24 and MongoDB 8.
 
 ## First run
 
@@ -39,6 +39,20 @@ TRUST_PROXY_HOPS=1
 
 `MONGODB_URI` is mandatory in production and must remain a server-side secret. Use a dedicated database user with access only to the configured database, require TLS, and restrict network access to the API host. `MONGODB_DB` defaults to `videocrafts`.
 
+### Standalone API host
+
+The API can be deployed without sibling `client/`, `admin/` or root `shared/` directories. Upload the complete `server/` directory, including `shared/media-catalog.json`, then install and start it on the API host:
+
+```sh
+cd /var/www/api.videocraftsindia.com
+npm ci --omit=dev
+npm start
+```
+
+With no frontend build paths configured, `/api/*` and `/media/*` remain available and `/` returns a small service-status response. The public and admin builds can be hosted independently on their own subdomains. Run `npm run build:all` in the full repository before packaging a release whenever image references change; that command refreshes the catalog copied into `server/shared/`.
+
+If the same Node process must also serve the public or admin build, deploy those assets and set `SITE_DIR`, `ADMIN_DIR`, `RENDERER_DIR`, `CLIENT_SEO_FILE` and `SEO_RENDERER_FILE` to their absolute locations. All five website-rendering files must be available before public server-side rendering is enabled.
+
 Keep the three web origins synchronized with `client/src/config/urls.js` and `admin/src/config.js`, then rebuild after a domain change. Every origin must omit paths and trailing slashes. The code uses these production origins by default when `NODE_ENV=production`; explicit values are recommended so deployment configuration remains visible.
 
 - Terminate TLS at a trusted reverse proxy. Route `api.videocraftsindia.com/api/*` and `api.videocraftsindia.com/media/*` to the loopback Node port. Route the `www` host to Node as well when current image replacements must be present in initial HTML and social metadata. Publish `admin/dist/` at the root of `admin.videocraftsindia.com`. Set the proxy's upload body limit to at least 13 MB; the API enforces a 12 MB file limit.
@@ -46,7 +60,7 @@ Keep the three web origins synchronized with `client/src/config/urls.js` and `ad
 - All production origins use HTTPS. The public `GET /api/media` endpoint allows cross-origin reads without credentials; authenticated admin routes accept credentialed CORS only from the configured origins. The secure, HttpOnly, SameSite=Strict cookie remains host-only on `api.videocraftsindia.com`; the sibling `admin` subdomain is same-site, while `credentials: include`, Origin checks and CSRF tokens protect authenticated changes.
 - Use a process supervisor supplied by your host. Restart on code deployments and monitor disk usage/errors. The app performs graceful shutdown on SIGTERM/SIGINT.
 - Build on the target platform. Do not copy macOS node_modules to a Linux server; Sharp uses platform-specific packages.
-- Keep the whole project layout or equivalent configured build paths. Only assets and public routes are served; MongoDB credentials, source, .env and server/site-renderer are not public directories.
+- Deploy `server/shared/media-catalog.json` with the API. MongoDB credentials, source, `.env` and `site-renderer/` are never exposed as static directories.
 
 Old static Apache/Netlify configurations remain for read-only snapshots. They do not replace the Node runtime needed by this admin. MongoDB can be managed remotely, but an ephemeral/serverless filesystem is still unsuitable for uploaded WebP files unless `/media` is moved to object storage.
 
