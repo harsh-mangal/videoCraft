@@ -1,5 +1,5 @@
 const acceptedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-const sourceLimit = 25 * 1024 * 1024;
+const sourceLimit = 50 * 1024 * 1024;
 const outputLimit = 10 * 1024 * 1024;
 const maxDimension = 2400;
 
@@ -40,7 +40,7 @@ const encodeWebp = (canvas, quality) => new Promise((resolve, reject) => {
 
 export async function compressImage(source) {
   if (!acceptedTypes.has(source?.type)) throw new Error("Choose a JPEG, PNG or WebP image.");
-  if (source.size > sourceLimit) throw new Error("Choose an image up to 25 MB. It will be compressed before upload.");
+  if (source.size > sourceLimit) throw new Error("Choose an image up to 50 MB. It will be compressed before upload.");
   const image = await loadImage(source);
   try {
     const dimensions = fittedDimensions(image.width, image.height);

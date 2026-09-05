@@ -12,6 +12,10 @@ test("compression helpers create WebP names and proportional dimensions", () => 
   expect(formatBytes(2 * 1024 * 1024)).toBe("2.0 MB");
 });
 
+test("source images larger than 50 MB are rejected before decoding", async () => {
+  await expect(compressImage({ type: "image/jpeg", size: 50 * 1024 * 1024 + 1, name: "too-large.jpg" })).rejects.toThrow("up to 50 MB");
+});
+
 test("compressImage resizes, encodes, renames and closes the decoded image", async () => {
   const bitmap = { width: 4000, height: 2000, close: vi.fn() };
   const drawImage = vi.fn();

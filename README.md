@@ -63,7 +63,7 @@ The library covers **122 entries: 121 existing photos/logos/backgrounds plus the
 
 1. Sign in, then search or filter by collection/page.
 2. Select an image. The editor shows its current dimensions and all places where it is used.
-3. Choose a JPEG, PNG or WebP file up to 25 MB. The admin automatically resizes it when needed, converts it to WebP and shows the compressed size before upload. Optionally set alt text.
+3. Choose a JPEG, PNG or WebP file up to 50 MB. The admin automatically resizes it when needed, converts it to WebP and shows the compressed size before upload. Optionally set alt text.
 4. Review the preview and select **Publish changes**.
 5. Use **Restore original image**, then **Publish original**, to undo the replacement.
 
