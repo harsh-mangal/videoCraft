@@ -66,7 +66,7 @@ const Footer = () => {
           </nav>
 
           <div className="lg:col-span-3">
-            <h3 className="footer-heading">The studio</h3>
+            <h3 className="footer-heading">The Office</h3>
             <address className="mt-5 space-y-3 not-italic">
               <a href="tel:+919888626212" className="footer-contact"><Phone size={17} aria-hidden="true" />+91 98886 26212</a>
               <a href="mailto:videocrafts95@gmail.com" className="footer-contact"><Mail size={17} aria-hidden="true" />videocrafts95@gmail.com</a>
@@ -75,7 +75,7 @@ const Footer = () => {
           </div>
 
           <div className="sm:col-span-2 lg:col-span-3">
-            <h3 className="footer-heading">Studio notes</h3>
+            <h3 className="footer-heading">Office notes</h3>
             <p className="mt-5 max-w-sm text-sm leading-relaxed">Receive occasional photography updates through WhatsApp. You can review the message before sending.</p>
             <form noValidate onSubmit={submitNewsletter} className="mt-6 w-full max-w-md">
               <label htmlFor="footer-email" className="mb-2 block text-xs font-semibold uppercase tracking-[0.16em]">Email address</label>

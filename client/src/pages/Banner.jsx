@@ -9,7 +9,7 @@ export default function Banner() {
       <ResponsiveImage src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo__1_-removebg-preview.png?updatedAt=1758019179068" alt="Videocrafts India" width={400} sizes="240px" loading="eager" className="mx-auto mb-8 h-auto w-44 brightness-0 invert sm:w-56" />
       <p className="luxury-kicker text-white/90">Chandigarh · Established in the 1980s</p>
       <h1 className="mt-5 font-serif text-5xl font-normal leading-[0.98] sm:text-6xl lg:text-7xl">Wedding photography,<br className="hidden sm:block" /> shaped like cinema</h1>
-      <p className="mx-auto mt-6 max-w-2xl font-serif text-xl italic text-white/90 sm:text-2xl">Honest emotion. Artful light. Timeless stories.</p>
+      <p className="mx-auto mt-6 max-w-2xl font-serif text-xl italic text-white/90 sm:text-2xl">Crafting Timeless visuals of your story.</p>
       <Link to="/about" className="luxury-button mt-10 inline-flex min-h-12 items-center px-8 py-3">Discover our story</Link>
     </div>
   </section>;

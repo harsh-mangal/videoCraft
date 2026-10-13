@@ -33,7 +33,7 @@ const ContactUs = () => (
             <a href="mailto:videocrafts95@gmail.com" className="mt-1 block text-[#62625A] hover:underline">videocrafts95@gmail.com</a>
           </div>
           <div className="sm:col-span-2">
-            <h2 className="flex items-center gap-2 text-xl uppercase text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}><MapPin size={20} className="shrink-0" aria-hidden="true" focusable="false" />Studio</h2>
+            <h2 className="flex items-center gap-2 text-xl uppercase text-[#4D504A]" style={{ fontFamily: '"Cormorant Garamond", serif' }}><MapPin size={20} className="shrink-0" aria-hidden="true" focusable="false" />Office</h2>
             <address className="mt-1 not-italic text-[#62625A]">First Floor, 56-57-58, Madhya Marg, Sector 9-D, Chandigarh 160009</address>
           </div>
         </div>
@@ -52,7 +52,7 @@ const ContactUs = () => (
     <div className="mx-auto mt-14 grid max-w-7xl grid-cols-1 gap-8 lg:grid-cols-2">
       <div className="h-[380px] overflow-hidden rounded-xl shadow-lg">
         <iframe
-          title="Videocrafts India studio location"
+          title="Videocrafts India Office location"
           src="https://www.google.com/maps?q=First%20Floor%2056-57-58%20Madhya%20Marg%20Sector%209-D%20Chandigarh%20160009&output=embed"
           className="h-full w-full border-0"
           allowFullScreen
@@ -67,7 +67,7 @@ const ContactUs = () => (
         <p className="mt-5 text-center text-[#6C6C63]">
           Please call or message before visiting so our team can confirm availability and give your consultation the time it deserves.
         </p>
-        <a href="https://wa.me/919888626212?text=Hello%20Videocrafts%20India%2C%20I%20would%20like%20to%20schedule%20a%20studio%20visit." target="_blank" rel="noopener noreferrer" className="mx-auto mt-7 inline-flex rounded-md bg-[#4D504A] px-6 py-3 font-semibold text-white transition hover:bg-[#343731]">
+        <a href="https://wa.me/919888626212?text=Hello%20Videocrafts%20India%2C%20I%20would%20like%20to%20schedule%20an%20office%20visit." target="_blank" rel="noopener noreferrer" className="mx-auto mt-7 inline-flex rounded-md bg-[#4D504A] px-6 py-3 font-semibold text-white transition hover:bg-[#343731]">
           Schedule on WhatsApp
         </a>
       </div>
