@@ -1,26 +1,23 @@
 import React from "react";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Link, MemoryRouter, useLocation } from "react-router-dom";
 import { buildWhatsAppUrl, openWhatsApp, WHATSAPP_NUMBER } from "./utils/whatsapp";
 import { normalizePhone, validateEnquiry } from "./utils/enquiry";
-import { getPageMeta, normalizePath, SITE_URL } from "./config/seo";
+import { getPageMeta, normalizePath, routeMeta, structuredData, SITE_URL } from "./config/seo";
 import { ADMIN_URL, API_URL, apiUrl } from "./config/urls";
 import { imageUrl, imageSrcSet, resolveImage } from "./utils/images";
 import { MediaProvider } from "./components/MediaProvider";
 import ResponsiveImage from "./components/ResponsiveImage";
 import SocialLinks from "./components/SocialLinks";
-import ContactForm from "./pages/ContactForm";
+import ContactForm from "./site-pages/ContactForm";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
-import PageMeta from "./components/PageMeta";
 import Carousel from "./components/Carousel";
-import Layout from "./Layout";
-import RouteErrorBoundary from "./components/RouteErrorBoundary";
-import ReviewsSection from "./pages/ReviewsSection";
+import ReviewsSection from "./site-pages/ReviewsSection";
 import WhatsAppButton from "./components/WhatsAppButton";
-import About from "./pages/About";
+import About from "./site-pages/About";
+import { PageContext } from "./components/PageContext";
 
 vi.mock("./utils/whatsapp", async importOriginal => ({
   ...await importOriginal(),
@@ -122,7 +119,7 @@ test("multiple enquiry forms have distinct label and error IDs", () => {
 
 test("footer validates updates requests and composes a WhatsApp message", async () => {
   const user = userEvent.setup();
-  render(<MemoryRouter><Footer /></MemoryRouter>);
+  render(<Footer />);
   expect(screen.getByRole("heading", { name: "Your story deserves to be remembered beautifully." })).toBeInTheDocument();
   expect(screen.getByRole("navigation", { name: "Footer navigation" })).toBeInTheDocument();
   expect(screen.getByRole("link", { name: "Begin a conversation" })).toHaveAttribute("href", "/contact");
@@ -137,7 +134,7 @@ test("footer validates updates requests and composes a WhatsApp message", async 
 
 test("mobile menu closes on Escape and returns focus to its toggle", async () => {
   const user = userEvent.setup();
-  render(<MemoryRouter><Navbar /></MemoryRouter>);
+  render(<Navbar />);
   const button = screen.getByRole("button", { name: "Open navigation menu" });
   await user.click(button);
   expect(button).toHaveAttribute("aria-expanded", "true");
@@ -148,15 +145,17 @@ test("mobile menu closes on Escape and returns focus to its toggle", async () =>
 
 test("mobile route selection closes the menu", async () => {
   const user = userEvent.setup();
-  render(<MemoryRouter><Navbar /></MemoryRouter>);
+  render(<Navbar />);
   await user.click(screen.getByRole("button", { name: "Open navigation menu" }));
-  await user.click(within(document.getElementById("mobile-navigation")).getByRole("link", { name: "Contact Us" }));
+  const link = within(document.getElementById("mobile-navigation")).getByRole("link", { name: "Contact Us" });
+  link.addEventListener("click", event => event.preventDefault(), { once: true });
+  fireEvent.click(link);
   expect(screen.getByRole("button", { name: "Open navigation menu" })).toHaveAttribute("aria-expanded", "false");
 });
 
 test("theme control switches modes and preserves the visitor choice", async () => {
   const user = userEvent.setup();
-  render(<MemoryRouter><Navbar /></MemoryRouter>);
+  render(<Navbar />);
   const toggle = screen.getByRole("button", { name: "Switch to dark mode" });
   await user.click(toggle);
   expect(document.documentElement).toHaveClass("dark");
@@ -169,7 +168,7 @@ test("theme control switches modes and preserves the visitor choice", async () =
 });
 
 test("about page keeps the services introduction without percentage ratings", () => {
-  render(<MemoryRouter initialEntries={["/about"]}><About /></MemoryRouter>);
+  render(<PageContext pathname="/about"><About /></PageContext>);
   expect(screen.getByRole("heading", { name: "Our Services" })).toBeInTheDocument();
   for (const value of ["90%", "100%", "95%", "92%"] ) expect(screen.queryByText(value)).not.toBeInTheDocument();
 });
@@ -206,31 +205,41 @@ test("uses the owner-confirmed canonical production origin", () => {
   expect(apiUrl("/api/media")).toBe("https://api.videocraftsindia.com/api/media");
 });
 
+test("publishes the complete first-wave SEO route cluster with template-specific schema", () => {
+  expect(Object.keys(routeMeta)).toHaveLength(42);
+  for (const path of [
+    "/wedding-photographer-chandigarh",
+    "/candid-wedding-photographer-chandigarh",
+    "/wedding-videography-chandigarh",
+    "/wedding-photography-packages-chandigarh",
+    "/pre-wedding-shoot-locations-chandigarh",
+    "/wedding-photographer-mohali",
+    "/wedding-photographer-panchkula",
+    "/wedding-photographer-zirakpur",
+    "/wedding-photography-cost-chandigarh",
+    "/how-to-choose-wedding-photographer-chandigarh",
+    "/wedding-photography-timeline-guide",
+    "/wedding-albums-chandigarh",
+    "/pre-wedding-shoot-cost-chandigarh",
+    "/kids-photographer-chandigarh",
+    "/corporate-headshot-photographer-chandigarh",
+    "/food-photography-chandigarh",
+    "/interior-architecture-photographer-chandigarh",
+  ]) expect(routeMeta[path]).toBeDefined();
+
+  const serviceTypes = structuredData(getPageMeta("/wedding-photographer-chandigarh"))["@graph"].map(item => item["@type"]);
+  expect(serviceTypes).toEqual(expect.arrayContaining(["LocalBusiness", "WebSite", "WebPage", "Service", "FAQPage", "BreadcrumbList"]));
+  const articleTypes = structuredData(getPageMeta("/wedding-stories/tales-of-romance"))["@graph"].map(item => item["@type"]);
+  expect(articleTypes).toContain("Article");
+  const guideTypes = structuredData(getPageMeta("/how-to-choose-wedding-photographer-chandigarh"))["@graph"].map(item => item["@type"]);
+  expect(guideTypes).toEqual(expect.arrayContaining(["Article", "FAQPage", "BreadcrumbList"]));
+  expect(guideTypes).not.toContain("Service");
+});
+
 test("preserves legacy URL redirects and handles malformed encodings safely", () => {
   expect(normalizePath("/From-%E2%80%98I-Do%E2%80%99-to%20Forever")).toBe("/wedding-stories/from-i-do-to-forever");
   expect(normalizePath("/bridal-potraits")).toBe("/bridal-portraits");
   expect(getPageMeta("/bad%ZZ").canonical).toBeNull();
-});
-
-test("client navigation updates metadata and clears it on a missing page", async () => {
-  const user = userEvent.setup();
-  render(<MemoryRouter initialEntries={["/about/"]}><PageMeta /><Link to="/missing">Missing page</Link></MemoryRouter>);
-  expect(document.title).toBe(getPageMeta("/about").title);
-  expect(document.querySelector('link[rel="canonical"]').href).toBe(SITE_URL + "/about");
-  expect(document.querySelector('link[rel="icon"]')).toHaveAttribute("href", "/brand-icon.png");
-  expect(JSON.parse(document.getElementById("site-schema").textContent)["@graph"]).toBeTruthy();
-  await user.click(screen.getByRole("link", { name: "Missing page" }));
-  expect(document.title).toContain("Page Not Found");
-  expect(document.querySelector('meta[name="robots"]').content).toBe("noindex, follow");
-  expect(document.querySelector('link[rel="canonical"]')).toBeNull();
-  expect(document.getElementById("site-schema")).toBeNull();
-});
-
-function LocationProbe() { return <output aria-label="Current path">{useLocation().pathname}</output>; }
-test("full layout redirects case and trailing-slash aliases to a canonical URL", async () => {
-  render(<MemoryRouter initialEntries={["/About/"]}><Layout /><LocationProbe /></MemoryRouter>);
-  expect(await screen.findByRole("heading", { name: "About Us", level: 1 })).toBeInTheDocument();
-  expect(screen.getByLabelText("Current path")).toHaveTextContent("/about");
 });
 
 test("responsive image URLs preserve source parameters and stay within the requested width", () => {
@@ -241,14 +250,6 @@ test("responsive image URLs preserve source parameters and stay within the reque
   expect(imageSrcSet(src, 640)).toContain("640w");
   expect(imageSrcSet(src, 640)).not.toContain("960w");
   expect(imageUrl("/brand-icon.png")).toBe("/brand-icon.png");
-});
-
-test("a failed route chunk leaves a recovery link instead of a blank page", () => {
-  vi.spyOn(console, "error").mockImplementation(() => {});
-  const BrokenRoute = () => { throw new Error("Chunk unavailable"); };
-  render(<RouteErrorBoundary path="/gallery"><BrokenRoute /></RouteErrorBoundary>);
-  expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("This page could not load");
-  expect(screen.getByRole("link", { name: "Reload page" })).toHaveAttribute("href", "/gallery");
 });
 
 test("published images use server dimensions and variants while decorative images remain decorative", () => {

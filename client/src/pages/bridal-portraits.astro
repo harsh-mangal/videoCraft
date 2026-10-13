@@ -1,0 +1,17 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BridalPage from "../islands/BridalPage";
+import { loadPublishedMedia, mediaForRoute } from "../lib/publishedMedia";
+const media = await loadPublishedMedia();
+const pageMedia = mediaForRoute(media, "/bridal-portraits");
+---
+<BaseLayout pathname="/bridal-portraits" media={media}>
+  <BridalPage media={pageMedia} />
+  <section class="bg-[var(--theme-surface)] px-5 py-16 text-[var(--theme-text)] sm:px-8 sm:py-24">
+    <div class="mx-auto max-w-6xl">
+      <nav aria-label="Breadcrumb" class="text-xs font-semibold uppercase tracking-[0.16em] text-[#9b7746]"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Bridal portraits</span></nav>
+      <div class="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-20"><div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#9b7746]">PORTRAITS WITH PRESENCE</p><h2 class="mt-4 font-serif text-4xl leading-tight text-[var(--theme-heading)] sm:text-5xl">Bridal portraits shaped by light, detail and personality.</h2></div><div class="space-y-6 text-lg leading-8"><p>A bridal portrait can hold the detail of the clothing, the atmosphere before a ceremony and the confidence of the person wearing it. We plan a focused portrait window without separating the bride from the celebration for longer than necessary.</p><p>Location, available light, room access and the wedding timeline all influence what is possible. Quiet preparation photographs, carefully directed editorial frames and candid moments with family can sit together in one complete sequence.</p><p>Share the ceremony schedule, getting-ready location and any heirlooms or details that carry family meaning. That context helps the team photograph more than the surface of the occasion.</p></div></div>
+      <div class="mt-14 flex flex-wrap gap-3"><a class="rounded-full bg-[#4d504a] px-6 py-3 font-semibold text-white" href="/contact">Discuss your wedding</a><a class="rounded-full border border-[var(--theme-border)] px-6 py-3 font-semibold" href="/anand-karaj-photographer-chandigarh">Anand Karaj photography</a><a class="rounded-full border border-[var(--theme-border)] px-6 py-3 font-semibold" href="/candid-wedding-photographer-chandigarh">Candid wedding coverage</a></div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,65 @@
+---
+import "@fontsource-variable/cormorant-garamond/wght.css";
+import "@fontsource-variable/cormorant-garamond/wght-italic.css";
+import "@fontsource-variable/mulish/wght.css";
+import cormorantLatin from "@fontsource-variable/cormorant-garamond/files/cormorant-garamond-latin-wght-normal.woff2?url";
+import mulishLatin from "@fontsource-variable/mulish/files/mulish-latin-wght-normal.woff2?url";
+import "../index.css";
+import "../App.css";
+import NavbarIsland from "../islands/NavbarIsland";
+import FooterIsland from "../islands/FooterIsland";
+import WhatsAppButton from "../components/WhatsAppButton";
+import { getPageMeta, structuredData, SITE_NAME } from "../config/seo";
+import { resolveImage } from "../utils/images";
+import { mediaForUsage } from "../lib/publishedMedia";
+
+const { pathname, media = {}, is404 = false } = Astro.props;
+const meta = getPageMeta(is404 ? "/404" : pathname, media);
+const schema = structuredData(meta, media);
+const icon = resolveImage("/brand-icon.png", media);
+const navbarMedia = mediaForUsage(media, "Navbar");
+const footerMedia = mediaForUsage(media, "Footer");
+const searchVerification = import.meta.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+const analyticsId = /^G-[A-Z0-9]+$/.test(import.meta.env.PUBLIC_GA_MEASUREMENT_ID || "") ? import.meta.env.PUBLIC_GA_MEASUREMENT_ID : "";
+---
+<!doctype html>
+<html lang="en-IN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#4D504A" />
+    <script is:inline src="/theme.js"></script>
+    <script is:inline src="/analytics.js" defer></script>
+    {analyticsId && <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${analyticsId}`}></script>}
+    {analyticsId && <script is:inline set:html={`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${analyticsId}',{send_page_view:true});`}></script>}
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href={icon.src} type={icon.replaced ? "image/webp" : "image/png"} />
+    <link rel="apple-touch-icon" href={icon.src} />
+    <link rel="preload" href={cormorantLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={mulishLatin} as="font" type="font/woff2" crossorigin />
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    <meta name="robots" content={meta.robots} />
+    {searchVerification && <meta name="google-site-verification" content={searchVerification} />}
+    {meta.canonical && <link rel="canonical" href={meta.canonical} />}
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    {meta.canonical && <meta property="og:url" content={meta.canonical} />}
+    <meta property="og:image" content={meta.image} />
+    <meta property="og:type" content={meta.pageType === "Article" ? "article" : "website"} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:locale" content="en_IN" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={meta.title} />
+    <meta name="twitter:description" content={meta.description} />
+    <meta name="twitter:image" content={meta.image} />
+    {schema && <script id="site-schema" type="application/ld+json" set:html={JSON.stringify(schema)} />}
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
+    <NavbarIsland pathname={pathname} media={navbarMedia} client:load />
+    <main id="main-content" tabindex="-1" class="min-h-screen"><slot /></main>
+    <FooterIsland pathname={pathname} media={footerMedia} client:visible />
+    <WhatsAppButton />
+  </body>
+</html>

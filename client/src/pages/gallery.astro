@@ -1,0 +1,8 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GalleryPage from "../islands/GalleryPage";
+import { loadPublishedMedia, mediaForRoute } from "../lib/publishedMedia";
+const media = await loadPublishedMedia();
+const pageMedia = mediaForRoute(media, "/gallery");
+---
+<BaseLayout pathname="/gallery" media={media}><GalleryPage media={pageMedia} /></BaseLayout>

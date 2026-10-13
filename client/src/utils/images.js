@@ -10,13 +10,16 @@ export function resolveImage(src, media = {}) {
 
 export function managedImageUrl(image, width = 960) {
   if (!image.variants?.length) return imageUrl(image.src, width);
-  return (image.variants.find(variant => variant.width >= width) || image.variants.at(-1)).src;
+  const variants = image.variants.filter(variant => !variant.format || variant.format === "webp");
+  return (variants.find(variant => variant.width >= width) || variants.at(-1) || image.variants.at(-1)).src;
 }
 
-export function managedImageSrcSet(image, width = 1600) {
+export function managedImageSrcSet(image, width = 1600, format = "webp") {
   if (!image.variants?.length) return imageSrcSet(image.src, width);
-  const selected = image.variants.filter(variant => variant.width <= width);
-  const larger = image.variants.find(variant => variant.width > width);
+  const variants = image.variants.filter(variant => format === "webp" ? (!variant.format || variant.format === "webp") : variant.format === format);
+  if (!variants.length) return undefined;
+  const selected = variants.filter(variant => variant.width <= width);
+  const larger = variants.find(variant => variant.width > width);
   if (larger) selected.push(larger);
   return selected.map(variant => variant.src + " " + variant.width + "w").join(", ");
 }

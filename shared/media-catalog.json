@@ -9,11 +9,11 @@
     "groups": [
       "Shared",
       "Branding",
-      "SEO"
+      "brand"
     ],
     "usedIn": [
       "Footer",
-      "seo"
+      "brand"
     ]
   },
   {
@@ -24,11 +24,11 @@
     "height": 600,
     "label": "Home hero / default social preview",
     "groups": [
-      "SEO",
+      "brand",
       "Home"
     ],
     "usedIn": [
-      "seo",
+      "brand",
       "Banner"
     ]
   },
@@ -93,6 +93,115 @@
     ]
   },
   {
+    "id": "b297d7050d971c1a",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-1.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-1.jpg?updatedAt=1758024050924",
+    "width": 652,
+    "height": 815,
+    "label": "Wedding 1",
+    "groups": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "Home",
+      "Portfolios"
+    ],
+    "usedIn": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "WeddingSection"
+    ]
+  },
+  {
+    "id": "6e62c3805534935c",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-3.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-3.jpg?updatedAt=1758024050891",
+    "width": 652,
+    "height": 815,
+    "label": "Wedding 3",
+    "groups": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "Home",
+      "Portfolios"
+    ],
+    "usedIn": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "WeddingSection"
+    ]
+  },
+  {
+    "id": "6b5414260f4ee4bb",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-2.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-2.jpg?updatedAt=1758024050544",
+    "width": 652,
+    "height": 815,
+    "label": "Wedding 2",
+    "groups": [
+      "seoExpansionPages",
+      "Home",
+      "Portfolios"
+    ],
+    "usedIn": [
+      "seoExpansionPages",
+      "WeddingSection"
+    ]
+  },
+  {
+    "id": "353e4e8d6b4c51fc",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/3-1.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/3-1.jpg?updatedAt=1758109838520",
+    "width": 1520,
+    "height": 600,
+    "label": "Pre-wedding hero",
+    "groups": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "Pre-wedding"
+    ],
+    "usedIn": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "PreWedding"
+    ]
+  },
+  {
+    "id": "bb5af42067640439",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/FAMILY-3.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/FAMILY-3.jpg?updatedAt=1758114032201",
+    "width": 550,
+    "height": 692,
+    "label": "FAMILY 3",
+    "groups": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "Gallery"
+    ],
+    "usedIn": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "Gallery"
+    ]
+  },
+  {
+    "id": "2ecd0662da9a8a6f",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/vc-junior.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/vc-junior.jpg?updatedAt=1758110287945",
+    "width": 1920,
+    "height": 600,
+    "label": "Junior hero",
+    "groups": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "Junior"
+    ],
+    "usedIn": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "VideoCraftsJunior"
+    ]
+  },
+  {
     "id": "db72ce69b533a9af",
     "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/455841250_18292334629201135_8028869471403628683_n.jpg",
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/455841250_18292334629201135_8028869471403628683_n.jpg?updatedAt=1758102107890",
@@ -100,10 +209,82 @@
     "height": 1080,
     "label": "About background photograph",
     "groups": [
+      "seoExpansionPages",
+      "seoLandingPages",
       "About"
     ],
     "usedIn": [
+      "seoExpansionPages",
+      "seoLandingPages",
       "About"
+    ]
+  },
+  {
+    "id": "932187931fb4c747",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/bg.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/bg.jpg?updatedAt=1758103560393",
+    "width": 1520,
+    "height": 478,
+    "label": "Services hero",
+    "groups": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "Services"
+    ],
+    "usedIn": [
+      "seoExpansionPages",
+      "seoLandingPages",
+      "OurServices"
+    ]
+  },
+  {
+    "id": "9998ebd5d715ea2e",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-5.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-5.jpg?updatedAt=1758024050814",
+    "width": 652,
+    "height": 815,
+    "label": "Wedding 5",
+    "groups": [
+      "seoLandingPages",
+      "Home",
+      "Portfolios"
+    ],
+    "usedIn": [
+      "seoLandingPages",
+      "WeddingSection"
+    ]
+  },
+  {
+    "id": "369f2f677cfc8870",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/bridal-portraits-4.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/bridal-portraits-4.jpg?updatedAt=1758109180755",
+    "width": 1920,
+    "height": 600,
+    "label": "Bridal portraits hero",
+    "groups": [
+      "seoLandingPages",
+      "Bridal portraits"
+    ],
+    "usedIn": [
+      "seoLandingPages",
+      "BridalPortraits"
+    ]
+  },
+  {
+    "id": "166b1e756aa62620",
+    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Pre%20Wedding/Pre-wedding-1.jpg",
+    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Pre%20Wedding/Pre-wedding-1.jpg?updatedAt=1758021538373",
+    "width": 452,
+    "height": 570,
+    "label": "Pre wedding 1",
+    "groups": [
+      "seoLandingPages",
+      "Home",
+      "Portfolios"
+    ],
+    "usedIn": [
+      "seoLandingPages",
+      "WeddingSection"
     ]
   },
   {
@@ -112,7 +293,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/343436716_164584696545059_5452633694856277380_n.jpg?updatedAt=1758095326362",
     "width": 1080,
     "height": 1350,
-    "label": "About photograph 2",
+    "label": "About photograph 1",
     "groups": [
       "About"
     ],
@@ -126,7 +307,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/453875494_18290686984201135_3117475045989761803_n.jpg?updatedAt=1758095326089",
     "width": 1080,
     "height": 1350,
-    "label": "About photograph 3",
+    "label": "About photograph 2",
     "groups": [
       "About"
     ],
@@ -140,7 +321,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/451984871_495778003131281_8603668917776350073_n.jpg?updatedAt=1758095326142",
     "width": 1080,
     "height": 1349,
-    "label": "About photograph 4",
+    "label": "About photograph 3",
     "groups": [
       "About"
     ],
@@ -154,7 +335,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/451232285_878669220750221_5654401183711832386_n.jpg?updatedAt=1758095326128",
     "width": 1080,
     "height": 1349,
-    "label": "About photograph 5",
+    "label": "About photograph 4",
     "groups": [
       "About"
     ],
@@ -168,7 +349,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/343457423_1855208218169410_3262816958422017919_n.jpg?updatedAt=1758095325998",
     "width": 1080,
     "height": 1350,
-    "label": "About photograph 6",
+    "label": "About photograph 5",
     "groups": [
       "About"
     ],
@@ -182,7 +363,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/451816231_990775676025712_3930829498517495652_n.jpg?updatedAt=1758095326084",
     "width": 1080,
     "height": 1349,
-    "label": "About photograph 7",
+    "label": "About photograph 6",
     "groups": [
       "About"
     ],
@@ -196,7 +377,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/457802175_18294241429201135_6269314796825905026_n.jpg?updatedAt=1758088743134",
     "width": 1080,
     "height": 1349,
-    "label": "About photograph 8",
+    "label": "About photograph 7",
     "groups": [
       "About",
       "Home",
@@ -213,7 +394,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/457848006_18294241438201135_1430426432942772031_n.jpg?updatedAt=1758088743129",
     "width": 1080,
     "height": 1351,
-    "label": "About photograph 9",
+    "label": "About photograph 8",
     "groups": [
       "About",
       "Home",
@@ -230,7 +411,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/457793381_18294241456201135_1473232198490311256_n-qwntzurqxtp8uu456pympn2y48ribuub0prkq1qvi4.jpg?updatedAt=1758096986862",
     "width": 550,
     "height": 550,
-    "label": "About photograph 10",
+    "label": "About photograph 9",
     "groups": [
       "About"
     ],
@@ -244,7 +425,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/457749077_18294241447201135_7443172115267756558_n-qwntzwnfbhrti21evqrvumlvb0i8r91roz2jolo35o.jpg?updatedAt=1758096986853",
     "width": 550,
     "height": 550,
-    "label": "About photograph 11",
+    "label": "About photograph 10",
     "groups": [
       "About"
     ],
@@ -258,7 +439,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/339997274_761820905299101_1482883258721342530_n.jpg?updatedAt=1758102950722",
     "width": 1080,
     "height": 721,
-    "label": "About photograph 12",
+    "label": "About photograph 11",
     "groups": [
       "About"
     ],
@@ -272,7 +453,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/319282880_1863636050656434_3121507668845167913_n.jpg?updatedAt=1758102950530",
     "width": 1080,
     "height": 722,
-    "label": "About photograph 13",
+    "label": "About photograph 12",
     "groups": [
       "About"
     ],
@@ -286,7 +467,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/318869482_537710268244886_4417641904349254790_n.jpg?updatedAt=1758102950608",
     "width": 1080,
     "height": 722,
-    "label": "About photograph 14",
+    "label": "About photograph 13",
     "groups": [
       "About"
     ],
@@ -300,7 +481,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/319095871_529489285745408_2411097867280031755_n%20(1).jpg?updatedAt=1758102950477",
     "width": 1080,
     "height": 722,
-    "label": "About photograph 15",
+    "label": "About photograph 14",
     "groups": [
       "About"
     ],
@@ -314,7 +495,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/318978161_639392474594869_5202545905984573334_n.jpg?updatedAt=1758102950260",
     "width": 1000,
     "height": 666,
-    "label": "About photograph 16",
+    "label": "About photograph 15",
     "groups": [
       "About"
     ],
@@ -328,7 +509,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/339827585_768796091489364_739165343552228577_n.jpg?updatedAt=1758102950069",
     "width": 1080,
     "height": 721,
-    "label": "About photograph 17",
+    "label": "About photograph 16",
     "groups": [
       "About"
     ],
@@ -356,7 +537,7 @@
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/385007931_18251174875201135_9088427915493833893_n.jpg?updatedAt=1758094499523",
     "width": 1080,
     "height": 1350,
-    "label": "About photograph 19",
+    "label": "About photograph 18",
     "groups": [
       "About"
     ],
@@ -427,20 +608,6 @@
     "width": 652,
     "height": 815,
     "label": "bridal portraits 3",
-    "groups": [
-      "Bridal portraits"
-    ],
-    "usedIn": [
-      "BridalPortraits"
-    ]
-  },
-  {
-    "id": "369f2f677cfc8870",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/bridal-portraits-4.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/bridal-portraits-4.jpg?updatedAt=1758109180755",
-    "width": 1920,
-    "height": 600,
-    "label": "Bridal portraits hero",
     "groups": [
       "Bridal portraits"
     ],
@@ -969,20 +1136,6 @@
     ]
   },
   {
-    "id": "bb5af42067640439",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/FAMILY-3.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/FAMILY-3.jpg?updatedAt=1758114032201",
-    "width": 550,
-    "height": 692,
-    "label": "FAMILY 3",
-    "groups": [
-      "Gallery"
-    ],
-    "usedIn": [
-      "Gallery"
-    ]
-  },
-  {
     "id": "f25a15324b0cd819",
     "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/FAMILY.jpg",
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/FAMILY.jpg?updatedAt=1758114032195",
@@ -1231,20 +1384,6 @@
     ]
   },
   {
-    "id": "932187931fb4c747",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/bg.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/bg.jpg?updatedAt=1758103560393",
-    "width": 1520,
-    "height": 478,
-    "label": "Services hero",
-    "groups": [
-      "Services"
-    ],
-    "usedIn": [
-      "OurServices"
-    ]
-  },
-  {
     "id": "8e8a389e4c85c00e",
     "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/pre-wedding-2%20(1).jpg",
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/pre-wedding-2%20(1).jpg?updatedAt=1758109838211",
@@ -1335,20 +1474,6 @@
     "width": 452,
     "height": 570,
     "label": "pre wedding 4",
-    "groups": [
-      "Pre-wedding"
-    ],
-    "usedIn": [
-      "PreWedding"
-    ]
-  },
-  {
-    "id": "353e4e8d6b4c51fc",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/3-1.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/3-1.jpg?updatedAt=1758109838520",
-    "width": 1520,
-    "height": 600,
-    "label": "Pre-wedding hero",
     "groups": [
       "Pre-wedding"
     ],
@@ -1454,20 +1579,6 @@
     ]
   },
   {
-    "id": "2ecd0662da9a8a6f",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/vc-junior.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/vc-junior.jpg?updatedAt=1758110287945",
-    "width": 1920,
-    "height": 600,
-    "label": "Junior hero",
-    "groups": [
-      "Junior"
-    ],
-    "usedIn": [
-      "VideoCraftsJunior"
-    ]
-  },
-  {
     "id": "b28031462475a16b",
     "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Pre%20Wedding/pre-wedding-3%20(1).jpg",
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Pre%20Wedding/pre-wedding-3%20(1).jpg?updatedAt=1758021539395",
@@ -1489,21 +1600,6 @@
     "width": 452,
     "height": 570,
     "label": "Pre wedding 2",
-    "groups": [
-      "Home",
-      "Portfolios"
-    ],
-    "usedIn": [
-      "WeddingSection"
-    ]
-  },
-  {
-    "id": "166b1e756aa62620",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Pre%20Wedding/Pre-wedding-1.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Pre%20Wedding/Pre-wedding-1.jpg?updatedAt=1758021538373",
-    "width": 452,
-    "height": 570,
-    "label": "Pre wedding 1",
     "groups": [
       "Home",
       "Portfolios"
@@ -1618,57 +1714,12 @@
     ]
   },
   {
-    "id": "b297d7050d971c1a",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-1.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-1.jpg?updatedAt=1758024050924",
-    "width": 652,
-    "height": 815,
-    "label": "Wedding 1",
-    "groups": [
-      "Home",
-      "Portfolios"
-    ],
-    "usedIn": [
-      "WeddingSection"
-    ]
-  },
-  {
     "id": "b23af45a91a7a520",
     "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding.jpg",
     "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding.jpg?updatedAt=1758024050896",
     "width": 652,
     "height": 815,
     "label": "Wedding",
-    "groups": [
-      "Home",
-      "Portfolios"
-    ],
-    "usedIn": [
-      "WeddingSection"
-    ]
-  },
-  {
-    "id": "6e62c3805534935c",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-3.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-3.jpg?updatedAt=1758024050891",
-    "width": 652,
-    "height": 815,
-    "label": "Wedding 3",
-    "groups": [
-      "Home",
-      "Portfolios"
-    ],
-    "usedIn": [
-      "WeddingSection"
-    ]
-  },
-  {
-    "id": "9998ebd5d715ea2e",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-5.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-5.jpg?updatedAt=1758024050814",
-    "width": 652,
-    "height": 815,
-    "label": "Wedding 5",
     "groups": [
       "Home",
       "Portfolios"
@@ -1714,21 +1765,6 @@
     "width": 652,
     "height": 815,
     "label": "bridal portraits",
-    "groups": [
-      "Home",
-      "Portfolios"
-    ],
-    "usedIn": [
-      "WeddingSection"
-    ]
-  },
-  {
-    "id": "6b5414260f4ee4bb",
-    "key": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-2.jpg",
-    "src": "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-2.jpg?updatedAt=1758024050544",
-    "width": 652,
-    "height": 815,
-    "label": "Wedding 2",
     "groups": [
       "Home",
       "Portfolios"

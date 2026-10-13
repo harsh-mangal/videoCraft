@@ -19,7 +19,8 @@
     "test:watch": "npm --prefix client run test:watch",
     "lint": "eslint client/src client/scripts client/vite.config.js server/src server/scripts server/test admin/src admin/vite.config.js eslint.config.js",
     "lint:client": "eslint client/src client/scripts client/vite.config.js",
-    "check:seo": "npm --prefix client run check:seo"
+    "check:seo": "npm --prefix client run check:seo",
+    "audit:production": "npm --prefix client run audit:production"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",

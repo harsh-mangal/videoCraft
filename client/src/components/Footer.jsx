@@ -2,7 +2,6 @@ import ResponsiveImage from "../components/ResponsiveImage";
 import React, { useState } from "react";
 import { ArrowUpRight, Mail, MapPin, Phone, Send } from "lucide-react";
 import SocialLinks from "./SocialLinks";
-import { Link } from "react-router-dom";
 import { EMAIL_PATTERN } from "../utils/enquiry";
 import { openWhatsApp } from "../utils/whatsapp";
 
@@ -10,6 +9,8 @@ const footerLinks = [
   ["About", "/about"],
   ["Gallery", "/gallery"],
   ["Services", "/services"],
+  ["Wedding photography", "/wedding-photographer-chandigarh"],
+  ["Planning guides", "/how-to-choose-wedding-photographer-chandigarh"],
   ["Wedding stories", "/wedding-stories/tales-of-romance"],
   ["Contact", "/contact"],
 ];
@@ -38,18 +39,18 @@ const Footer = () => {
             <p className="footer-kicker">Private consultations · Chandigarh</p>
             <h2 id="footer-invitation-title" className="footer-display mt-4">Your story deserves to be remembered beautifully.</h2>
           </div>
-          <Link to="/contact" className="footer-cta inline-flex min-h-12 shrink-0 items-center gap-3 px-6 py-3">
+          <a href="/contact" className="footer-cta inline-flex min-h-12 shrink-0 items-center gap-3 px-6 py-3">
             Begin a conversation <ArrowUpRight size={18} aria-hidden="true" />
-          </Link>
+          </a>
         </div>
       </section>
 
       <div className="footer-main px-5 py-16 sm:py-20">
         <div className="mx-auto grid max-w-7xl gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:gap-10">
           <div className="footer-brand sm:col-span-2 lg:col-span-4 lg:pr-10">
-            <Link to="/" aria-label="Videocrafts India home" className="inline-flex">
+            <a href="/" aria-label="Videocrafts India home" className="inline-flex">
               <ResponsiveImage src="https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/logo.png?updatedAt=1758018691025" alt="Videocrafts India" className="footer-logo h-auto w-52" loading="lazy" decoding="async" />
-            </Link>
+            </a>
             <p className="mt-6 max-w-sm font-serif text-xl italic leading-relaxed">
               Photography and films made with feeling, craft and an eye for the moments in between.
             </p>
@@ -60,7 +61,7 @@ const Footer = () => {
             <h3 className="footer-heading">Explore</h3>
             <ul className="mt-5 space-y-2">
               {footerLinks.map(([label, path]) => <li key={path}>
-                <Link to={path} className="footer-link inline-flex min-h-10 items-center">{label}</Link>
+                <a href={path} className="footer-link inline-flex min-h-10 items-center">{label}</a>
               </li>)}
             </ul>
           </nav>

@@ -149,7 +149,7 @@ footer { border-top: 1px solid var(--theme-border); }
 }
 .section-heading {
   color: var(--theme-heading);
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: "Cormorant Garamond Variable", Georgia, serif;
   font-size: clamp(2.4rem, 5vw, 4rem);
   font-weight: 500;
   line-height: 1.02;
@@ -217,6 +217,7 @@ main textarea { border-radius: 2px !important; }
 
 /* Dark-theme adjustments. */
 .dark .bg-white { background-color: var(--theme-surface); }
+.dark .seo-primary-cta { color: #22261f; background-color: #fff; }
 .dark .bg-\[\#f0f5fa\],
 .dark .bg-\[\#f2eaea\],
 .dark .bg-\[\#f3efec\],
@@ -277,7 +278,7 @@ main textarea { border-radius: 2px !important; }
 .footer-display {
   max-width: 48rem;
   color: #f4eee3;
-  font-family: "Cormorant Garamond", Georgia, serif;
+  font-family: "Cormorant Garamond Variable", Georgia, serif;
   font-size: clamp(2.7rem, 6vw, 5.1rem);
   font-weight: 500;
   line-height: .98;

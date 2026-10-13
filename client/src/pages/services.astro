@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ServicesPage from "../islands/ServicesPage";
+import { loadPublishedMedia, mediaForRoute } from "../lib/publishedMedia";
+import { seoLandingPages } from "../content/seoLandingPages";
+const media = await loadPublishedMedia();
+const pageMedia = mediaForRoute(media, "/services");
+const groups = [
+  ["Weddings", ["wedding-photographer-chandigarh", "candid-wedding-photographer-chandigarh", "wedding-videography-chandigarh", "wedding-photography-packages-chandigarh", "destination-wedding-photographer-chandigarh", "anand-karaj-photographer-chandigarh", "engagement-roka-photographer-chandigarh", "wedding-albums-chandigarh"]],
+  ["Pre-wedding", ["pre-wedding-shoot-locations-chandigarh", "indoor-pre-wedding-shoot-chandigarh"]],
+  ["Portrait & family", ["maternity-photographer-chandigarh", "newborn-baby-photographer-chandigarh", "kids-photographer-chandigarh", "first-birthday-photographer-chandigarh", "portrait-photographer-chandigarh", "family-photographer-chandigarh"]],
+  ["Commercial", ["corporate-event-photographer-chandigarh", "corporate-headshot-photographer-chandigarh", "product-photography-chandigarh", "food-photography-chandigarh", "interior-architecture-photographer-chandigarh", "fashion-model-portfolio-photographer-chandigarh"]],
+  ["Tricity locations", ["wedding-photographer-mohali", "wedding-photographer-panchkula", "wedding-photographer-zirakpur"]],
+  ["Planning guides", ["how-to-choose-wedding-photographer-chandigarh", "wedding-photography-timeline-guide", "candid-vs-traditional-wedding-photography", "what-do-wedding-photography-packages-include", "wedding-photography-cost-chandigarh", "pre-wedding-shoot-cost-chandigarh"]],
+];
+---
+<BaseLayout pathname="/services" media={media}>
+  <ServicesPage media={pageMedia} />
+  <section class="bg-[var(--theme-surface)] px-5 py-16 text-[var(--theme-text)] sm:px-8 sm:py-24" aria-labelledby="service-directory-title">
+    <div class="mx-auto max-w-7xl">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#9b7746]">EXPLORE BY NEED</p>
+      <h2 id="service-directory-title" class="mt-4 max-w-3xl font-serif text-4xl leading-tight text-[var(--theme-heading)] sm:text-5xl">Photography and films for every chapter.</h2>
+      <p class="mt-5 max-w-3xl text-lg leading-8">Each guide explains the approach, planning decisions and questions that matter before you book.</p>
+      <div class="mt-12 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        {groups.map(([heading, slugs]) => <section><h3 class="border-b border-[var(--theme-border)] pb-4 font-serif text-2xl text-[var(--theme-heading)]">{heading}</h3><ul class="mt-4 space-y-1">{slugs.map(slug => { const page = seoLandingPages["/" + slug]; return <li><a class="block border-b border-transparent py-2.5 hover:border-[#9b7746] hover:text-[#9b7746]" href={`/${slug}`}>{page.serviceType}</a></li>; })}</ul></section>)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

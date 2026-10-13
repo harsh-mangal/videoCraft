@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PreWeddingPage from "../islands/PreWeddingPage";
+import { loadPublishedMedia, mediaForRoute } from "../lib/publishedMedia";
+const media = await loadPublishedMedia();
+const pageMedia = mediaForRoute(media, "/pre-wedding");
+---
+<BaseLayout pathname="/pre-wedding" media={media}>
+  <PreWeddingPage media={pageMedia} />
+  <section class="bg-[var(--theme-surface)] px-5 py-16 text-[var(--theme-text)] sm:px-8 sm:py-24">
+    <div class="mx-auto max-w-6xl">
+      <nav aria-label="Breadcrumb" class="text-xs font-semibold uppercase tracking-[0.16em] text-[#9b7746]"><a href="/">Home</a> <span aria-hidden="true">/</span> <span aria-current="page">Pre-wedding photography</span></nav>
+      <div class="mt-10 grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+        <div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#9b7746]">CHANDIGARH & TRICITY</p><h2 class="mt-4 font-serif text-4xl leading-tight text-[var(--theme-heading)] sm:text-5xl">A pre-wedding session that feels like the two of you.</h2></div>
+        <div class="space-y-6 text-lg leading-8"><p>Pre-wedding photography works best when the place, pace and visual direction fit the couple rather than a borrowed checklist. We begin with how you want the photographs to feel, then build a realistic session around light, travel, clothing and comfort.</p><p>A smaller number of well-chosen settings usually produces a more coherent story than spending the day moving between unrelated locations. We help plan timing, wardrobe transitions and a weather alternative while keeping property permissions and access rules clear.</p><p>During the session, direction stays simple. The goal is to create flattering photographs without losing conversation, movement and the small gestures that make the images personal.</p></div>
+      </div>
+      <div class="mt-16 grid gap-8 sm:grid-cols-3"><section><h2 class="font-serif text-3xl text-[var(--theme-heading)]">Before the session</h2><p class="mt-4 leading-8">Share references, preferred mood, wardrobe ideas and any place with personal meaning. We turn those inputs into a practical route and schedule.</p></section><section><h2 class="font-serif text-3xl text-[var(--theme-heading)]">On the day</h2><p class="mt-4 leading-8">Allow enough time to settle into each location. We guide position and light while leaving space for genuine interaction and unplanned frames.</p></section><section><h2 class="font-serif text-3xl text-[var(--theme-heading)]">Photography and film</h2><p class="mt-4 leading-8">A short pre-wedding film can be planned with the photographs so movement, sound and still images share one visual direction.</p></section></div>
+      <div class="mt-14 flex flex-wrap gap-3"><a class="rounded-full bg-[#4d504a] px-6 py-3 font-semibold text-white" href="/contact">Plan your session</a><a class="rounded-full border border-[var(--theme-border)] px-6 py-3 font-semibold" href="/pre-wedding-shoot-locations-chandigarh">Explore location planning</a><a class="rounded-full border border-[var(--theme-border)] px-6 py-3 font-semibold" href="/engagement-roka-photographer-chandigarh">Engagement & Roka photography</a></div>
+    </div>
+  </section>
+</BaseLayout>

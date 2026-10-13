@@ -19,7 +19,7 @@ export function createPreviewServer(directory = "build") {
       response.writeHead(301, { Location: route + url.search }); response.end(); return;
     }
     const known = !!routeMeta[route];
-    const relative = known ? (route === "/" ? "index.html" : route.slice(1) + ".html") : pathname.slice(1);
+    const relative = known ? (route === "/" ? "index.html" : route.slice(1) + "/index.html") : pathname.slice(1);
     const file = path.resolve(root, relative);
     const safe = file.startsWith(root + path.sep) && !relative.split("/").some(part => part.startsWith("."));
     let body, status = 200, extension = path.extname(file);
@@ -33,7 +33,7 @@ export function createPreviewServer(directory = "build") {
       "Content-Type": types[extension] || "application/octet-stream",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "strict-origin-when-cross-origin",
-      "Cache-Control": status === 200 && pathname.startsWith("/assets/") ? "public, max-age=31536000, immutable" : "no-cache",
+      "Cache-Control": status === 200 && pathname.startsWith("/_astro/") ? "public, max-age=31536000, immutable" : "no-cache",
     });
     response.end(request.method === "HEAD" ? undefined : body);
   });

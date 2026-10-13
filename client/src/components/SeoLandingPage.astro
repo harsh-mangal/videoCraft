@@ -1,0 +1,91 @@
+---
+import { ArrowRight, Check, MessageCircle, Phone } from "lucide-react";
+import ManagedImage from "./ManagedImage.astro";
+import { routeMeta } from "../config/seo";
+
+const { page, media } = Astro.props;
+const weddingImages = [
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-3.jpg?updatedAt=1758024050891",
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-5.jpg?updatedAt=1758024050814",
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/wedding/Wedding-2.jpg?updatedAt=1758024050544",
+];
+const familyImages = [
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/FAMILY-1.jpg?updatedAt=1758114032016",
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/Gallary/FAMILY-2.jpg?updatedAt=1758114031787",
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/junior/junior-3.jpg?updatedAt=1758024179268",
+];
+const preWeddingImages = [
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/pre-wedding-2%20(1).jpg?updatedAt=1758109838211",
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/pre-wedding-6.jpg?updatedAt=1758109838374",
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/pre-wedding-5.jpg?updatedAt=1758109839088",
+];
+const commercialImages = [
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/451984871_495778003131281_8603668917776350073_n.jpg?updatedAt=1758095326142",
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/453875494_18290686984201135_3117475045989761803_n.jpg?updatedAt=1758095326089",
+  "https://ik.imagekit.io/sqpcbo0c0/Video%20Craft/343457423_1855208218169410_3262816958422017919_n.jpg?updatedAt=1758095325998",
+];
+const type = page.serviceType.toLowerCase();
+const gallery = type.includes("maternity") || type.includes("newborn") || type.includes("family") ? familyImages
+  : type.includes("pre-wedding") || type.includes("engagement") ? preWeddingImages
+    : type.includes("product") || type.includes("corporate") || type.includes("fashion") || type === "portrait photography" ? commercialImages
+      : weddingImages;
+const linkLabel = path => routeMeta[path]?.label || path.replaceAll("-", " ").replace("/", "");
+---
+<article class="seo-landing">
+  <header class="relative isolate overflow-hidden bg-[#11130f] text-white">
+    <ManagedImage src={page.hero} media={media} alt={page.heroAlt} width={1920} sizes="100vw" priority class="absolute inset-0 h-full w-full object-cover opacity-45" />
+    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/45"></div>
+    <div class="relative mx-auto flex min-h-[68vh] max-w-7xl flex-col justify-end px-5 pb-16 pt-32 sm:px-8 sm:pb-24 lg:px-10">
+      <nav aria-label="Breadcrumb" class="mb-10 text-xs font-semibold uppercase tracking-[0.18em] text-white/75">
+        <ol class="flex flex-wrap items-center gap-2"><li><a class="hover:text-white" href="/">Home</a></li><li aria-hidden="true">/</li><li><a class="hover:text-white" href="/services">Services</a></li><li aria-hidden="true">/</li><li aria-current="page">{page.serviceType}</li></ol>
+      </nav>
+      <p class="text-xs font-semibold tracking-[0.28em] text-[#d5b98b] sm:text-sm">{page.eyebrow}</p>
+      <h1 class="mt-5 max-w-5xl font-serif text-5xl font-medium leading-[0.95] sm:text-6xl lg:text-8xl">{page.h1}</h1>
+      <p class="mt-7 max-w-3xl text-base leading-8 text-white/85 sm:text-lg">{page.lead}</p>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href="/contact" class="seo-primary-cta inline-flex min-h-12 items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-[#22261f] transition hover:bg-[#d5b98b]">Check your date <ArrowRight size={17} aria-hidden="true" /></a>
+        <a href="tel:+919888626212" class="inline-flex min-h-12 items-center gap-2 rounded-full border border-white/50 px-6 py-3 text-sm font-semibold uppercase tracking-[0.12em] hover:border-white"><Phone size={17} aria-hidden="true" />Call the studio</a>
+      </div>
+    </div>
+  </header>
+
+  <section class="bg-[var(--theme-bg)] px-5 py-16 text-[var(--theme-text)] sm:px-8 sm:py-24">
+    <div class="mx-auto max-w-7xl">
+      <div class="grid gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20">
+        <div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#9b7746]">WHAT TO EXPECT</p><h2 class="mt-4 font-serif text-4xl leading-tight text-[var(--theme-heading)] sm:text-5xl">A considered plan, built around the work.</h2></div>
+        <ul class="grid gap-3 sm:grid-cols-2">
+          {page.inclusions.map(item => <li class="flex items-start gap-3 border-b border-[var(--theme-border)] py-4"><Check className="mt-1 shrink-0 text-[#9b7746]" size={18} aria-hidden="true" /><span>{item}</span></li>)}
+        </ul>
+      </div>
+      <div class="mt-20 grid gap-14 lg:grid-cols-3 lg:gap-10">
+        {page.sections.map(([heading, ...paragraphs], index) => <section>
+          <span class="font-serif text-3xl text-[#b99562]">0{index + 1}</span>
+          <h2 class="mt-4 font-serif text-3xl leading-tight text-[var(--theme-heading)]">{heading}</h2>
+          {paragraphs.map(paragraph => <p class="mt-5 leading-8">{paragraph}</p>)}
+        </section>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="grid bg-[#171914] sm:grid-cols-3" aria-label={`${page.serviceType} portfolio selection`}>
+    {gallery.map((src, index) => <ManagedImage src={src} media={media} alt={`Selected ${page.serviceType.toLowerCase()} portfolio photograph ${index + 1}`} width={960} sizes="(min-width: 640px) 33vw, 100vw" class="aspect-[4/5] h-full w-full object-cover" />)}
+  </section>
+
+  <section class="bg-[var(--theme-surface)] px-5 py-16 text-[var(--theme-text)] sm:px-8 sm:py-24">
+    <div class="mx-auto max-w-5xl">
+      <p class="text-center text-xs font-semibold uppercase tracking-[0.2em] text-[#9b7746]">PLANNING NOTES</p>
+      <h2 class="mx-auto mt-4 max-w-2xl text-center font-serif text-4xl text-[var(--theme-heading)] sm:text-5xl">Questions worth asking before you book</h2>
+      <div class="mt-12 divide-y divide-[var(--theme-border)] border-y border-[var(--theme-border)]">
+        {page.faqs.map(([question, answer]) => <details class="group py-5"><summary class="cursor-pointer list-none pr-10 text-lg font-semibold text-[var(--theme-heading)] marker:hidden">{question}<span class="float-right text-[#9b7746] transition group-open:rotate-45">+</span></summary><p class="mt-4 max-w-3xl leading-8">{answer}</p></details>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-[#23251f] px-5 py-16 text-white sm:px-8 sm:py-20">
+    <div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+      <div><p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#d5b98b]">CONTINUE EXPLORING</p><h2 class="mt-4 max-w-3xl font-serif text-4xl leading-tight sm:text-5xl">Useful next pages for planning your story.</h2><div class="mt-8 flex flex-wrap gap-3">{page.related.map(path => <a class="rounded-full border border-white/25 px-4 py-2 text-sm hover:border-[#d5b98b] hover:text-[#d5b98b]" href={path}>{linkLabel(path)}</a>)}</div></div>
+      <div class="rounded-2xl border border-white/15 bg-white/5 p-7"><MessageCircle className="text-[#d5b98b]" size={28} aria-hidden="true" /><h2 class="mt-5 font-serif text-3xl">Tell us what you are planning.</h2><p class="mt-3 leading-7 text-white/75">Share the date, city, venues and the photographs or films you value. We will help shape a practical next step.</p><a href="/contact" class="mt-6 inline-flex items-center gap-2 font-semibold text-[#d5b98b]">Start an enquiry <ArrowRight size={17} aria-hidden="true" /></a></div>
+    </div>
+  </section>
+</article>
+

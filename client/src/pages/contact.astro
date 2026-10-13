@@ -1,0 +1,8 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ContactPage from "../islands/ContactPage";
+import { loadPublishedMedia, mediaForRoute } from "../lib/publishedMedia";
+const media = await loadPublishedMedia();
+const pageMedia = mediaForRoute(media, "/contact");
+---
+<BaseLayout pathname="/contact" media={media}><ContactPage media={pageMedia} client:load /></BaseLayout>

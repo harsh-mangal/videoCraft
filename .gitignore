@@ -11,6 +11,8 @@ node_modules/
 /client/dist/
 /client/coverage/
 .cache/
+.astro/
+/client/.astro/
 .eslintcache
 *.tsbuildinfo
 

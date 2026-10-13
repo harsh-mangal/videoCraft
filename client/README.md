@@ -1,28 +1,41 @@
 # Public website
 
-The public React application lives here, separate from ../admin/ and ../server/.
+Astro 7 static site for `https://www.videocraftsindia.com/`, with React 19 used only for interactive islands and Tailwind CSS 4 for styling.
 
-Run these commands from the repository root:
+## Commands
 
 ```sh
-npm ci --prefix client
 npm --prefix client run dev
+npm --prefix client run build
+npm --prefix client run preview
+npm --prefix client test
+npm --prefix client run check:seo
+npm --prefix client run audit:production # after deployment
 ```
 
-The development server opens at http://127.0.0.1:5173. Run npm --prefix server run dev in another terminal for the image API and uploaded media. Root npm start and npm run dev forward to this application.
+Development runs at `http://127.0.0.1:5173`. Production output is written to `client/build/`.
 
-The production client is hosted at **https://www.videocraftsindia.com/** and always reads its published image map and managed uploads from **https://api.videocraftsindia.com/**, including when the client runs on localhost. To target another API for isolated development, set `VITE_API_ORIGIN` in an ignored local client environment file before starting Vite.
+## Published media
 
-## Files and commands
+Copy `.env.example` to an ignored `.env` when you want a local build to include the current production media map:
 
-- src/ contains pages, components, styles, SEO configuration and tests.
-- public/ contains static assets, crawler files and static hosting rules.
-- scripts/ contains prerendering, SEO checks and the static preview server.
-- npm --prefix client run build generates client/build/ and the backend renderer in server/site-renderer/. It regenerates the shared image catalog and runs SEO/HTTP checks.
-- npm --prefix client test runs the public website tests.
-- npm --prefix client run preview serves the static snapshot on port 4173. Use the Node server on port 4691 to verify published admin changes.
-- npm --prefix client run lint uses the shared root ESLint tooling; install it with npm ci at the root first.
+```dotenv
+MEDIA_MANIFEST_URL=https://api.videocraftsindia.com/api/media
+```
 
-Keep the repository layout when building: client source uses ../shared/ image defaults, and the backend uses the client's SEO helpers. This folder is a separate application package, not a standalone copy of the whole system.
+This endpoint is read during the build only. Browsers do not fetch `/api/media`. Without the variable, builds use the catalog’s original fallback images. Production should set the variable and configure the API’s deployment webhook so each admin publish queues a new build.
 
-Build artifacts and node_modules are ignored. See [the root README](../README.md) for full setup, deployment and image administration.
+## Rendering model
+
+- Astro owns routing, page HTML, metadata, sitemap generation and the 404 page.
+- `src/layouts/BaseLayout.astro` emits the complete document head and shared page structure.
+- `src/pages/` contains the canonical file-based routes.
+- `src/site-pages/` contains the existing React page presentation components.
+- `src/islands/` wraps only interactive React areas for hydration.
+- `src/lib/publishedMedia.js` loads the published manifest once during a build.
+- `scripts/postbuild.mjs` generates canonical hosting redirects and cache rules.
+- `scripts/check-build.mjs` audits the generated pages and static HTTP behavior.
+
+Static pages remain readable with JavaScript disabled. Navbar, forms and manual carousels hydrate independently where needed.
+
+The build emits 42 canonical routes plus a real 404, the standard Astro sitemap and a dedicated image sitemap. Optional `PUBLIC_GOOGLE_SITE_VERIFICATION` and `PUBLIC_GA_MEASUREMENT_ID` build variables enable Search Console verification and GA4 without placing account values in source control.

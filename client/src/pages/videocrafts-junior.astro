@@ -1,0 +1,11 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import JuniorPage from "../islands/JuniorPage";
+import { loadPublishedMedia, mediaForRoute } from "../lib/publishedMedia";
+const media = await loadPublishedMedia();
+const pageMedia = mediaForRoute(media, "/videocrafts-junior");
+---
+<BaseLayout pathname="/videocrafts-junior" media={media}>
+  <JuniorPage media={pageMedia} />
+  <section class="bg-[var(--theme-surface)] px-5 py-16 text-[var(--theme-text)] sm:px-8 sm:py-24"><div class="mx-auto max-w-5xl"><p class="text-xs font-semibold uppercase tracking-[0.2em] text-[#9b7746]">VIDEOCrafts JUNIOR</p><h2 class="mt-4 font-serif text-4xl text-[var(--theme-heading)] sm:text-5xl">Patient sessions for new beginnings and growing families.</h2><div class="mt-8 grid gap-8 text-lg leading-8 sm:grid-cols-2"><p>Our junior work includes newborn, baby, child and family photographs with a pace shaped around comfort. Breaks, feeding and time to settle are expected rather than treated as delays.</p><p>Explore the dedicated planning guides for newborn safety and pacing, maternity sessions and relaxed multi-generation family portraits.</p></div><div class="mt-10 flex flex-wrap gap-3"><a class="rounded-full border border-[var(--theme-border)] px-5 py-3 font-semibold" href="/newborn-baby-photographer-chandigarh">Newborn & baby</a><a class="rounded-full border border-[var(--theme-border)] px-5 py-3 font-semibold" href="/maternity-photographer-chandigarh">Maternity</a><a class="rounded-full border border-[var(--theme-border)] px-5 py-3 font-semibold" href="/family-photographer-chandigarh">Family photography</a></div></div></section>
+</BaseLayout>

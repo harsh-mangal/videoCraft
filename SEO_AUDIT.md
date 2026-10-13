@@ -1,142 +1,74 @@
-# SEO, performance and responsive audit
+# Videocrafts India SEO and performance audit
 
-**Date:** 2026-08-28
-**Scope:** Current source and generated production build, all 11 public routes, local static HTTP behavior, browser layout and interactions, dependency scan, and referenced ImageKit assets. This is the maintained audit; current architecture and setup instructions are in README.md.
+**Updated:** 14 October 2026
+**Scope:** current source, generated Astro build, all 42 public routes, static HTTP behavior, API/admin media flow and dependency audit.
 
-## Result
+## Current architecture
 
-**Admin follow-up (2026-09-03):** The repository includes a separate Node.js backend and React admin. The catalog covers 122 editable entries (121 existing images plus the browser icon). Published replacements update server-rendered HTML, social/schema images, both CSS backgrounds and the app icon without a rebuild. Production is configured for separate `www`, `admin`, and `api` HTTPS subdomains; the admin is noindex and authenticated cross-origin changes retain strict Origin, cookie and CSRF controls. Verification now covers 38 public-site tests, 6 admin tests and 11 backend integration tests. Initial public JavaScript is approximately 90 KB gzip, with the admin delivered as a separate bundle. The Node server compresses public HTML/assets; private API responses are not compressed. See README.md and server/README.md for deployment details.
+The public website now uses Astro static generation with React islands and Tailwind CSS 4. Every canonical route is emitted as complete HTML with its own title, description, canonical URL, social metadata and structured data. The browser does not fetch the media manifest. MongoDB media data is read once during a deployment build and embedded into the generated pages.
 
-The reported application issues have been addressed in code. The site now generates crawlable page content and route-specific metadata before JavaScript runs, has a canonical sitemap and robots file, uses responsive images and smaller JavaScript bundles, and has regression/build checks.
+The admin remains an independent React/Vite application. The Node API remains independent and no longer imports files from `client/src`, eliminating the previous standalone deployment failure. Uploads are transformed into AVIF and WebP variants at publish time and can be stored in Cloudflare R2 behind `media.videocraftsindia.com`.
 
-**Domain update (2026-08-31):** The owner confirmed **https://www.videocraftsindia.com** as the canonical origin, and its existing public page was reachable over HTTPS during this update. The rebuilt application in this repository has not been deployed by this audit, so production redirects, generated metadata, indexing and Search Console still require verification after release.
+## Implemented technical SEO
 
-**Persistence update (2026-09-03):** The backend now uses the official MongoDB Node.js driver instead of SQLite. Admins, expiring sessions, image overrides, optimistic versions, bounded edit history and rate limits are stored in MongoDB; generated WebP files remain in persistent upload storage. Backend integration tests run against a disposable MongoDB database and verify the required unique and TTL indexes.
-
-## Technical SEO checks
-
-| Area | Implemented and checked | Status |
-| --- | --- | --- |
-| Crawlable content | Complete HTML for 11 routes, including lazy route content, with no loading placeholders or hidden streaming fragments | Pass locally |
-| Titles/descriptions | One unique title and description per public route | Pass |
-| Canonicals | One absolute production-domain canonical per known route; case/trailing variants normalized; no canonical on 404 | Pass locally |
-| Social previews | Open Graph and Twitter title, description and image in initial HTML; distinct article images | Pass structurally; live preview not tested |
-| Sitemap | Valid XML with exactly 11 canonical HTTPS URLs; no aliases, duplicates or 404 pages | Pass |
-| Robots | Crawl allowed, including JS/CSS/images; absolute sitemap reference | Pass |
-| Structured data | LocalBusiness, WebSite and WebPage; BreadcrumbList for inner routes; parseable JSON-LD | Pass structurally |
-| Business consistency | Existing phone, email and Chandigarh address visible in footer/contact and matched in schema | Source-consistent; owner must confirm facts |
-| Headings | Exactly one H1 per route; meaningful home H1 and article heading cleanup | Pass |
-| Internal links | Generated root-relative links resolve to routes; portfolios have contact links | Pass |
-| Redirects | Legacy spellings, common trailing slash/case variants and direct HTML requests canonicalize in local preview | Pass locally; host rules supplied |
-| Missing URLs | Local HTTP 404 plus noindex metadata; no home-page fallback for missing pages/assets | Pass locally |
-| Images | Responsive srcset/sizes, optimized URLs, alt attributes and intrinsic dimensions | Pass structurally |
-| Caching | Hashed JS/CSS, immutable asset headers and revalidated HTML; Apache compression configuration | Configured; host/CDN behavior needs deployment check |
-| Source portability | Git filename case corrected; production check validates import spelling exactly | Pass locally |
-| Security dependencies | npm audit reports no vulnerabilities in the current lockfile | Pass at audit time |
-
-Static generation avoids making discovery of the page body depend on JavaScript rendering. Titles, canonical metadata and links follow [Google's JavaScript SEO guidance](https://developers.google.com/search/docs/crawling-indexing/javascript/javascript-seo-basics). The sitemap contains only absolute canonical URLs, following [Google's sitemap guidance](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap). There are deliberately no invented last-modified dates, business hours, prices, review counts or ratings in structured data.
-
-### Route inventory
-
-All rows below have initial HTML, canonical URLs, indexable robots metadata and matching sitemap entries. Description length is a diagnostic, not a ranking guarantee.
-
-| URL path | Title | Description characters |
-| --- | --- | --- |
-| / | Wedding Photographers in Chandigarh \| Videocrafts India | 145 |
-| /about | About Our Photography Studio \| Videocrafts India | 151 |
-| /services | Photography Services in Chandigarh \| Videocrafts India | 149 |
-| /gallery | Wedding & Family Photography Gallery \| Videocrafts India | 140 |
-| /contact | Contact Videocrafts India \| Chandigarh Photography Studio | 158 |
-| /bridal-portraits | Bridal Portrait Photography \| Videocrafts India | 147 |
-| /pre-wedding | Pre-Wedding Photography \| Videocrafts India Chandigarh | 153 |
-| /videocrafts-junior | Newborn, Kids & Family Photography \| Videocrafts Junior | 148 |
-| /wedding-stories/tales-of-romance | Tales of Romance: A Wedding Story \| Videocrafts India | 143 |
-| /wedding-stories/from-i-do-to-forever | From I Do to Forever: Wedding Story \| Videocrafts India | 155 |
-| /wedding-stories/unforgettable-wedding-day | An Unforgettable Wedding Day \| Videocrafts India | 148 |
-
-## Performance changes and measurements
-
-| Measure | Previous audit | Current build / observation |
-| --- | --- | --- |
-| Initial JavaScript | About 186 KB gzip in one main bundle | About 95 KB gzip including the shared image module; roughly half the previous payload |
-| Main CSS | About 12.3 KB gzip | About 5.6 KB gzip |
-| Route loading | All pages eagerly imported | Separate inner-route chunks; HTML already prerendered |
-| Animation/carousel dependencies | Framer Motion, Swiper, Slick | Removed; small manual carousel and static content |
-| Dependency audit | 60 flagged entries, including 3 critical | 0 flagged entries |
-| Tests | 1 helper test | 55 tests across the public site, admin and backend |
-| Image requests | Source-size images with limited responsive delivery | ImageKit width/quality/format transformations plus srcset/sizes |
-| Layout stability | Many images lacked intrinsic dimensions | Measured source dimensions for all 121 remaining ImageKit assets |
-| Interface icons | External service-icon images and text glyphs | Lucide interface icons and Simple Icons brand marks; 11 external icon images replaced with inline SVG |
-| Loading priority | CSS backgrounds and eager image strips | High-priority hero; default lazy images below the fold; no duplicated moving strips |
-
-The byte comparisons below use the same Accept: image/webp header for each original/optimized pair, with a 640px transform for the mobile variant. They are resource-size measurements, not whole-page load-time measurements.
-
-| ImageKit asset | Original response | 640px response |
-| --- | ---: | ---: |
-| Home banner | 19,764 bytes | 5,688 bytes |
-| Gallery Wedding-7 | 40,048 bytes | 37,646 bytes |
-| Award image | 27,844 bytes | 13,184 bytes |
-
-All 132 original ImageKit source headers were read successfully during the asset audit. A subsequent Lucide React update replaced 11 icon images, leaving 121 image assets with measured dimensions. This does not guarantee future CDN availability. Image transformations use [ImageKit's documented resize/format behavior](https://imagekit.io/docs/image-transformation).
-
-There is **no claimed Lighthouse score or Core Web Vitals result**. No throttled Lighthouse run, production field data or CrUX report was collected. Once deployed, measure LCP, INP and CLS on representative real devices and in Search Console. Lower bundle/image bytes are verified; a specific loading-time improvement is not claimed.
-
-## Responsive and accessibility checks
-
-- Home tested at 320, 375, 768, 820, 1024 and 1440px: no document-width overflow and no overlapping visible navigation hit targets.
-- All ten inner routes tested at 375, 768 and 1024px: no document-width overflow; expected page headings and no broken loaded images observed.
-- No warning/error logs were captured during those browser checks.
-- Mobile menu opens, closes after route selection, supports Escape and returns focus to the toggle.
-- Empty enquiry submission stays on the site, announces the error, marks the invalid field and focuses it.
-- Manual carousel buttons support keyboard activation; autoplay and JavaScript reveal transforms are removed.
-- A skip link and route focus handling are present. Standard controls have visible focus styling; major navigation/carousel controls use 44px targets.
-- Muted text colors were darkened. Fixed service-card heights and the crowded tablet footer/navigation layout were removed.
-
-These are targeted checks, not a formal WCAG certification or comprehensive screen-reader audit. No real enquiry, WhatsApp message or updates request was sent.
-
-## Prior issue resolution
-
-| Historical finding | Resolution |
+| Area | Implementation |
 | --- | --- |
-| ClientFeedBack / ClientFeedback mismatch | Case-only rename recorded in Git; strict import check and Linux CI added |
-| Tablet menu/phone overlap | Desktop navigation uses its own flex layout from the large breakpoint; tablet/mobile menu below that |
-| Valid variants get 404 metadata | Shared path normalization and canonical redirects |
-| Dependency advisories | New Vite/Vitest toolchain, patched React/Router, unnecessary libraries removed |
-| Reduced-motion/autoplay | Autoplay and animated image strips removed; manual controls retained |
-| Initial response missing per-page SEO | React static generation with complete Suspense content; metadata generated per route |
-| Malformed phone numbers accepted | Whole-input validation, balanced formatting, local/international length limits and normalized enquiry text |
-| Minimal test coverage | 55 tests plus production URL, SEO/import/HTTP checks and CI configuration |
-| Ignore rules ineffective for tracked output | build/ and .DS_Store removed from the Git index; local files retained |
+| Rendering | Static HTML for every public route; selective React hydration only where interaction is needed |
+| Metadata | Unique title, description, canonical, robots, Open Graph and Twitter tags |
+| Structured data | `LocalBusiness`, `WebSite`, page-specific web page, `Service`, `Article`, `FAQPage` and breadcrumb nodes |
+| Crawl control | Native Astro sitemap index, image sitemap, robots file, noindex 404, admin noindex |
+| Status behavior | Real 404 document and generated canonical redirect rules |
+| Images | Intrinsic dimensions, contextual alt text, responsive `srcset`, eager LCP heroes, AVIF/WebP upload variants and meaningful uploaded filenames |
+| Caching | Hashed Astro assets and versioned media cached for one year as immutable |
+| Measurement | Optional Search Console verification, optional GA4 and phone/email/WhatsApp conversion events |
+| Domains | Canonical `www`; separate `admin`, `api` and recommended `media` origins |
+| Accessibility | One H1 per page, skip link, labelled controls, keyboard carousels and focus treatment |
+| Security | CSP, origin/CSRF validation, secure sessions, upload validation and dependency audit |
 
-## Owner and deployment actions still required
+## Automated results
 
-1. **Enforce the production hostnames.** Keep `https://www.videocraftsindia.com`, `https://admin.videocraftsindia.com`, and `https://api.videocraftsindia.com` synchronized across the client URL configs, server environment and reverse proxy. Redirect the apex or alternate public hostname to `www`, preserving paths and query strings.
-2. **Deploy and verify host behavior.** For a static snapshot, upload client/build/ including hidden files. Live image administration requires the Node deployment described in README.md. Verify HTTPS, alternate hostname redirects, compression, cache headers, clean route responses, old URL redirects and actual 404 status codes. The generated Apache/Netlify rules are not a substitute for testing the live hosting configuration. Native Apache configuration validation was blocked by an OS permission error; the 22 passing HTTP checks use the project's Node preview server, not Apache or Netlify.
-3. **Validate business and editorial content.** Confirm the studio address, phone, email, establishment history, review quotations/permissions, award imagery and the factual status of the wedding narratives before publication. The inherited Sarah/Jack-style stories and testimonials were preserved, not independently authenticated or represented as verified customer evidence.
-4. **Verify search ownership and discovery.** Submit the deployed sitemap through an owner-controlled Search Console property, inspect representative URLs, and run Google's Rich Results Test. No Search Console account or Business Profile was accessed.
-5. **Improve content from actual shoots.** Add verified location/service-specific copy, useful package/process FAQs, and more descriptive photo captions/alt text where the owner can supply accurate context. The current alt attributes are present but some remain broad portfolio descriptions.
-6. **Measure production performance.** Test slow mobile connections and real devices after CDN/hosting settings are active; monitor LCP/INP/CLS instead of relying only on bundle sizes.
-7. **Maintenance.** Re-run dependency audits regularly. ESLint remains at the latest compatible version 9 because the accessibility plugin does not yet declare version 10 compatibility; do not force incompatible peer dependencies.
+The build audit currently verifies:
 
-No deployment, rankings, indexing, rich-result eligibility or ownership verification is implied by this audit.
+- 42 indexable routes plus the 404 document
+- exactly one H1 on every generated page
+- unique titles and descriptions
+- matching canonical, Open Graph and Twitter metadata
+- parseable, template-specific structured data
+- all public images registered in the admin catalog with dimensions and alt attributes
+- valid internal links
+- web and image sitemap coverage
+- canonical redirects and missing-page 404 behavior
+- gzip JavaScript budgets
+- absence of runtime `/api/media` calls in generated HTML
 
-## Reproduce the local checks
+Repository lint, all frontend/admin/backend tests, full builds and dependency audits pass after the migration.
 
-Use Node.js 24 or newer:
+## Deployment requirements
 
-    npm ci
-    npm ci --prefix client
-    npm ci --prefix admin
-    npm ci --prefix server
-    npm run lint
-    npm run build:all
-    npm run test:all
-    npm audit
-    npm audit --prefix client
-    npm audit --prefix admin
-    npm audit --prefix server
-    npm run preview
+The production host still has to deploy the new build correctly. Before requesting reindexing, verify:
 
-The build includes SEO, asset, exact-case import and local HTTP checks. Detailed machine-readable results are written to .cache/build-audit.json. The CI workflow is configured for Ubuntu with Node 24; it has not been run on GitHub from this local session.
+1. `/about`, `/services`, `/gallery`, `/contact` and story routes return their own HTML rather than the homepage.
+2. Unknown paths return `404`, not the homepage with `200`.
+3. `https://videocraftsindia.com/*` permanently redirects to the same path on `https://www.videocraftsindia.com/*`.
+4. `/sitemap-index.xml`, `/sitemap-0.xml` and `/image-sitemap.xml` are reachable and submitted in Search Console.
+5. `media.videocraftsindia.com` serves R2 objects with immutable browser/CDN caching.
+6. Admin publishing triggers the configured static deployment hook.
+7. The production build has `MEDIA_MANIFEST_URL=https://api.videocraftsindia.com/api/media`.
+8. Search Console URL Inspection sees each route’s correct title, canonical, H1 and body copy.
 
-The implementation uses [Vite's prerendering approach](https://vite.dev/guide/ssr#pre-rendering-ssg) and [React's generation API](https://react.dev/reference/react-dom/static/prerenderToNodeStream). Static snapshots remain available, but the image admin and live published-image HTML now require the Node backend described in README.md. Production DNS/TLS, host configuration, backups and owner credentials remain deployment tasks.
+Run `npm run audit:production` after deployment to check every route's status, title, canonical, H1 and static body, plus sitemap availability and genuine 404 behavior.
+
+## Ranking work outside the stack
+
+The stack removes technical barriers; it does not guarantee rankings. The next ranking work should focus on:
+
+- add firsthand portfolio proof to the implemented Chandigarh, Mohali, Panchkula, Zirakpur and destination service pages without doorway-page duplication
+- real wedding and family case studies with venue, process and original photography context
+- a complete Google Business Profile, consistent business citations and ongoing review acquisition
+- descriptive image filenames and page-specific alt text
+- links and mentions from venues, planners, publications and relevant local organizations
+- Search Console query/page analysis and Core Web Vitals field monitoring after deployment
+
+The account-access and real-content workflow is maintained in [SEO_OPERATIONS.md](SEO_OPERATIONS.md). Search Console, analytics, Google Business Profile, review acquisition and editorial outreach are not complete until an authorized owner performs and verifies those production actions.
+
+Avoid fabricated ratings, FAQ spam, hidden city lists, copied venue descriptions and mass-generated location pages.

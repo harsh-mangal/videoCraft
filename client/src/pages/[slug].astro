@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import SeoLandingPage from "../components/SeoLandingPage.astro";
+import { seoLandingPages } from "../content/seoLandingPages";
+import { loadPublishedMedia } from "../lib/publishedMedia";
+
+export function getStaticPaths() {
+  return Object.values(seoLandingPages).map(page => ({ params: { slug: page.slug }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const media = await loadPublishedMedia();
+---
+<BaseLayout pathname={`/${page.slug}`} media={media}><SeoLandingPage page={page} media={media} /></BaseLayout>
+

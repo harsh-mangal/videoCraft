@@ -10,6 +10,7 @@ import sharp from "sharp";
 import { createApp } from "../src/app.mjs";
 import { loadConfig, productionUrls, root, serverRoot } from "../src/config.mjs";
 import { hashPassword, tokenHash } from "../src/auth.mjs";
+import { createImageVariants } from "../src/uploads.mjs";
 import { routeMeta } from "../../client/src/config/seo.js";
 
 let directory, server, store, origin, csrf, cookie, config, catalog, mongoProcess;
@@ -78,8 +79,9 @@ test("project paths and MongoDB indexes keep runtime data private and expiring",
   assert.throws(() => loadConfig({ ADMIN_SETUP_TOKEN: "too-short" }), /between 32 and 256/);
   assert.equal(defaults.siteDir, path.join(root, "client/build"));
   assert.equal(defaults.adminDir, path.join(root, "admin/dist"));
-  assert.equal(defaults.rendererDir, path.join(root, "server/site-renderer"));
   assert.equal(defaults.dataDir, path.join(root, "server/data"));
+  assert.equal(defaults.r2, null);
+  assert.throws(() => loadConfig({ R2_BUCKET: "incomplete" }), /configured together/);
   const production = loadConfig({ NODE_ENV: "production", MONGODB_URI: "mongodb://database.example.test:27017" });
   assert.equal(production.origin, productionUrls.public);
   assert.equal(production.apiOrigin, productionUrls.api);
@@ -103,9 +105,6 @@ test("standalone API starts without client, admin or renderer files", async () =
     dataDir: path.join(directory, "standalone-data"),
     siteDir: missing("client-build"),
     adminDir: missing("admin-build"),
-    rendererDir: missing("site-renderer"),
-    clientSeoFile: missing("seo.js"),
-    seoRendererFile: missing("seo.mjs"),
     adminSetupToken: "standalone-test-setup-token-1234567890",
   };
   const standalone = await createApp(standaloneConfig);
@@ -186,9 +185,23 @@ test("invalid and active uploads are rejected before they can be published", asy
   assert.equal((await api("/api/admin/images/" + id, { method: "PUT", headers: { "If-Match": '"0"' }, body: huge })).status, 413);
   assert.equal((await store.image(id)).version, 0);
 });
-test("upload persists, serves optimized variants and updates public HTML and social preview", async () => {
+test("remote media storage receives immutable AVIF and WebP variants", async () => {
+  const uploaded = [], removed = [];
+  const remoteStorage = {
+    async upload(name, body, contentType) { uploaded.push({ name, bytes: body.length, contentType }); return "https://media.videocraftsindia.com/videocrafts/" + name; },
+    async remove(name) { removed.push(name); },
+  };
+  const source = await sharp({ create: { width: 800, height: 600, channels: 3, background: "#806947" } }).png().toBuffer();
+  const generated = await createImageVariants(source, path.join(directory, "unused-remote-media"), 1024, remoteStorage);
+  assert.deepEqual(new Set(generated.image.variants.map(variant => variant.format)), new Set(["avif", "webp"]));
+  assert(generated.image.variants.every(variant => variant.src.startsWith("https://media.videocraftsindia.com/")));
+  assert(generated.image.src.endsWith(".webp"));
+  assert(uploaded.every(item => item.bytes > 0 && ["image/avif", "image/webp"].includes(item.contentType)));
+  await generated.cleanup();
+  assert.deepEqual(new Set(removed), new Set(uploaded.map(item => item.name)));
+});
+test("upload persists, serves optimized variants and updates the build-time media manifest", async () => {
   const hero = catalog.find(item => item.label === "Home hero / default social preview");
-  // Prime the HTML cache before publishing, so stale-cache bugs are covered.
   const initial = await api("/", { headers: { "Accept-Encoding": "gzip" } });
   assert.equal(initial.status, 200);
   assert.equal(initial.headers.get("content-encoding"), "gzip");
@@ -207,10 +220,9 @@ test("upload persists, serves optimized variants and updates public HTML and soc
   assert.equal((await sharp(Buffer.from(await file.arrayBuffer())).metadata()).exif, undefined);
   const html = await (await api("/")).text();
   assert(html.includes('data-media-id="' + hero.id + '"'));
-  assert(html.includes('src="' + config.apiOrigin + item.value.variants.find(variant => variant.width >= 960).src + '"') || html.includes('src="' + config.apiOrigin + item.value.src + '"'));
-  assert(html.includes('property="og:image" content="' + config.apiOrigin + item.value.src + '"'));
-  assert(html.includes('id="site-media"'));
-  assert.equal((await (await api("/api/media")).json()).images[hero.id].src, config.apiOrigin + item.value.src);
+  assert(!html.includes(item.value.src), "published media is embedded by the next Astro build, not fetched at runtime");
+  const published = await (await api("/api/media")).json();
+  assert.equal(published.images[hero.id].src, config.apiOrigin + item.value.src);
   const storedImage = await store.images.findOne({ _id: hero.id });
   assert.equal(storedImage.history.length, 1);
   assert.equal(storedImage.history[0].next.alt, "New studio photograph");
@@ -223,9 +235,9 @@ test("upload persists, serves optimized variants and updates public HTML and soc
   const restored = await api("/api/admin/images/" + hero.id + "/restore", { method: "POST", headers: { "If-Match": '"1"' } });
   assert.equal(restored.status, 200);
   assert.equal((await store.image(hero.id)).value, null);
-  assert(!(await (await api("/")).text()).includes(item.value.src));
+  assert(!(await (await api("/api/media")).text()).includes(item.value.src));
 });
-test("favicon, background and logo replacements use the same managed media pipeline", async () => {
+test("favicon, background and logo replacements use the same media manifest", async () => {
   const bytes = await sharp({ create: { width: 200, height: 200, channels: 4, background: "#234a36" } }).png().toBuffer();
   const targets = [catalog.find(item => item.id === "site-icon"), catalog.find(item => item.label === "Home background · enjoy your day"), catalog.find(item => item.label === "Studio logo · navigation and footer")];
   for (const item of targets) {
@@ -233,13 +245,11 @@ test("favicon, background and logo replacements use the same managed media pipel
     const response = await api("/api/admin/images/" + item.id, { method: "PUT", headers: { "If-Match": '"' + (await store.image(item.id)).version + '"' }, body: form });
     assert.equal(response.status, 200);
     const saved = (await response.json()).image.value;
-    const html = await (await api("/")).text();
-    assert(html.includes(saved.src));
+    const published = await (await api("/api/media")).json();
+    assert.equal(published.images[item.id].src, config.apiOrigin + saved.src);
     if (item.id === "site-icon") {
-      assert(html.includes('rel="icon" type="image/webp" href="' + config.apiOrigin + saved.src + '"'));
       assert.equal((await (await api("/manifest.json")).json()).icons[0].src, config.apiOrigin + saved.src);
     }
-    if (item.label.includes("background")) assert(html.includes("background-image:url(" + config.apiOrigin + saved.src + ")"));
   }
 });
 test("backend does not expose private data, renderer code or admin indexing", async () => {
@@ -254,7 +264,8 @@ test("all public routes, canonical redirects and admin entry work on the Node se
   for (const route of Object.keys(routeMeta)) {
     const response = await api(route);
     assert.equal(response.status, 200, route);
-    assert((await response.text()).includes('id="site-media"'), route);
+    const html = await response.text();
+    assert(html.includes('<link rel="canonical" href="https://www.videocraftsindia.com' + (route === "/" ? "/" : route) + '"'), route);
   }
   for (const [from, to] of [["/About/", "/about"], ["/index.html", "/"], ["/bridal-potraits", "/bridal-portraits"], ["/admin", "/admin/"]]) {
     const response = await api(from, { redirect: "manual" });

@@ -1,0 +1,7 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import NotFoundPage from "../islands/NotFoundPage";
+import { loadPublishedMedia } from "../lib/publishedMedia";
+const media = await loadPublishedMedia();
+---
+<BaseLayout pathname="/404" media={media} is404><NotFoundPage media={media} /></BaseLayout>

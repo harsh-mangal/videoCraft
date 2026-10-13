@@ -61,11 +61,12 @@ function Editor({ item, session, onClose, onSaved, onExpired }) {
       if (restore) { method = "POST"; path += "/restore"; body = {}; }
       else if (file) { method = "PUT"; body = new FormData(); body.append("image", file); body.append("alt", alt); }
       const result = await request(path, { method, body, csrf: session.csrf, version: item.version });
-      onSaved(result.image, restore ? "Original restored." : "Image changes published.");
+      const action = restore ? "Original restored." : "Image changes published.";
+      onSaved(result.image, result.rebuildQueued ? action + " Public-site rebuild queued." : action + " Rebuild the public site to refresh its generated HTML.");
     } catch (err) { if (err.status === 401) onExpired(); else setError(err.message); }
     finally { setBusy(false); }
   }
-  const current = item.value?.src || item.src;
+  const current = item.value || item.src;
   return <dialog ref={dialog} className="editor" aria-labelledby="editor-title" onCancel={event => { event.preventDefault(); close(); }}>
     <form onSubmit={save}>
       <header className="editor-header"><div><span className="eyebrow">EDIT IMAGE</span><h2 id="editor-title">{item.label}</h2></div><button type="button" className="icon-button" onClick={close} disabled={busy} aria-label="Close image editor"><Icon component={X} /></button></header>
@@ -110,8 +111,8 @@ function Library({ session, onLogout }) {
         {notice && <div className="success" role="status"><Icon component={Check} size={18} />{notice}<button className="icon-button" aria-label="Dismiss notification" onClick={() => setNotice("")}><Icon component={X} size={16} /></button></div>}
         {error && <p className="error" role="alert">{error}</p>}
         <div className="results-heading"><h2>{group}</h2><span>{filtered.length} {filtered.length === 1 ? "image" : "images"}</span></div>
-        {loading ? <div className="empty" role="status"><Icon component={LoaderCircle} className="spin" size={28} /><p>Loading your image library…</p></div> : filtered.length ? <div className="image-grid">{filtered.map(item => <button type="button" className="image-card" key={item.id} aria-label={"Edit " + item.label} onClick={() => setEditing(item)}><div className="card-preview"><img loading="lazy" decoding="async" src={thumbnail(item.value?.src || item.src)} alt="" className={item.groups.includes("Branding") || item.groups.includes("Reviews") ? "contain" : ""} />{item.value && <span className="updated-badge"><Check size={11} aria-hidden="true" />Updated</span>}<span className="edit-badge"><Icon component={ImagePlus} size={17} /></span></div><div className="card-details"><span>{item.groups[0]}</span><h3>{item.label}</h3><p>{item.value?.width || item.width} × {item.value?.height || item.height}<span>Edit image <ArrowUpRight size={13} aria-hidden="true" /></span></p></div></button>)}</div> : <div className="empty"><Icon component={Search} size={32} /><h3>No images found</h3><p>Try another search or collection.</p><button className="button" onClick={() => { setQuery(""); setGroup("All images"); setFilter("all"); }}>Clear filters</button></div>}
-        <p className="library-footnote">Changes update the public website, including shared images and social previews. SVG interface icons are managed in code.</p>
+        {loading ? <div className="empty" role="status"><Icon component={LoaderCircle} className="spin" size={28} /><p>Loading your image library…</p></div> : filtered.length ? <div className="image-grid">{filtered.map(item => <button type="button" className="image-card" key={item.id} aria-label={"Edit " + item.label} onClick={() => setEditing(item)}><div className="card-preview"><img loading="lazy" decoding="async" src={thumbnail(item.value || item.src)} alt="" className={item.groups.includes("Branding") || item.groups.includes("Reviews") ? "contain" : ""} />{item.value && <span className="updated-badge"><Check size={11} aria-hidden="true" />Updated</span>}<span className="edit-badge"><Icon component={ImagePlus} size={17} /></span></div><div className="card-details"><span>{item.groups[0]}</span><h3>{item.label}</h3><p>{item.value?.width || item.width} × {item.value?.height || item.height}<span>Edit image <ArrowUpRight size={13} aria-hidden="true" /></span></p></div></button>)}</div> : <div className="empty"><Icon component={Search} size={32} /><h3>No images found</h3><p>Try another search or collection.</p><button className="button" onClick={() => { setQuery(""); setGroup("All images"); setFilter("all"); }}>Clear filters</button></div>}
+        <p className="library-footnote">Publishing updates the media catalog and queues a static-site rebuild when the deployment webhook is configured. SVG interface icons are managed in code.</p>
       </main>
     </div>
     {editing && <Editor key={editing.id + ":" + editing.version} item={editing} session={session} onClose={() => setEditing(null)} onExpired={() => onLogout("Your session expired. Please sign in again.")} onSaved={(item, message) => { setItems(current => current.map(existing => existing.id === item.id ? item : existing)); setEditing(null); setNotice(message); }} />}

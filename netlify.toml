@@ -4,3 +4,4 @@
 
 [build.environment]
   NODE_VERSION = "24"
+  MEDIA_MANIFEST_URL = "https://api.videocraftsindia.com/api/media"

@@ -4,13 +4,15 @@ import compression from "compression";
 import multer from "multer";
 import { access, readFile } from "node:fs/promises";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
 import { serverRoot } from "./config.mjs";
 import { Store } from "./store.mjs";
 import { randomToken, tokenHash, constantEqual, readSessionCookie, hashPassword, verifyPassword } from "./auth.mjs";
 import { createImageVariants, uploadLimit } from "./uploads.mjs";
+import { createMediaStorage } from "./media-storage.mjs";
 
 const catalog = JSON.parse(await readFile(path.join(serverRoot, "shared/media-catalog.json"), "utf8"));
+const siteRoutes = JSON.parse(await readFile(path.join(serverRoot, "shared/site-routes.json"), "utf8"));
+const routeSet = new Set(siteRoutes.routes);
 const catalogById = new Map(catalog.map(item => [item.id, item]));
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: uploadLimit, files: 1, fields: 1, parts: 3, fieldSize: 2000 },
   fileFilter(_req, file, done) { done(null, ["image/jpeg", "image/png", "image/webp"].includes(file.mimetype)); } }).single("image");
@@ -22,31 +24,31 @@ export async function createApp(config) {
   const store = await Store.connect(config);
   const dummyPassword = await hashPassword(randomToken());
   const mediaDir = path.join(config.dataDir, "uploads");
+  const mediaStorage = createMediaStorage(config);
   let uploading = false, activeLogins = 0;
-  const pageCache = new Map();
+  let rebuildTimer;
+  const queueRebuild = () => {
+    if (!config.siteRebuildWebhook) return false;
+    clearTimeout(rebuildTimer);
+    rebuildTimer = setTimeout(async () => {
+      try {
+        await fetch(config.siteRebuildWebhook, { method: "POST", headers: { "Content-Type": "application/json", ...(config.siteRebuildToken ? { Authorization: "Bearer " + config.siteRebuildToken } : {}) }, body: JSON.stringify({ source: "videocrafts-admin", action: "media-published" }), signal: AbortSignal.timeout(10_000) });
+      } catch (error) { console.error("Site rebuild webhook failed:", error.message); }
+    }, 1000);
+    rebuildTimer.unref?.();
+    return true;
+  };
   const externalMediaUrl = src => src?.startsWith("/media/") ? config.apiOrigin + src : src;
   const externalImage = image => image ? { ...image, src: externalMediaUrl(image.src), variants: image.variants?.map(variant => ({ ...variant, src: externalMediaUrl(variant.src) })) } : image;
   const publicManifest = async () => Object.fromEntries(Object.entries(await store.manifest()).map(([id, image]) => [id, externalImage(image)]));
   const adminAvailable = await fileExists(path.join(config.adminDir, "index.html"));
-  const websiteAvailable = (await Promise.all([
-    path.join(config.siteDir, "index.html"),
-    path.join(config.rendererDir, "entry-server.js"),
-    path.join(config.rendererDir, "template.html"),
-    config.clientSeoFile,
-    config.seoRendererFile,
-  ].map(fileExists))).every(Boolean);
-  let websiteModules;
-  const loadWebsiteModules = async () => websiteModules ||= Promise.all([
-    import(pathToFileURL(config.clientSeoFile).href),
-    import(pathToFileURL(config.seoRendererFile).href),
-    import(pathToFileURL(path.join(config.rendererDir, "entry-server.js")).href),
-  ]);
+  const websiteAvailable = (await Promise.all([path.join(config.siteDir, "index.html"), path.join(config.siteDir, "404.html")].map(fileExists))).every(Boolean);
   app.disable("x-powered-by");
   app.set("strict routing", true);
   app.use(compression({ filter: (req, res) => !req.path.startsWith("/api") && !req.path.startsWith("/media") && compression.filter(req, res) }));
   if (config.proxy) app.set("trust proxy", config.proxy);
   app.use(helmet({ crossOriginResourcePolicy: { policy: "same-site" },
-    contentSecurityPolicy: { directives: { "default-src": ["'self'"], "script-src": ["'self'"], "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], "font-src": ["'self'", "https://fonts.gstatic.com"], "img-src": ["'self'", "https:", "data:", "blob:"], "connect-src": ["'self'", config.apiOrigin], "frame-src": ["https://www.google.com"], "object-src": ["'none'"], "frame-ancestors": ["'none'"], "upgrade-insecure-requests": config.production ? [] : null } },
+    contentSecurityPolicy: { directives: { "default-src": ["'self'"], "script-src": ["'self'", "'unsafe-inline'", "https://www.googletagmanager.com"], "style-src": ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"], "font-src": ["'self'", "https://fonts.gstatic.com"], "img-src": ["'self'", "https:", "data:", "blob:"], "connect-src": ["'self'", config.apiOrigin, "https://www.google-analytics.com", "https://region1.google-analytics.com"], "frame-src": ["https://www.google.com"], "object-src": ["'none'"], "frame-ancestors": ["'none'"], "upgrade-insecure-requests": config.production ? [] : null } },
     strictTransportSecurity: config.production ? undefined : false }));
 
   app.use("/api", (req, res, next) => {
@@ -130,7 +132,7 @@ export async function createApp(config) {
     const alt = altText(req.body?.alt);
     const previous = (await store.image(req.image.id)).value;
     await store.saveImage(req.image.id, { ...previous, alt }, req.imageVersion, req.session.admin_id);
-    pageCache.clear(); res.json({ image: await detail(req.image) });
+    res.json({ image: await detail(req.image), rebuildQueued: queueRebuild() });
   });
   app.put("/api/admin/images/:id", checkVersion, (req, res, next) => {
     if (uploading) return next(error(429, "Another upload is processing. Please try again shortly."));
@@ -141,21 +143,21 @@ export async function createApp(config) {
         if (uploadError) throw uploadError;
         if (!req.file) throw error(422, "Choose a JPEG, PNG or WebP image, up to 12 MB.");
         const alt = altText(req.body.alt || "");
-        generated = await createImageVariants(req.file.buffer, mediaDir, config.maxStorageBytes);
+        generated = await createImageVariants(req.file.buffer, mediaDir, config.maxStorageBytes, mediaStorage, req.image.label);
         await store.saveImage(req.image.id, { ...generated.image, alt }, req.imageVersion, req.session.admin_id);
-        pageCache.clear(); res.json({ image: await detail(req.image) });
+        res.json({ image: await detail(req.image), rebuildQueued: queueRebuild() });
       } catch (err) { if (generated) await generated.cleanup(); next(err); }
       finally { uploading = false; }
     });
   });
   app.post("/api/admin/images/:id/restore", checkVersion, async (req, res) => {
     await store.saveImage(req.image.id, null, req.imageVersion, req.session.admin_id);
-    pageCache.clear(); res.json({ image: await detail(req.image) });
+    res.json({ image: await detail(req.image), rebuildQueued: queueRebuild() });
   });
   app.use("/api", (_req, _res, next) => next(error(404, "API endpoint not found.")));
 
   app.get("/media/:file", (req, res, next) => {
-    if (!/^[a-f0-9-]{36}-\d{1,4}\.webp$/.test(req.params.file)) return next(error(404, "Image not found."));
+    if (!/^[a-z0-9-]{1,140}-\d{1,4}\.(?:avif|webp)$/.test(req.params.file)) return next(error(404, "Image not found."));
     res.set("Cache-Control", "public, max-age=31536000, immutable");
     res.sendFile(req.params.file, { root: mediaDir, dotfiles: "deny" }, err => { if (err) next(error(404, "Image not found.")); });
   });
@@ -167,31 +169,23 @@ export async function createApp(config) {
   }
 
   if (websiteAvailable) {
-    app.use("/assets", express.static(path.join(config.siteDir, "assets"), { immutable: true, maxAge: "1y", fallthrough: false }));
+    app.use("/_astro", express.static(path.join(config.siteDir, "_astro"), { immutable: true, maxAge: "1y", fallthrough: false }));
     app.get("/manifest.json", async (_req, res) => {
       const manifest = JSON.parse(await readFile(path.join(config.siteDir, "manifest.json"), "utf8"));
       const icon = (await publicManifest())["site-icon"];
       if (icon?.src) manifest.icons = [{ src: icon.src, sizes: icon.width + "x" + icon.height, type: "image/webp" }];
       res.set("Cache-Control", "no-cache").json(manifest);
     });
-    app.get(["/robots.txt", "/sitemap.xml", "/brand-icon.png"], (req, res) => res.set("Cache-Control", "no-cache").sendFile(path.join(config.siteDir, req.path)));
+    app.get(["/robots.txt", "/sitemap-index.xml", "/sitemap-0.xml", "/image-sitemap.xml", "/brand-icon.png", "/theme.js", "/analytics.js"], (req, res) => res.set("Cache-Control", "no-cache").sendFile(path.join(config.siteDir, req.path)));
     app.get(["/", "/{*path}"], async (req, res) => {
-      const [{ normalizePath, routeMeta, getPageMeta }, { renderHead, jsonForHtml }, { render }] = await loadWebsiteModules();
       let pathname;
       try { pathname = decodeURIComponent(req.path); } catch { throw error(400, "Invalid URL encoding."); }
-      const route = normalizePath(pathname.replace(/\.html$/i, "").replace(/^\/index$/i, "/"));
-      const known = !!routeMeta[route];
+      let route = pathname.replace(/\.html$/i, "").replace(/^\/index$/i, "/").replace(/\/+$/, "").toLowerCase() || "/";
+      route = siteRoutes.legacy[route] || route;
+      const known = routeSet.has(route);
       if (known && req.path !== route) return res.redirect(301, route + (req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : ""));
-      const canonical = known ? route : "/404";
-      const revision = await store.revision();
-      const key = canonical + ":" + revision;
-      if (!pageCache.has(key)) {
-        const media = await publicManifest();
-        const template = await readFile(path.join(config.rendererDir, "template.html"), "utf8");
-        const html = template.replace("<!--seo-head-->", renderHead(getPageMeta(canonical, media), media)).replace("<!--app-html-->", await render(canonical, media)).replace("<!--media-data-->", '<script type="application/json" id="site-media">' + jsonForHtml(media) + "</script>");
-        if (revision === await store.revision()) pageCache.set(key, html);
-        res.status(known ? 200 : 404).set("Cache-Control", "no-cache").type("html").send(html);
-      } else res.status(known ? 200 : 404).set("Cache-Control", "no-cache").type("html").send(pageCache.get(key));
+      const file = known ? (route === "/" ? "index.html" : route.slice(1) + "/index.html") : "404.html";
+      res.status(known ? 200 : 404).set("Cache-Control", "no-cache").sendFile(path.join(config.siteDir, file));
     });
   } else {
     app.get("/", (_req, res) => res.set("Cache-Control", "no-store").json({ ok: true, service: "Videocrafts API" }));

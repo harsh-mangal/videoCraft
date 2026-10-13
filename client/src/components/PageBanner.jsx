@@ -1,10 +1,10 @@
 import ResponsiveImage from "./ResponsiveImage";
-import { Link, useLocation } from "react-router-dom";
-import { getPageMeta } from "../config/seo";
+import { PAGE_DESCRIPTIONS } from "../config/pageDescriptions";
 import { ArrowRight } from "lucide-react";
+import { usePagePath } from "./PageContext";
 
 export default function PageBanner({ image, title }) {
-  const { pathname } = useLocation();
+  const pathname = usePagePath();
   return <><header className="luxury-page-banner relative isolate flex min-h-80 items-center justify-center overflow-hidden bg-[#24251f] px-4 py-16 text-center sm:min-h-[460px] lg:min-h-[560px]">
     <ResponsiveImage src={image} alt="" priority width={1600} sizes="100vw" className="absolute inset-0 -z-20 h-full w-full object-cover" />
     <div className="luxury-hero-overlay absolute inset-0 -z-10" />
@@ -14,8 +14,8 @@ export default function PageBanner({ image, title }) {
     </div>
   </header>
     <div className="mx-auto max-w-3xl px-5 pb-4 pt-12 text-center">
-      <p className="leading-relaxed text-[#62625A]">{getPageMeta(pathname).description}</p>
-      <Link to="/contact" className="luxury-text-link mt-5 inline-flex min-h-11 items-center gap-2 font-medium">Plan your photography session <ArrowRight size={18} className="shrink-0" aria-hidden="true" focusable="false" /></Link>
+      <p className="leading-relaxed text-[#62625A]">{PAGE_DESCRIPTIONS[pathname]}</p>
+      <a href="/contact" className="luxury-text-link mt-5 inline-flex min-h-11 items-center gap-2 font-medium">Plan your photography session <ArrowRight size={18} className="shrink-0" aria-hidden="true" focusable="false" /></a>
     </div>
   </>;
 }

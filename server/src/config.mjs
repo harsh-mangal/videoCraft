@@ -39,10 +39,24 @@ export function loadConfig(env = process.env) {
   for (const publicDir of [path.join(root, "client/build"), path.join(root, "admin/dist"), path.join(root, "client/public")]) {
     if (dataDir === publicDir || dataDir.startsWith(publicDir + path.sep)) throw new Error("DATA_DIR must not be inside a public build or asset directory.");
   }
+  const r2Values = [env.R2_ACCOUNT_ID, env.R2_ACCESS_KEY_ID, env.R2_SECRET_ACCESS_KEY, env.R2_BUCKET, env.MEDIA_PUBLIC_ORIGIN];
+  if (r2Values.some(Boolean) && !r2Values.every(Boolean)) throw new Error("R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET and MEDIA_PUBLIC_ORIGIN must be configured together.");
+  const r2 = r2Values.every(Boolean) ? {
+    accountId: env.R2_ACCOUNT_ID,
+    accessKeyId: env.R2_ACCESS_KEY_ID,
+    secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+    bucket: env.R2_BUCKET,
+    publicOrigin: exactOrigin("MEDIA_PUBLIC_ORIGIN", env.MEDIA_PUBLIC_ORIGIN, production),
+    prefix: (env.R2_PREFIX || "videocrafts").replace(/^\/+|\/+$/g, ""),
+  } : null;
+  let siteRebuildWebhook = null;
+  if (env.SITE_REBUILD_WEBHOOK) {
+    siteRebuildWebhook = new URL(env.SITE_REBUILD_WEBHOOK);
+    if (production && siteRebuildWebhook.protocol !== "https:") throw new Error("SITE_REBUILD_WEBHOOK must use HTTPS in production.");
+  }
   return { production, origin, apiOrigin, origins, proxy, host: env.HOST || "127.0.0.1", port: Number(env.PORT || 4691), mongoUri, mongoDbName,
     dataDir, siteDir: path.resolve(env.SITE_DIR || path.join(root, "client/build")),
-    adminDir: path.resolve(env.ADMIN_DIR || path.join(root, "admin/dist")), rendererDir: path.resolve(env.RENDERER_DIR || path.join(serverRoot, "site-renderer")),
-    clientSeoFile: path.resolve(env.CLIENT_SEO_FILE || path.join(root, "client/src/config/seo.js")),
-    seoRendererFile: path.resolve(env.SEO_RENDERER_FILE || path.join(root, "client/scripts/seo.mjs")),
-    adminSetupToken, maxStorageBytes };
+    adminDir: path.resolve(env.ADMIN_DIR || path.join(root, "admin/dist")),
+    adminSetupToken, maxStorageBytes, r2, siteRebuildWebhook: siteRebuildWebhook?.href || null,
+    siteRebuildToken: env.SITE_REBUILD_TOKEN || "" };
 }

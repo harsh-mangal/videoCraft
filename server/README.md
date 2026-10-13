@@ -1,73 +1,69 @@
-# Node.js backend
+# Node.js API
 
-Express API, MongoDB persistence and image processing, with optional public HTML rendering and static delivery of the two independent React builds. The standalone API requires Node.js 22.19 or newer, MongoDB, and persistent writable storage for uploaded images. CI targets Node 24 and MongoDB 8.
+Express API for authentication, MongoDB-backed image metadata, upload processing, optional Cloudflare R2 storage, and optional delivery of prebuilt public/admin files. It does not import the public frontend source and can be deployed as a standalone `server/` directory.
 
-## First run
-
-From the repository root, install the root tooling and all three application packages and run npm run build:all (see the root README). Start a local MongoDB server on `mongodb://127.0.0.1:27017` or configure `MONGODB_URI`, then:
+## Start
 
 ```sh
+npm ci --prefix server
 npm --prefix server run admin:create
 npm --prefix server start
 ```
 
-The account command runs interactively with hidden password input. There is no public sign-up or default account. A separately enabled, one-time setup endpoint is documented below for Postman. To reset an existing account's password and revoke its sessions:
+Node.js 22.19 or newer is supported; the repository and CI use Node.js 24. MongoDB is required.
 
-```sh
-npm --prefix server run admin:create -- --reset
-```
-
-Run this on the server that owns the database. Do not send passwords in command arguments, commit them, or place them in a frontend environment variable.
-
-## Production configuration
-
-Copy server/.env.example to server/.env and set real values:
+## Production environment
 
 ```dotenv
 NODE_ENV=production
 HOST=127.0.0.1
 PORT=4691
-MONGODB_URI=mongodb+srv://application-user:replace-with-a-secret@your-cluster.example/videocrafts?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://application-user:secret@cluster.example/videocrafts?retryWrites=true&w=majority
 MONGODB_DB=videocrafts
 PUBLIC_ORIGIN=https://www.videocraftsindia.com
 API_ORIGIN=https://api.videocraftsindia.com
 ADMIN_ORIGINS=https://admin.videocraftsindia.com
-DATA_DIR=/srv/videocrafts-data
-MAX_STORAGE_MB=1024
 TRUST_PROXY_HOPS=1
+
+R2_ACCOUNT_ID=your-cloudflare-account-id
+R2_ACCESS_KEY_ID=your-r2-access-key
+R2_SECRET_ACCESS_KEY=your-r2-secret
+R2_BUCKET=videocrafts-media
+MEDIA_PUBLIC_ORIGIN=https://media.videocraftsindia.com
+R2_PREFIX=videocrafts
+
+SITE_REBUILD_WEBHOOK=https://your-static-host.example/deploy-hook
+SITE_REBUILD_TOKEN=optional-bearer-token
 ```
 
-`MONGODB_URI` is mandatory in production and must remain a server-side secret. Use a dedicated database user with access only to the configured database, require TLS, and restrict network access to the API host. `MONGODB_DB` defaults to `videocrafts`.
+`MONGODB_URI`, R2 credentials, rebuild tokens and admin credentials are server secrets. Never put them in client/admin environment files or commit them.
 
-### Standalone API host
+If R2 is not configured, uploads use `DATA_DIR/uploads` with `MAX_STORAGE_MB` as a local persistent-disk fallback. R2 is recommended for production. Connect the bucket to the custom media domain; do not use the rate-limited `r2.dev` address for production delivery.
 
-The API can be deployed without sibling `client/`, `admin/` or root `shared/` directories. Upload the complete `server/` directory, including `shared/media-catalog.json`, then install and start it on the API host:
+The API can optionally serve generated builds:
 
-```sh
-cd /var/www/api.videocraftsindia.com
-npm ci --omit=dev
-npm start
+```dotenv
+SITE_DIR=/var/www/videocrafts-client/build
+ADMIN_DIR=/var/www/videocrafts-admin/dist
 ```
 
-With no frontend build paths configured, `/api/*` and `/media/*` remain available and `/` returns a small service-status response. The public and admin builds can be hosted independently on their own subdomains. Run `npm run build:all` in the full repository before packaging a release whenever image references change; that command refreshes the catalog copied into `server/shared/`.
+No frontend source, renderer bundle or sibling `client/src` path is required.
 
-If the same Node process must also serve the public or admin build, deploy those assets and set `SITE_DIR`, `ADMIN_DIR`, `RENDERER_DIR`, `CLIENT_SEO_FILE` and `SEO_RENDERER_FILE` to their absolute locations. All five website-rendering files must be available before public server-side rendering is enabled.
+## First admin through Postman
 
-### Create the first admin with Postman
-
-Generate a one-time secret on the API server:
+Generate a one-time secret:
 
 ```sh
 openssl rand -hex 32
 ```
 
-Add it to `.env` as `ADMIN_SETUP_TOKEN`, restart Node, and send this request from Postman:
+Temporarily set `ADMIN_SETUP_TOKEN`, restart the API, then send:
 
 ```http
 POST https://api.videocraftsindia.com/api/admin/setup
 Origin: https://admin.videocraftsindia.com
 Content-Type: application/json
-X-Admin-Setup-Token: paste-the-one-time-secret-here
+X-Admin-Setup-Token: paste-the-one-time-secret
 ```
 
 ```json
@@ -77,61 +73,54 @@ X-Admin-Setup-Token: paste-the-one-time-secret-here
 }
 ```
 
-A successful request returns `201 Created`. The endpoint creates only the first admin and returns `409 Conflict` after an account exists. Remove `ADMIN_SETUP_TOKEN` from `.env` and restart Node immediately after successful setup. Password resets remain restricted to `npm run admin:create -- --reset` on the server.
+Remove `ADMIN_SETUP_TOKEN` and restart immediately after the successful `201` response. Later password resets use:
 
-Keep the three web origins synchronized with `client/src/config/urls.js` and `admin/src/config.js`, then rebuild after a domain change. Every origin must omit paths and trailing slashes. The code uses these production origins by default when `NODE_ENV=production`; explicit values are recommended so deployment configuration remains visible.
+```sh
+npm --prefix server run admin:create -- --reset
+```
 
-- Terminate TLS at a trusted reverse proxy. Route `api.videocraftsindia.com/api/*` and `api.videocraftsindia.com/media/*` to the loopback Node port. Route the `www` host to Node as well when current image replacements must be present in initial HTML and social metadata. Publish `admin/dist/` at the root of `admin.videocraftsindia.com`. Set the proxy's upload body limit to at least 13 MB; the API enforces a 12 MB file limit.
-- Set TRUST_PROXY_HOPS=1 only when exactly one trusted proxy is in front of Node. Keep the Node port inaccessible from the public network so clients cannot spoof the proxy chain. Otherwise use 0.
-- All production origins use HTTPS. The public `GET /api/media` endpoint allows cross-origin reads without credentials; authenticated admin routes accept credentialed CORS only from the configured origins. The secure, HttpOnly, SameSite=Strict cookie remains host-only on `api.videocraftsindia.com`; the sibling `admin` subdomain is same-site, while `credentials: include`, Origin checks and CSRF tokens protect authenticated changes.
-- Use a process supervisor supplied by your host. Restart on code deployments and monitor disk usage/errors. The app performs graceful shutdown on SIGTERM/SIGINT.
-- Build on the target platform. Do not copy macOS node_modules to a Linux server; Sharp uses platform-specific packages.
-- Deploy `server/shared/media-catalog.json` with the API. MongoDB credentials, source, `.env` and `site-renderer/` are never exposed as static directories.
+## Media lifecycle
 
-Old static Apache/Netlify configurations remain for read-only snapshots. They do not replace the Node runtime needed by this admin. MongoDB can be managed remotely, but an ephemeral/serverless filesystem is still unsuitable for uploaded WebP files unless `/media` is moved to object storage.
+Uploads accept one still JPEG, PNG or WebP image. The browser admin accepts up to 50 MB and sends a compressed WebP; the API applies its own 12 MB and 40-megapixel limits. Sharp validates decoding, applies orientation, strips metadata, bounds the source to 2400 × 2400 and generates responsive AVIF and WebP variants.
 
-## Stored data and backups
+R2 objects use random versioned names, a custom media domain and one-year immutable caching. MongoDB stores the current manifest, alt text, optimistic version and a bounded history. Existing objects are retained so previously cached pages do not break.
 
-MongoDB collections contain:
+To migrate all registered originals from ImageKit into R2:
 
-| Collection | Purpose |
-| --- | --- |
-| admins | Admin email addresses and password hashes |
-| sessions | Expiring authenticated sessions; a TTL index removes expired records |
-| images | Image overrides, optimistic versions and the latest 200 history entries per image |
-| attempts | Login/edit rate limits; a TTL index removes expired windows |
+```sh
+npm --prefix server run media:migrate:r2
+```
 
-`DATA_DIR` now contains only `uploads/`, which holds generated public WebP variants named with random IDs. Back up MongoDB and the **entire DATA_DIR** to private storage, and test restoration of both. Keep the upload directory outside deployment/build folders and preserve it between releases. For Atlas, configure an appropriate snapshot or continuous-backup policy rather than assuming the provider retains every accidental deletion.
+The command skips entries already on `MEDIA_PUBLIC_ORIGIN`. It updates MongoDB as each image succeeds, so an interrupted run can be resumed. Rebuild and verify the public site before retiring the old image account.
 
-Old uploaded variants are retained so existing cached pages continue to load. The UI restores the original ImageKit image, not an arbitrary past upload. Review storage usage and archive obsolete versions through an operator-maintained process; do not blindly delete files referenced in the database or edit history. The default storage budget is 1 GB and includes retained variants. Existing originals remain on ImageKit and depend on that account/CDN remaining available.
+Publishing an image or alt-text change queues `SITE_REBUILD_WEBHOOK` after a short debounce. The static host then builds with `MEDIA_MANIFEST_URL=https://api.videocraftsindia.com/api/media`, embedding current media into the page HTML and social metadata. If no hook is configured, the admin explicitly tells the operator that a public rebuild is required.
 
 ## API
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| GET | /api/health | Basic liveness response |
-| GET | /api/media | Public image overrides and revision (no user data) |
-| POST | /api/admin/setup | One-time initial admin creation when explicitly enabled |
-| POST | /api/admin/login | JSON email/password; sets session cookie |
-| GET | /api/admin/session | Current admin email and CSRF token |
-| POST | /api/admin/logout | Revoke current session |
-| GET | /api/admin/images | Catalog, usage groups, current overrides and versions |
-| PUT | /api/admin/images/:id | Multipart image file and optional alt field |
-| PATCH | /api/admin/images/:id | JSON alt text update |
-| POST | /api/admin/images/:id/restore | Restore original image and default alt |
+| GET | `/api/health` | Liveness response |
+| GET | `/api/media` | Public build-time media manifest |
+| POST | `/api/admin/setup` | Explicitly enabled one-time account setup |
+| POST | `/api/admin/login` | Sign in and create the secure session cookie |
+| GET | `/api/admin/session` | Current admin and CSRF token |
+| POST | `/api/admin/logout` | Revoke the current session |
+| GET | `/api/admin/images` | Editable catalog and current values |
+| PUT | `/api/admin/images/:id` | Publish a replacement image |
+| PATCH | `/api/admin/images/:id` | Publish alt text |
+| POST | `/api/admin/images/:id/restore` | Restore the catalog original |
 
-All mutations require an exact allowed Origin. The one-time setup route requires `X-Admin-Setup-Token`; other routes except login require an authenticated cookie and X-CSRF-Token. Image mutations require a quoted version header, e.g. If-Match: "2". Conflicts return 409 instead of overwriting newer changes. Unknown image IDs cannot be created by the client.
+Mutations require an exact allowed Origin, authenticated HttpOnly session cookie, CSRF token and quoted `If-Match` version. Login/edit attempts are rate limited in MongoDB. Unknown catalog IDs cannot be created by the browser.
 
-Uploads accept one still JPEG/PNG/WebP, up to 12 MB and 40 megapixels. Signatures and decoded types are validated, EXIF orientation is applied, metadata is stripped, and images are resized within 2400 × 2400 with smaller variants. Arbitrary external URLs are not fetched, and SVG/executable files are not accepted.
+## Operations and security
 
-## Security and verification
+- Terminate HTTPS at a trusted reverse proxy and keep the Node port private.
+- Set `TRUST_PROXY_HOPS=1` only when exactly one trusted proxy is present.
+- Give the MongoDB application user access only to this database and restrict its network access.
+- Give the R2 key access only to the media bucket.
+- Back up MongoDB; when using local media fallback, back up the complete `DATA_DIR` too.
+- Build Sharp dependencies on the target platform rather than copying macOS `node_modules` to Linux.
+- Deploy both `server/shared/media-catalog.json` and `server/shared/site-routes.json` with the API.
+- Monitor failed deploy hooks, upload errors, storage usage and authentication rate limits.
 
-- Passwords: salted scrypt; no plaintext password storage.
-- Sessions: random tokens stored as hashes, eight-hour expiry, persistent across restarts, revoked on logout/password reset.
-- Requests: CSRF token plus Origin checks, strict cookie settings, login/edit rate limits and bounded concurrent processing.
-- Data: MongoDB driver queries, unique/TTL indexes, atomic optimistic version checks and bounded per-image history.
-- Serving: security headers/CSP, private directory isolation, no directory listing, immutable uploaded/hashed asset URLs, revalidated HTML.
-
-These protections follow [Express security guidance](https://expressjs.com/en/advanced/best-practice-security.html). Database connectivity uses the [official MongoDB Node.js driver](https://www.mongodb.com/docs/drivers/node/current/connect/mongoclient/), and expired sessions/rate-limit windows use [MongoDB TTL indexes](https://www.mongodb.com/docs/manual/core/index-ttl/). Image validation uses [Sharp's input limits](https://sharp.pixelplumbing.com/api-constructor/). This is an implemented and tested baseline, not a penetration-test certification.
-
-Tests use a uniquely named temporary MongoDB database and synthetic images, then remove both. Set `MONGODB_TEST_URI` to a disposable Mongo deployment; when it is absent, the test runner starts the local `mongod` binary. Tests never use the production database. Run npm --prefix server test after building both frontends. Production hosting, TLS/DNS, backups, real credentials and ongoing monitoring must still be configured by the owner.
+Run `npm --prefix server test` after the public/admin builds. Tests use a disposable database and synthetic images.

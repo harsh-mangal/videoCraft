@@ -1,28 +1,13 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import { apiUrl } from "../config/urls";
+import { createContext, useContext } from "react";
 import { resolveImage } from "../utils/images";
 
 const empty = {};
 const MediaContext = createContext(empty);
 
-export function MediaProvider({ initialMedia = empty, children, live = true }) {
-  const [media, setMedia] = useState(initialMedia);
-  useEffect(() => {
-    if (!live) return;
-    const controller = new AbortController();
-    const refresh = async () => {
-      try {
-        const response = await fetch(apiUrl("/api/media"), { signal: controller.signal });
-        if (!response.ok || !response.headers.get("content-type")?.includes("application/json")) return;
-        const result = await response.json();
-        if (result.images && typeof result.images === "object") setMedia(result.images);
-      } catch { /* Keep the last published images when the API is unavailable. */ }
-    };
-    refresh();
-    window.addEventListener("focus", refresh);
-    return () => { controller.abort(); window.removeEventListener("focus", refresh); };
-  }, [live]);
-  return <MediaContext.Provider value={media}>{children}</MediaContext.Provider>;
+// Published media is embedded into Astro's generated HTML at build time. The
+// browser never needs to call /api/media on navigation or focus.
+export function MediaProvider({ initialMedia = empty, children }) {
+  return <MediaContext.Provider value={initialMedia}>{children}</MediaContext.Provider>;
 }
 
 export const useMedia = () => useContext(MediaContext);

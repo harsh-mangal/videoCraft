@@ -2,6 +2,7 @@ import { readFile, readdir, writeFile, mkdir } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { routeMeta, legacyRoutes } from "../../client/src/config/seo.js";
 
 const root = fileURLToPath(new URL("../../", import.meta.url));
 const groups = {
@@ -53,5 +54,6 @@ await mkdir(path.join(root, "server/shared"), { recursive: true });
 const catalogJson = JSON.stringify([...catalog.values()], null, 2) + "\n";
 await writeFile(path.join(root, "shared/media-catalog.json"), catalogJson);
 await writeFile(path.join(root, "server/shared/media-catalog.json"), catalogJson);
+await writeFile(path.join(root, "server/shared/site-routes.json"), JSON.stringify({ routes: Object.keys(routeMeta), legacy: legacyRoutes }, null, 2) + "\n");
 await writeFile(path.join(root, "shared/media-defaults.json"), JSON.stringify(Object.fromEntries([...catalog.values()].map(({ key, id, width, height }) => [key, { id, width, height }])), null, 2) + "\n");
 console.log("Registered " + catalog.size + " editable images, including the browser icon.");

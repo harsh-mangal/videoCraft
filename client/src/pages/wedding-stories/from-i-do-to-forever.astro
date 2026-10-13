@@ -1,0 +1,8 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ForeverPage from "../../islands/ForeverPage";
+import { loadPublishedMedia, mediaForRoute } from "../../lib/publishedMedia";
+const media = await loadPublishedMedia();
+const pageMedia = mediaForRoute(media, "/wedding-stories/from-i-do-to-forever");
+---
+<BaseLayout pathname="/wedding-stories/from-i-do-to-forever" media={media}><ForeverPage media={pageMedia} /></BaseLayout>

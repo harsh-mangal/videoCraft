@@ -17,7 +17,12 @@ export async function request(path, { method = "GET", body, csrf, version } = {}
   if (!response.ok) throw new ApiError(result.error || "The request failed. Please try again.", response.status);
   return result;
 }
-export function thumbnail(src, width = 480) {
+export function thumbnail(image, width = 480) {
+  if (image && typeof image === "object") {
+    const variants = image.variants?.filter(variant => !variant.format || variant.format === "webp") || [];
+    image = (variants.find(variant => variant.width >= width) || variants.at(-1))?.src || image.src;
+  }
+  let src = image;
   src = mediaUrl(src);
   if (!src?.startsWith("https://ik.imagekit.io/")) return src;
   const url = new URL(src); url.searchParams.set("tr", "w-" + width + ",q-75,f-auto"); return url.href;
